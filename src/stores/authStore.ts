@@ -1,32 +1,32 @@
 import { create } from 'zustand'
-import type { Player, Character } from '../types'
+import type { User, Character } from '../types'
 
 interface AuthState {
-  player: Player | null
-  activeChar: Character | null
+  user: User | null
   isLoading: boolean
-  setPlayer: (player: Player | null) => void
-  setActiveChar: (char: Character | null) => void
+  setUser: (user: User | null) => void
   setLoading: (v: boolean) => void
+  activeChar: () => Character | null
   isBanned: () => boolean
   banSecondsLeft: () => number
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
-  player: null,
-  activeChar: null,
+  user: null,
   isLoading: true,
-  setPlayer: (player) => set({ player }),
-  setActiveChar: (activeChar) => set({ activeChar }),
+  setUser: (user) => set({ user }),
   setLoading: (isLoading) => set({ isLoading }),
+  activeChar: () => get().user?.characters.find((c) => c.active) ?? null,
   isBanned: () => {
-    const { player } = get()
-    if (!player?.banned_until) return false
-    return new Date(player.banned_until) > new Date()
+    const { user } = get()
+    if (!user) return false
+    if (user.banned) return true
+    if (!user.banUntil) return false
+    return new Date(user.banUntil) > new Date()
   },
   banSecondsLeft: () => {
-    const { player } = get()
-    if (!player?.banned_until) return 0
-    return Math.max(0, Math.floor((new Date(player.banned_until).getTime() - Date.now()) / 1000))
+    const { user } = get()
+    if (!user?.banUntil) return 0
+    return Math.max(0, Math.floor((new Date(user.banUntil).getTime() - Date.now()) / 1000))
   },
 }))

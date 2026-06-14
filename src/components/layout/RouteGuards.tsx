@@ -4,31 +4,30 @@ import { Spinner } from '../ui/Spinner'
 import { fmt } from '../../utils/time'
 
 export function PrivateRoute() {
-  const { player, isLoading } = useAuthStore()
+  const { user, isLoading } = useAuthStore()
   if (isLoading) return <div className="flex-1 flex items-center justify-center"><Spinner size="lg" /></div>
-  if (!player) return <Navigate to="/" replace />
+  if (!user) return <Navigate to="/" replace />
   return <Outlet />
 }
 
 export function CharRequiredRoute() {
-  const { player, activeChar, isLoading } = useAuthStore()
+  const { user, isLoading, activeChar } = useAuthStore()
   if (isLoading) return <div className="flex-1 flex items-center justify-center"><Spinner size="lg" /></div>
-  if (!player) return <Navigate to="/" replace />
-  if (!activeChar) return <Navigate to="/worlds" replace />
+  if (!user) return <Navigate to="/" replace />
+  if (!activeChar()) return <Navigate to="/app/characters" replace />
   return <Outlet />
 }
 
 export function AdminRoute() {
-  const { player, isLoading } = useAuthStore()
+  const { user, isLoading } = useAuthStore()
   if (isLoading) return <div className="flex-1 flex items-center justify-center"><Spinner size="lg" /></div>
-  if (!player) return <Navigate to="/" replace />
-  const role = (player as unknown as { role?: string }).role
-  if (role !== 'admin') return <Navigate to="/403" replace />
+  if (!user) return <Navigate to="/" replace />
+  if (!user.isAdmin) return <Navigate to="/403" replace />
   return <Outlet />
 }
 
 export function BannedGuard({ children }: { children: React.ReactNode }) {
-  const { isBanned, banSecondsLeft, player } = useAuthStore()
+  const { isBanned, banSecondsLeft, user } = useAuthStore()
   if (!isBanned()) return <>{children}</>
   const secs = banSecondsLeft()
   return (
@@ -40,7 +39,7 @@ export function BannedGuard({ children }: { children: React.ReactNode }) {
         <span className="text-text font-mono font-bold">{fmt(secs)}</span>
       </p>
       <p className="text-xs text-text-dim">
-        Acumulou {player?.warnings ?? 0} warnings.
+        Acumulou {user?.warnings ?? 0} warnings.
       </p>
     </div>
   )

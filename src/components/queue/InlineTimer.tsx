@@ -7,14 +7,32 @@ interface HuntTimerProps {
 }
 
 export function HuntTimer({ startedAt }: HuntTimerProps) {
-  const elapsed = useMemo(() => huntDuration(startedAt), [])
+  const elapsed = useMemo(() => huntDuration(startedAt), [startedAt])
   return (
     <span
       className="font-mono text-sm text-text-muted"
       aria-live="polite"
       aria-label="Tempo de caça"
     >
-      {fmt(elapsed)}
+      +{fmt(elapsed)}
+    </span>
+  )
+}
+
+interface HuntEndTimerProps {
+  endsAt: string
+}
+
+export function HuntEndTimer({ endsAt }: HuntEndTimerProps) {
+  const endTime = useMemo(() => new Date(endsAt).getTime(), [endsAt])
+  const seconds = useCountdown(endTime, () => {})
+  return (
+    <span
+      className={`font-mono text-xs ${seconds <= 300 ? 'text-amber' : 'text-text-muted'}`}
+      aria-live="polite"
+      aria-label="Tempo restante de caça"
+    >
+      {fmt(seconds)}
     </span>
   )
 }

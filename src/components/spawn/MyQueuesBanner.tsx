@@ -1,7 +1,8 @@
 import { useAuthStore } from '../../stores/authStore'
 import { useQueueStore } from '../../stores/queueStore'
 import { useCountdown } from '../../hooks/useCountdown'
-import { fmt } from '../../utils/time'
+import { fmt, secondsUntil } from '../../utils/time'
+import { getEntryStatus } from '../../types'
 import type { Spawn } from '../../types'
 
 interface MyQueuesBannerProps {
@@ -74,16 +75,19 @@ function AcceptChip({
 }
 
 export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProps) {
-  const { player } = useAuthStore()
-  const getMyEntries = useQueueStore((s) => s.getMyEntries)
+  const { activeChar } = useAuthStore()
+  const { getMyEntries } = useQueueStore()
+  const char = activeChar()
 
-  if (!player) return null
-  const myEntries = getMyEntries(player.id)
+  if (!char) return null
+  const myEntries = getMyEntries(char.name)
   if (myEntries.length === 0) return null
 
-  const pendingAccepts = myEntries.filter((e) => e.status === 'pending_accept' && e.accept_deadline)
-  const activeHunts = myEntries.filter((e) => e.status === 'active')
-  const waiting = myEntries.filter((e) => e.status === 'waiting')
+  const pendingAccepts = myEntries.filter(
+    (e) => getEntryStatus(e) === 'pending_accept' && e.acceptDeadline,
+  )
+  const activeHunts = myEntries.filter((e) => getEntryStatus(e) === 'active')
+  const waiting = myEntries.filter((e) => getEntryStatus(e) === 'waiting')
 
   const hasConflict = pendingAccepts.length > 1
 
@@ -96,7 +100,6 @@ export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProp
   return (
     <div role="status" aria-live="polite" className="mb-4 space-y-3">
 
-      {/* Aceites pendentes */}
       {pendingAccepts.length > 0 && (
         <div>
           {hasConflict ? (
@@ -105,7 +108,7 @@ export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProp
                 ESCOLHA UM RESPAWN
               </p>
               <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
-                Dois respawns vagos ao mesmo tempo. Aceite um — o outro será repassado automaticamente para o próximo da fila.
+                Dois respawns vagos ao mesmo tempo. Aceite um — o outro será repassado automaticamente.
               </p>
             </>
           ) : (
@@ -118,9 +121,9 @@ export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProp
             {pendingAccepts.map((e) => (
               <AcceptChip
                 key={e.id}
-                spawnId={e.spawn_id}
-                spawnName={spawnName(e.spawn_id)}
-                deadline={e.accept_deadline!}
+                spawnId={e.spawnId}
+                spawnName={spawnName(e.spawnId)}
+                deadline={e.acceptDeadline!}
                 showSkip={!hasConflict}
                 onAccept={onAccept}
                 onLeave={onLeave}
@@ -130,7 +133,6 @@ export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProp
         </div>
       )}
 
-      {/* Hunts ativas */}
       {activeHunts.length > 0 && (
         <div className="flex gap-2 overflow-x-auto sm:flex-wrap pb-1">
           {activeHunts.map((e) => (
@@ -143,14 +145,16 @@ export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProp
                 color: 'var(--green)',
               }}
             >
-              ⚔ <span className="font-medium">{e.character_name}</span>
-              {' '}caçando em <span className="font-medium">{spawnName(e.spawn_id)}</span>
+              ⚔ <span className="font-medium">{e.characterName}</span>
+              {' '}caçando em <span className="font-medium">{spawnName(e.spawnId)}</span>
+              {e.huntEndsAt && (
+                <span className="text-text-muted ml-1">· {fmt(secondsUntil(e.huntEndsAt))}</span>
+              )}
             </span>
           ))}
         </div>
       )}
 
-      {/* Aguardando na fila */}
       {waiting.length > 0 && (
         <div>
           <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--text-dim)' }}>
@@ -163,8 +167,13 @@ export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProp
                 className="flex-shrink-0 rounded-lg px-3 py-1.5 text-xs whitespace-nowrap"
                 style={{ background: 'var(--bg-2)', border: '0.5px solid var(--border)', color: 'var(--text-muted)' }}
               >
-                <span className="text-text font-medium">{spawnName(e.spawn_id)}</span>
-                {' '}— #{e.position + 1} na fila
+                <span className="text-text font-medium">{spawnName(e.spawnId)}</span>
+                {' '}— #{e.position} na fila
+                {e.estimatedStart && (
+                  <span className="text-text-dim ml-1">
+                    · ~{fmt(secondsUntil(e.estimatedStart))}
+                  </span>
+                )}
               </span>
             ))}
           </div>

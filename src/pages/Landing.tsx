@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuthStore } from "../stores/authStore";
@@ -11,12 +10,9 @@ function scrollTo(id: string) {
 }
 
 export default function Landing() {
-  const { player, isLoading } = useAuthStore();
+  const { user, isLoading, activeChar } = useAuthStore();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isLoading && player) navigate("/worlds", { replace: true });
-  }, [player, isLoading, navigate]);
+  const char = activeChar();
 
   async function handleLogin() {
     await supabase.auth.signInWithOAuth({
@@ -50,9 +46,15 @@ export default function Landing() {
           >
             Planos
           </button>
-          <Button size="sm" onClick={handleLogin}>
-            Entrar com Discord
-          </Button>
+          {user ? (
+            <Button size="sm" onClick={() => navigate(char ? "/app/queue" : "/app/characters")}>
+              {char ? `Ir para as filas →` : "Configurar personagem →"}
+            </Button>
+          ) : (
+            <Button size="sm" onClick={handleLogin}>
+              Entrar com Discord
+            </Button>
+          )}
         </div>
       </nav>
 
@@ -89,12 +91,25 @@ export default function Landing() {
         </p>
 
         <div className="flex gap-3 flex-wrap justify-center">
-          <Button size="lg" onClick={handleLogin}>
-            ⚔ Entrar com Discord — é grátis
-          </Button>
-          <Button size="lg" variant="secondary" onClick={() => scrollTo("hw")}>
-            Como funciona →
-          </Button>
+          {user ? (
+            <>
+              <Button size="lg" onClick={() => navigate(char ? "/app/queue" : "/app/characters")}>
+                {char ? `⚔ Ir para as filas` : "⚔ Configurar personagem"}
+              </Button>
+              <Button size="lg" variant="secondary" onClick={() => navigate("/app/characters")}>
+                Meus personagens →
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button size="lg" onClick={handleLogin}>
+                ⚔ Entrar com Discord — é grátis
+              </Button>
+              <Button size="lg" variant="secondary" onClick={() => scrollTo("hw")}>
+                Como funciona →
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Stats row */}

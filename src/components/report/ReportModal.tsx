@@ -1,15 +1,17 @@
 import { useState } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { supabase } from '../../lib/supabase'
+import { useMutation } from '@tanstack/react-query'
+import { api } from '../../lib/api'
 import { useAuthStore } from '../../stores/authStore'
 import { useToasts } from '../../hooks/useToasts'
 import { Modal } from '../ui/Modal'
 import { Button } from '../ui/Button'
 
-const REASONS = [
-  'Não está no respawn / jogador ausente',
-  'Saiu do respawn e não finalizou corretamente',
-]
+type ReportReason = 'not_at_spawn' | 'left_without_passing'
+
+const REASON_LABELS: Record<ReportReason, string> = {
+  not_at_spawn: 'Não está no respawn / jogador ausente',
+  left_without_passing: 'Saiu do respawn e não finalizou corretamente',
+}
 
 interface ReportModalProps {
   isOpen: boolean
@@ -17,14 +19,7 @@ interface ReportModalProps {
   spawnId: string
   spawnName: string
   worldId: string
-  targetId: string
   targetName: string
-}
-
-interface ReportQuota {
-  used: number
-  limit: number
-  resets_at: string | null
 }
 
 export function ReportModal({
@@ -33,66 +28,35 @@ export function ReportModal({
   spawnId,
   spawnName,
   worldId,
-  targetId,
   targetName,
 }: ReportModalProps) {
-  const { player } = useAuthStore()
+  const { user } = useAuthStore()
   const { addToast } = useToasts()
-  const [reason, setReason] = useState('')
+  const [reason, setReason] = useState<ReportReason | ''>('')
   const [confirmed, setConfirmed] = useState(false)
 
-  const { data: quota } = useQuery<ReportQuota>({
-    queryKey: ['report-quota', player?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_report_quota', { player_id: player!.id })
-      if (error) throw error
-      return data as ReportQuota
-    },
-    enabled: !!player && isOpen,
-  })
-
   const { mutate: sendReport, isPending } = useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase.from('reports').insert({
-        reporter_id: player!.id,
-        target_id: targetId,
-        spawn_id: spawnId,
-        world_id: worldId,
+    mutationFn: () =>
+      api.post('/reports', {
+        targetName,
+        spawnId,
+        worldId,
         reason,
-      })
-      if (error) throw error
-    },
+      }),
     onSuccess: () => {
       addToast('success', 'Report enviado com sucesso.')
       onClose()
       setReason('')
       setConfirmed(false)
     },
-    onError: () => {
-      addToast('error', 'Falha ao enviar report. Tente novamente.')
-    },
+    onError: (e: Error) => addToast('error', e.message),
   })
 
-  const canReport = quota && quota.used < quota.limit
-  const remaining = quota ? quota.limit - quota.used : 0
+  if (!user) return null
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={`Reportar — ${spawnName}`}>
       <div className="space-y-4">
-        {quota && (
-          <p className="text-sm text-text-muted">
-            Reports disponíveis:{' '}
-            <span className={`font-semibold ${remaining > 0 ? 'text-green' : 'text-red'}`}>
-              {remaining}/{quota.limit}
-            </span>
-            {!canReport && quota.resets_at && (
-              <span className="text-xs block mt-1">
-                Recarrega em {new Date(quota.resets_at).toLocaleTimeString('pt-BR')}
-              </span>
-            )}
-          </p>
-        )}
-
         <div>
           <p className="text-sm text-text-muted mb-1">Reportando:</p>
           <p className="font-semibold text-text">{targetName}</p>
@@ -100,17 +64,17 @@ export function ReportModal({
 
         <div className="space-y-2">
           <p className="text-sm font-medium text-text-muted">Motivo</p>
-          {REASONS.map((r) => (
-            <label key={r} className="flex items-start gap-3 cursor-pointer group">
+          {(Object.entries(REASON_LABELS) as [ReportReason, string][]).map(([key, label]) => (
+            <label key={key} className="flex items-start gap-3 cursor-pointer group">
               <input
                 type="radio"
                 name="reason"
-                value={r}
-                checked={reason === r}
-                onChange={() => setReason(r)}
+                value={key}
+                checked={reason === key}
+                onChange={() => setReason(key)}
                 className="mt-0.5 accent-gold"
               />
-              <span className="text-sm text-text group-hover:text-text leading-snug">{r}</span>
+              <span className="text-sm text-text group-hover:text-text leading-snug">{label}</span>
             </label>
           ))}
         </div>
@@ -119,7 +83,7 @@ export function ReportModal({
           <Button
             variant="danger"
             className="w-full"
-            disabled={!reason || !canReport}
+            disabled={!reason}
             onClick={() => setConfirmed(true)}
           >
             Continuar

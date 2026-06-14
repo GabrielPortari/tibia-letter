@@ -10,7 +10,7 @@ export function validateCharacterName(name: string): boolean {
   return CHAR_NAME_REGEX.test(name)
 }
 
-const CODE_REGEX = /^SQ-[A-Z0-9]{6}$/
+const CODE_REGEX = /^TL-[A-Z0-9]{6}$/
 
 export function validateCode(code: string): boolean {
   return CODE_REGEX.test(code)
@@ -23,5 +23,5 @@ export function generateVerificationCode(): string {
   const suffix = Array.from(arr)
     .map((b) => chars[b % chars.length])
     .join('')
-  return `SQ-${suffix}`
+  return `TL-${suffix}`
 }

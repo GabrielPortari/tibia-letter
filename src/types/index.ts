@@ -1,93 +1,81 @@
-export interface Player {
-  id: string
-  discord_id: string
-  discord_username: string
-  discord_avatar: string | null
-  is_premium: boolean
-  warnings: number
-  banned_until: string | null
-  created_at: string
-}
-
 export interface Character {
   id: string
-  player_id: string
   name: string
   level: number
-  vocation: string
   world: string
-  is_verified: boolean
-  is_active: boolean
-  created_at: string
+  verified: boolean
+  active: boolean
+  verifyCode: string | null
+  verifyCodeExpiresAt: string | null
+  verifiedAt: string | null
+}
+
+export interface User {
+  id: string
+  discordId: string
+  discordName: string
+  avatarUrl: string | null
+  premium: boolean
+  warnings: number
+  banned: boolean
+  banUntil: string | null
+  isAdmin: boolean
+  characters: Character[]
 }
 
 export interface Spawn {
   id: string
   name: string
-  min_level: number
-  max_level: number
-  location: string | null
-  image_url: string | null
-  created_at: string
+  location: string
+  minLevel: number
+  maxLevel: number
+  active: boolean
 }
-
-export type QueueEntryStatus = 'waiting' | 'active' | 'pending_accept'
 
 export interface QueueEntry {
   id: string
-  world_id: string
-  spawn_id: string
-  player_id: string
-  character_id: string
-  character_name: string
-  character_level: number
+  characterName: string
+  characterLevel: number
   position: number
-  status: QueueEntryStatus
-  started_at: string | null
-  accept_deadline: string | null
-  joined_at: string
+  premium: boolean
+  huntDurationS: number
+  estimatedStart: string | null
+  huntStartedAt: string | null
+  huntEndsAt: string | null
+  acceptDeadline: string | null
+  joinedAt: string
 }
 
-export interface Report {
-  id: string
-  reporter_id: string
-  target_id: string
-  target_name: string
-  spawn_id: string
-  spawn_name: string
-  world_id: string
-  reason: string
-  created_at: string
+export type QueueStatus = 'waiting' | 'pending_accept' | 'active'
+
+export function getEntryStatus(e: QueueEntry): QueueStatus {
+  if (e.huntStartedAt != null) return 'active'
+  if (e.acceptDeadline != null) return 'pending_accept'
+  return 'waiting'
 }
 
 export interface RemovalLog {
   id: string
-  target_id: string
-  target_name: string
+  targetId: string
+  targetName: string
   action: 'removed_from_queue' | 'removed_from_spawn'
   reporters: string[]
   reason: string
-  spawn_id: string
-  spawn_name: string
-  world_id: string
-  warnings_after: number
-  created_at: string
-}
-
-export interface World {
-  id: string
-  name: string
-  region: 'eu' | 'na' | 'sa' | 'oc'
-  pvp_type: 'open' | 'optional' | 'hardcore' | 'retro-open' | 'retro-hardcore'
-}
-
-export interface VerificationCode {
-  code: string
-  expires_at: string
+  spawnId: string
+  spawnName: string
+  worldId: string
+  warningsAfter: number
+  createdAt: string
 }
 
 export interface Toast {
   id: string
   type: 'success' | 'error' | 'info' | 'warning'
   message: string
+}
+
+export interface AdminStats {
+  totalUsers: number
+  activeQueues: number
+  recentRemovals: number
 }

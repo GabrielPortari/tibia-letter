@@ -1,18 +1,26 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { supabase } from '../../lib/supabase'
+import { api } from '../../lib/api'
 import { useAuthStore } from '../../stores/authStore'
+import { queryClient } from '../../lib/queryClient'
 import { Avatar } from '../ui/Avatar'
 import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
 
 export function Topbar() {
-  const { player, activeChar } = useAuthStore()
+  const { user, setUser, activeChar } = useAuthStore()
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const char = activeChar()
 
   async function handleLogout() {
-    await supabase.auth.signOut()
+    try {
+      await api.post('/auth/logout')
+    } catch {
+      // best-effort
+    }
+    setUser(null)
+    queryClient.clear()
     navigate('/')
   }
 
@@ -23,23 +31,30 @@ export function Topbar() {
           Tibia Letter
         </Link>
 
-        {player ? (
+        {user ? (
           <>
             <div className="hidden sm:flex items-center gap-3">
-              {activeChar && (
-                <span className="text-sm text-text-muted">
-                  <span className="text-text font-medium">{activeChar.name}</span>
-                  {' '}Lv.{activeChar.level}
-                </span>
+              {char && (
+                <Link
+                  to="/app/characters"
+                  className="text-sm text-text-muted hover:text-text transition-colors"
+                >
+                  <span className="text-text font-medium">{char.name}</span>
+                  {' '}Lv.{char.level}
+                </Link>
               )}
-              {player.is_premium && <Badge variant="gold">Premium</Badge>}
+              {user.premium && <Badge variant="gold">Premium</Badge>}
+              {user.isAdmin && (
+                <Link
+                  to="/app/admin"
+                  className="text-xs text-text-muted hover:text-gold transition-colors border border-border hover:border-gold rounded px-2 py-1"
+                >
+                  Admin
+                </Link>
+              )}
               <Avatar
-                src={
-                  player.discord_avatar
-                    ? `https://cdn.discordapp.com/avatars/${player.discord_id}/${player.discord_avatar}.png?size=64`
-                    : null
-                }
-                alt={player.discord_username}
+                src={user.avatarUrl}
+                alt={user.discordName}
                 size={32}
               />
               <Button variant="ghost" size="sm" onClick={handleLogout}>
@@ -61,12 +76,28 @@ export function Topbar() {
         ) : null}
       </div>
 
-      {menuOpen && player && (
+      {menuOpen && user && (
         <div className="sm:hidden border-t border-border bg-bg1 px-4 py-3 flex flex-col gap-3">
-          {activeChar && (
+          {char && (
             <p className="text-sm text-text-muted">
-              Char: <span className="text-text font-medium">{activeChar.name}</span> Lv.{activeChar.level}
+              Char: <span className="text-text font-medium">{char.name}</span> Lv.{char.level}
             </p>
+          )}
+          <Link
+            to="/app/characters"
+            className="text-sm text-text-muted hover:text-text"
+            onClick={() => setMenuOpen(false)}
+          >
+            Personagens
+          </Link>
+          {user.isAdmin && (
+            <Link
+              to="/app/admin"
+              className="text-sm text-text-muted hover:text-text"
+              onClick={() => setMenuOpen(false)}
+            >
+              Admin
+            </Link>
           )}
           <Button variant="ghost" size="sm" onClick={handleLogout} className="w-full">
             Sair

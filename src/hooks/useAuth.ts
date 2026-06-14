@@ -1,73 +1,38 @@
 import { useEffect } from 'react'
-import { supabase } from '../lib/supabase'
 import { useAuthStore } from '../stores/authStore'
-import type { Player, Character } from '../types'
+import type { User } from '../types'
+
+const BASE = ((import.meta.env.VITE_API_URL as string) || '') + '/api/v1'
 
 export function useAuth() {
-  const { player, activeChar, isLoading, setPlayer, setActiveChar, setLoading } = useAuthStore()
+  const { user, isLoading, setUser, setLoading } = useAuthStore()
 
   useEffect(() => {
     let mounted = true
 
-    async function loadSession() {
+    async function loadMe() {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
+        // Raw fetch — intentionally bypasses the api.ts 401→redirect interceptor.
+        // A 401 here simply means "not logged in yet" and must NOT trigger a redirect.
+        const res = await fetch(`${BASE}/auth/me`, { credentials: 'include' })
         if (!mounted) return
-        if (session?.user) {
-          await loadPlayer(session.user.id)
+        if (res.ok) {
+          const me: User = await res.json()
+          setUser(me)
         } else {
-          if (mounted) setLoading(false)
+          setUser(null)
         }
       } catch {
-        if (mounted) setLoading(false)
-      }
-    }
-
-    async function loadPlayer(userId: string) {
-      try {
-        const { data: playerData } = await supabase
-          .from('players')
-          .select('*')
-          .eq('id', userId)
-          .single()
-
-        if (!mounted) return
-
-        if (playerData) {
-          setPlayer(playerData as Player)
-          const { data: charData } = await supabase
-            .from('characters')
-            .select('*')
-            .eq('player_id', userId)
-            .eq('is_active', true)
-            .single()
-          if (mounted && charData) setActiveChar(charData as Character)
-        }
-      } catch {
-        // player not found or DB error — treat as unauthenticated
+        if (mounted) setUser(null)
       } finally {
         if (mounted) setLoading(false)
       }
     }
 
-    loadSession()
+    loadMe()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return
-      if (event === 'SIGNED_OUT') {
-        setPlayer(null)
-        setActiveChar(null)
-        setLoading(false)
-      } else if (session?.user) {
-        await loadPlayer(session.user.id)
-      }
-    })
+    return () => { mounted = false }
+  }, [setUser, setLoading])
 
-    return () => {
-      mounted = false
-      subscription.unsubscribe()
-    }
-  }, [setPlayer, setActiveChar, setLoading])
-
-  return { player, activeChar, isLoading }
+  return { user, isLoading }
 }
