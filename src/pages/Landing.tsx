@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuthStore } from '../stores/authStore'
 import { Button } from '../components/ui/Button'
 import { Spinner } from '../components/ui/Spinner'
+import { DemoSection } from '../components/landing/DemoSection'
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
@@ -224,6 +225,9 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      {/* ── Demo ── */}
+      <DemoSection />
 
       {/* ── Planos ── */}
       <section id="pr" className="py-16 sm:py-20 px-4 max-w-3xl mx-auto w-full">
