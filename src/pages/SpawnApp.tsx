@@ -1,0 +1,177 @@
+import { useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useQuery, useMutation } from '@tanstack/react-query'
+import { supabase } from '../lib/supabase'
+import { useQueueRealtime } from '../hooks/useQueueRealtime'
+import { useQueueStore } from '../stores/queueStore'
+import { useAuthStore } from '../stores/authStore'
+import { useToasts } from '../hooks/useToasts'
+import { validateLevelRange } from '../utils/level'
+import { PageWrapper } from '../components/layout/PageWrapper'
+import { SpawnCard } from '../components/spawn/SpawnCard'
+import { MyQueuesBanner } from '../components/spawn/MyQueuesBanner'
+import { ReportModal } from '../components/report/ReportModal'
+import { BannedGuard } from '../components/layout/RouteGuards'
+import { Spinner } from '../components/ui/Spinner'
+import type { Spawn, QueueEntry } from '../types'
+
+export default function SpawnApp() {
+  const { worldId } = useParams<{ worldId: string }>()
+  const { player, activeChar } = useAuthStore()
+  const { setEntries } = useQueueStore()
+  const { addToast } = useToasts()
+  const navigate = useNavigate()
+
+  const [reportState, setReportState] = useState<{
+    spawnId: string
+    spawnName: string
+    targetId: string
+    targetName: string
+  } | null>(null)
+
+  useQueueRealtime(worldId!)
+
+  const { data: spawns, isLoading } = useQuery<Spawn[]>({
+    queryKey: ['spawns', worldId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('spawns').select('*').order('name')
+      if (error) throw error
+      const spawnList = data as Spawn[]
+      for (const spawn of spawnList) {
+        const { data: qData } = await supabase
+          .from('queue_entries')
+          .select('*')
+          .eq('world_id', worldId)
+          .eq('spawn_id', spawn.id)
+          .order('position')
+        if (qData) setEntries(spawn.id, qData as QueueEntry[])
+      }
+      return spawnList
+    },
+  })
+
+  function validateJoin(spawnId: string): string | null {
+    if (!player) return 'Não autenticado'
+    if (!activeChar) return 'Sem personagem ativo'
+    if (useAuthStore.getState().isBanned()) return 'Conta banida'
+    const spawn = spawns?.find((s) => s.id === spawnId)
+    if (!spawn) return 'Spawn não encontrado'
+    if (!validateLevelRange(activeChar.level, spawn.min_level, spawn.max_level)) {
+      return `Nível ${activeChar.level} fora do range (Lv. ${spawn.min_level}–${spawn.max_level})`
+    }
+    return null
+  }
+
+  const joinMutation = useMutation({
+    mutationFn: async (spawnId: string) => {
+      const err = validateJoin(spawnId)
+      if (err) throw new Error(err)
+      const { error } = await supabase.from('queue_entries').insert({
+        world_id: worldId,
+        spawn_id: spawnId,
+        player_id: player!.id,
+        character_id: activeChar!.id,
+        character_name: activeChar!.name,
+        character_level: activeChar!.level,
+      })
+      if (error) throw error
+    },
+    onError: (e: Error) => addToast('error', e.message),
+  })
+
+  const acceptMutation = useMutation({
+    mutationFn: async (spawnId: string) => {
+      const { error } = await supabase.functions.invoke('accept-spawn', {
+        body: { spawnId, worldId, playerId: player!.id },
+      })
+      if (error) throw error
+    },
+    onError: () => addToast('error', 'Falha ao aceitar respawn.'),
+  })
+
+  const finishMutation = useMutation({
+    mutationFn: async (spawnId: string) => {
+      const { error } = await supabase.functions.invoke('finish-hunt', {
+        body: { spawnId, worldId, playerId: player!.id },
+      })
+      if (error) throw error
+    },
+    onError: () => addToast('error', 'Falha ao finalizar caça.'),
+  })
+
+  const leaveMutation = useMutation({
+    mutationFn: async (spawnId: string) => {
+      const { error } = await supabase
+        .from('queue_entries')
+        .delete()
+        .eq('spawn_id', spawnId)
+        .eq('world_id', worldId)
+        .eq('player_id', player!.id)
+      if (error) throw error
+    },
+    onError: () => addToast('error', 'Falha ao sair da fila.'),
+  })
+
+  return (
+    <BannedGuard>
+      <PageWrapper>
+        <div className="flex items-center gap-3 mb-6">
+          <button
+            onClick={() => navigate('/worlds')}
+            className="text-text-muted hover:text-text transition-colors text-sm"
+          >
+            ← Mundos
+          </button>
+          <h1 className="font-display text-xl sm:text-2xl text-gold font-semibold">
+            {worldId}
+          </h1>
+        </div>
+
+        <MyQueuesBanner />
+
+        {isLoading ? (
+          <div className="flex justify-center py-16"><Spinner size="lg" /></div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {spawns?.map((spawn) => (
+              <SpawnCard
+                key={spawn.id}
+                spawn={spawn}
+                worldId={worldId!}
+                onJoin={(id) => joinMutation.mutateAsync(id)}
+                onAccept={(id) => acceptMutation.mutateAsync(id)}
+                onFinish={(id) => finishMutation.mutateAsync(id)}
+                onLeave={(id) => leaveMutation.mutateAsync(id)}
+                onReport={(spawnId, targetId) => {
+                  const spawn = spawns.find((s) => s.id === spawnId)
+                  const queue = useQueueStore.getState().getSpawnQueue(spawnId)
+                  const target = queue.find((e) => e.player_id === targetId)
+                  if (spawn && target) {
+                    setReportState({
+                      spawnId,
+                      spawnName: spawn.name,
+                      targetId,
+                      targetName: target.character_name,
+                    })
+                  }
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {reportState && (
+          <ReportModal
+            isOpen
+            onClose={() => setReportState(null)}
+            spawnId={reportState.spawnId}
+            spawnName={reportState.spawnName}
+            worldId={worldId!}
+            targetId={reportState.targetId}
+            targetName={reportState.targetName}
+          />
+        )}
+      </PageWrapper>
+    </BannedGuard>
+  )
+}
