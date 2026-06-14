@@ -10,7 +10,6 @@ import { secondsUntil, fmt } from '../../utils/time'
 import { Modal } from '../ui/Modal'
 import { Input } from '../ui/Input'
 import { Button } from '../ui/Button'
-import type { User } from '../../types'
 
 const schema = z.object({
   name: z
@@ -31,7 +30,7 @@ interface InitResponse {
 interface CharVerifyModalProps {
   isOpen: boolean
   onClose: () => void
-  onVerified?: (updatedUser: User) => void
+  onVerified?: () => void
   defaultName?: string
 }
 
@@ -73,9 +72,9 @@ export function CharVerifyModal({ isOpen, onClose, onVerified, defaultName }: Ch
 
   const { mutate: verifyChar, isPending: verifying } = useMutation({
     mutationFn: () => api.post<User>('/characters/verify', { name: charName }),
-    onSuccess: (updatedUser) => {
+    onSuccess: () => {
       addToast('success', `${charName} verificado com sucesso!`)
-      if (onVerified) onVerified(updatedUser)
+      if (onVerified) onVerified()
       handleClose()
     },
     onError: (e: Error) => addToast('error', e.message),
@@ -140,6 +139,16 @@ export function CharVerifyModal({ isOpen, onClose, onVerified, defaultName }: Ch
               <strong className="text-text">{charName}</strong> e cole o código abaixo no campo{' '}
               <em>Comment</em> do perfil. Depois clique em "Já coloquei o código".
             </p>
+            <div
+              className="rounded-lg px-3 py-2.5 text-xs leading-relaxed flex gap-2"
+              style={{ background: 'var(--blue-bg)', border: '1px solid var(--blue)', color: 'var(--blue)' }}
+            >
+              <span className="flex-shrink-0 mt-0.5">ℹ️</span>
+              <span>
+                O tibia.com pode levar <strong>até 5 minutos</strong> para refletir alterações no perfil.
+                Se a verificação falhar logo após salvar, aguarde alguns minutos e tente novamente.
+              </span>
+            </div>
 
             <div className="bg-bg3 border border-border rounded-lg p-4 text-center">
               <p className="font-mono text-2xl font-bold text-gold tracking-widest mb-2">{code}</p>

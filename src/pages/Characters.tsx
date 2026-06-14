@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
 import { api } from '../lib/api'
 import { useToasts } from '../hooks/useToasts'
@@ -9,6 +10,13 @@ import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
 import { CharVerifyModal } from '../components/character/CharVerifyModal'
 import type { User, Character } from '../types'
+
+const BASE = ((import.meta.env.VITE_API_URL as string) || '') + '/api/v1'
+
+async function fetchMe(): Promise<User | null> {
+  const res = await fetch(`${BASE}/auth/me`, { credentials: 'include' })
+  return res.ok ? (res.json() as Promise<User>) : null
+}
 
 type CharState = 'pending' | 'expired' | 'verified' | 'active'
 
@@ -22,31 +30,35 @@ function getCharState(char: Character): CharState {
 export default function Characters() {
   const { user, setUser } = useAuthStore()
   const { addToast } = useToasts()
+  const navigate = useNavigate()
   const [modalOpen, setModalOpen] = useState(false)
   const [reInitChar, setReInitChar] = useState<Character | null>(null)
 
   const activateMutation = useMutation({
-    mutationFn: (id: string) => api.patch<User>(`/characters/${id}/activate`),
-    onSuccess: (updatedUser) => {
-      setUser(updatedUser)
+    mutationFn: (id: string) => api.patch(`/characters/${id}/activate`),
+    onSuccess: async () => {
+      const me = await fetchMe()
+      if (me) setUser(me)
       addToast('success', 'Personagem ativado.')
     },
     onError: (e: Error) => addToast('error', e.message),
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.delete<User>(`/characters/${id}`),
-    onSuccess: (updatedUser) => {
-      setUser(updatedUser)
+    mutationFn: (id: string) => api.delete(`/characters/${id}`),
+    onSuccess: async () => {
+      const me = await fetchMe()
+      if (me) setUser(me)
       addToast('success', 'Personagem removido.')
     },
     onError: (e: Error) => addToast('error', e.message),
   })
 
   const verifyMutation = useMutation({
-    mutationFn: (name: string) => api.post<User>('/characters/verify', { name }),
-    onSuccess: (updatedUser, name) => {
-      setUser(updatedUser)
+    mutationFn: (name: string) => api.post('/characters/verify', { name }),
+    onSuccess: async (_, name) => {
+      const me = await fetchMe()
+      if (me) setUser(me)
       addToast('success', `${name} verificado com sucesso!`)
     },
     onError: (e: Error) => addToast('error', e.message),
@@ -81,7 +93,16 @@ export default function Characters() {
               : 'Nenhum personagem ativo — vincule e ative um para usar as filas.'}
           </p>
         </div>
-        <Button onClick={() => { setReInitChar(null); setModalOpen(true) }}>+ Vincular Personagem</Button>
+        <div className="flex gap-2">
+          {activeChar && (
+            <Button variant="secondary" onClick={() => navigate('/app/queue')}>
+              Entrar na fila →
+            </Button>
+          )}
+          <Button onClick={() => { setReInitChar(null); setModalOpen(true) }}>
+            + Vincular Personagem
+          </Button>
+        </div>
       </div>
 
       {!activeChar && (
@@ -122,7 +143,10 @@ export default function Characters() {
         isOpen={modalOpen}
         onClose={handleModalClose}
         defaultName={reInitChar?.name}
-        onVerified={(updatedUser) => setUser(updatedUser)}
+        onVerified={async () => {
+          const me = await fetchMe()
+          if (me) setUser(me)
+        }}
       />
     </PageWrapper>
   )
@@ -171,14 +195,13 @@ function CharCard({ char, state, isActivating, isDeleting, isVerifying, onActiva
           )}
 
           {state === 'pending' && char.verifyCode && (
-            <PendingCodeBlock
-              code={char.verifyCode}
-              expiresAt={char.verifyCodeExpiresAt}
-            />
+            <PendingCodeBlock code={char.verifyCode} expiresAt={char.verifyCodeExpiresAt} />
           )}
 
           {state === 'expired' && (
-            <p className="text-xs text-text-muted mt-1">Código expirado. Gere um novo para continuar a verificação.</p>
+            <p className="text-xs text-text-muted mt-1">
+              Código expirado. Gere um novo para continuar a verificação.
+            </p>
           )}
         </div>
       </div>
@@ -239,4 +262,3 @@ function PendingCodeBlock({ code, expiresAt }: { code: string; expiresAt: string
     </div>
   )
 }
-
