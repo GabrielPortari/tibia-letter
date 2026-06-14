@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { fmt } from '../../utils/time'
 
 // ── Mock data ──────────────────────────────────────────────────────────────────
@@ -306,13 +306,6 @@ function SpawnCardMock({ spawn, defaultOpen }: { spawn: MockSpawn; defaultOpen?:
 
 export function DemoSection() {
   const [spawns] = useState<MockSpawn[]>(INITIAL_SPAWNS)
-  const [tickMs, setTickMs] = useState(Date.now())
-  const tickRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  useEffect(() => {
-    tickRef.current = setInterval(() => setTickMs(Date.now()), 1000)
-    return () => { if (tickRef.current) clearInterval(tickRef.current) }
-  }, [])
 
   // My queues banner data
   const mySpawn = spawns[0]
@@ -404,7 +397,7 @@ export function DemoSection() {
             <div className="space-y-2">
               {spawns.map((spawn, i) => (
                 <SpawnCardMock
-                  key={spawn.id + tickMs}
+                  key={spawn.id}
                   spawn={spawn}
                   defaultOpen={i === 0}
                 />
