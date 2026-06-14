@@ -10,36 +10,44 @@ export function useAuth() {
     let mounted = true
 
     async function loadSession() {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!mounted) return
-
-      if (session?.user) {
-        await loadPlayer(session.user.id)
-      } else {
-        setLoading(false)
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!mounted) return
+        if (session?.user) {
+          await loadPlayer(session.user.id)
+        } else {
+          if (mounted) setLoading(false)
+        }
+      } catch {
+        if (mounted) setLoading(false)
       }
     }
 
     async function loadPlayer(userId: string) {
-      const { data: playerData } = await supabase
-        .from('players')
-        .select('*')
-        .eq('id', userId)
-        .single()
-
-      if (!mounted) return
-
-      if (playerData) {
-        setPlayer(playerData as Player)
-        const { data: charData } = await supabase
-          .from('characters')
+      try {
+        const { data: playerData } = await supabase
+          .from('players')
           .select('*')
-          .eq('player_id', userId)
-          .eq('is_active', true)
+          .eq('id', userId)
           .single()
-        if (mounted && charData) setActiveChar(charData as Character)
+
+        if (!mounted) return
+
+        if (playerData) {
+          setPlayer(playerData as Player)
+          const { data: charData } = await supabase
+            .from('characters')
+            .select('*')
+            .eq('player_id', userId)
+            .eq('is_active', true)
+            .single()
+          if (mounted && charData) setActiveChar(charData as Character)
+        }
+      } catch {
+        // player not found or DB error — treat as unauthenticated
+      } finally {
+        if (mounted) setLoading(false)
       }
-      if (mounted) setLoading(false)
     }
 
     loadSession()
