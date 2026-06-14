@@ -10,12 +10,10 @@ import { AcceptTimer } from '../queue/InlineTimer'
 
 interface SpawnCardProps {
   spawn: Spawn
-  worldId: string
   onJoin: (spawnId: string) => Promise<void>
   onAccept: (spawnId: string) => Promise<void>
   onFinish: (spawnId: string) => Promise<void>
   onLeave: (spawnId: string) => Promise<void>
-  onReport: (spawnId: string, targetId: string) => void
 }
 
 function getSpawnStatus(queue: QueueEntry[]) {
@@ -26,12 +24,10 @@ function getSpawnStatus(queue: QueueEntry[]) {
 
 export function SpawnCard({
   spawn,
-  worldId,
   onJoin,
   onAccept,
   onFinish,
   onLeave,
-  onReport,
 }: SpawnCardProps) {
   const [expanded, setExpanded] = useState(false)
   const [loading, setLoading] = useState<string | null>(null)
@@ -177,15 +173,6 @@ export function SpawnCard({
                 className="flex-1"
               >
                 Sair da Fila
-              </Button>
-            )}
-            {queue.length > 0 && queue[0].player_id !== player?.id && (
-              <Button
-                size="sm"
-                variant="danger"
-                onClick={() => onReport(spawn.id, queue[0].player_id)}
-              >
-                Reportar
               </Button>
             )}
           </div>

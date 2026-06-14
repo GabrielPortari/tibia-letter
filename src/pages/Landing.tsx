@@ -189,11 +189,6 @@ export default function Landing() {
                 d: "O timer corre sozinho. Quando a hunt acaba, o próximo já recebe o aviso — sem depender de ninguém.",
               },
               {
-                ic: "🚨",
-                t: "Comunidade se protege",
-                d: "Viu alguém abusando? Reporte. Acumulou reports suficientes, saiu. Tudo registrado e transparente.",
-              },
-              {
                 ic: "📅",
                 t: "Mais filas, mais hunts",
                 d: "Com Premium, entre em até 3 filas ao mesmo tempo. Aproveite cada respawn disponível no seu world.",
@@ -262,7 +257,6 @@ export default function Landing() {
               {[
                 "Até 3 filas ao mesmo tempo",
                 "Personagens ilimitados",
-                "Voz tripla nos reports",
               ].map((f) => (
                 <li key={f} className="flex gap-2 text-xs text-text-dim">
                   <span>✕</span> {f}
@@ -308,7 +302,6 @@ export default function Landing() {
               {[
                 "Até 3 filas ao mesmo tempo",
                 "Personagens ilimitados",
-                "Voz tripla nos reports",
                 "Acesso a todos os worlds",
                 "Suporte prioritário",
               ].map((f) => (

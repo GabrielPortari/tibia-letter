@@ -282,18 +282,6 @@ function SpawnCardMock({ spawn, defaultOpen }: { spawn: MockSpawn; defaultOpen?:
                       </span>
                     )}
                     {isActive && <ElapsedTimer startedAt={entry.startedAt!} />}
-                    {i === 0 && !isActive && !entry.isYou && (
-                      <button
-                        className="text-xs px-2 py-0.5 rounded flex-shrink-0 transition-opacity hover:opacity-80"
-                        style={{
-                          background: 'var(--red-bg)',
-                          border: '0.5px solid var(--red)',
-                          color: 'var(--red)',
-                        }}
-                      >
-                        reportar
-                      </button>
-                    )}
                   </div>
                 )
               })}

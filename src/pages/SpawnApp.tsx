@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
@@ -10,7 +9,6 @@ import { validateLevelRange } from '../utils/level'
 import { PageWrapper } from '../components/layout/PageWrapper'
 import { SpawnCard } from '../components/spawn/SpawnCard'
 import { MyQueuesBanner } from '../components/spawn/MyQueuesBanner'
-import { ReportModal } from '../components/report/ReportModal'
 import { BannedGuard } from '../components/layout/RouteGuards'
 import { Spinner } from '../components/ui/Spinner'
 import type { Spawn, QueueEntry } from '../types'
@@ -24,14 +22,7 @@ export default function SpawnApp() {
   const { addToast } = useToasts()
   const navigate = useNavigate()
 
-  const [reportState, setReportState] = useState<{
-    spawnId: string
-    spawnName: string
-    targetId: string
-    targetName: string
-  } | null>(null)
-
-  useQueueRealtime(worldId!)
+useQueueRealtime(worldId!)
 
   const { data: spawns, isLoading } = useQuery<Spawn[]>({
     queryKey: ['spawns', worldId],
@@ -168,40 +159,15 @@ export default function SpawnApp() {
               <SpawnCard
                 key={spawn.id}
                 spawn={spawn}
-                worldId={worldId!}
                 onJoin={(id) => joinMutation.mutateAsync(id)}
                 onAccept={(id) => acceptMutation.mutateAsync(id)}
                 onFinish={(id) => finishMutation.mutateAsync(id)}
                 onLeave={(id) => leaveMutation.mutateAsync(id)}
-                onReport={(spawnId, targetId) => {
-                  const spawn = spawns.find((s) => s.id === spawnId)
-                  const queue = useQueueStore.getState().getSpawnQueue(spawnId)
-                  const target = queue.find((e) => e.player_id === targetId)
-                  if (spawn && target) {
-                    setReportState({
-                      spawnId,
-                      spawnName: spawn.name,
-                      targetId,
-                      targetName: target.character_name,
-                    })
-                  }
-                }}
               />
             ))}
           </div>
         )}
 
-        {reportState && (
-          <ReportModal
-            isOpen
-            onClose={() => setReportState(null)}
-            spawnId={reportState.spawnId}
-            spawnName={reportState.spawnName}
-            worldId={worldId!}
-            targetId={reportState.targetId}
-            targetName={reportState.targetName}
-          />
-        )}
       </PageWrapper>
     </BannedGuard>
   )
