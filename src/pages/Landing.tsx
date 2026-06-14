@@ -5,6 +5,10 @@ import { useAuthStore } from '../stores/authStore'
 import { Button } from '../components/ui/Button'
 import { Spinner } from '../components/ui/Spinner'
 
+function scrollTo(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+}
+
 export default function Landing() {
   const { player, isLoading } = useAuthStore()
   const navigate = useNavigate()
@@ -33,37 +37,286 @@ export default function Landing() {
 
   return (
     <div className="flex-1 flex flex-col">
-      <section className="flex-1 flex flex-col items-center justify-center px-4 py-16 text-center gap-8">
-        <div className="max-w-2xl mx-auto">
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-gold mb-4 leading-tight">
-            Tibia Letter
-          </h1>
-          <p className="text-text-muted text-lg sm:text-xl mb-8 leading-relaxed">
-            Organize filas de respawn do Tibia de forma digital, justa e em tempo real.
-            Sem "cartas" manuais, sem confusão.
-          </p>
-          <Button size="lg" onClick={handleLogin} className="gap-3">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.081.11 18.102.128 18.116a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" />
-            </svg>
+      {/* ── Nav ── */}
+      <nav className="sticky top-0 z-40 bg-bg0/95 backdrop-blur border-b border-border flex items-center justify-between px-5 sm:px-10 h-14">
+        <span className="font-display text-gold text-base font-bold tracking-widest">
+          ⚔ Tibia Letter
+        </span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => scrollTo('pr')}
+            className="hidden sm:inline-flex px-3 py-1.5 text-sm text-text-muted hover:text-gold border border-border hover:border-gold rounded-lg transition-colors"
+          >
+            Planos
+          </button>
+          <Button size="sm" onClick={handleLogin}>
             Entrar com Discord
           </Button>
         </div>
+      </nav>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto mt-8 w-full">
+      {/* ── Hero ── */}
+      <section
+        className="flex flex-col items-center justify-center text-center px-4 py-16 sm:py-24"
+        style={{
+          backgroundImage:
+            'radial-gradient(ellipse 60% 40% at 50% 0%, var(--gold-glow) 0%, transparent 70%)',
+        }}
+      >
+        <div
+          className="inline-flex items-center px-3 py-1 border border-[var(--gold-dim)] rounded-full text-xs text-gold tracking-widest mb-6"
+        >
+          SISTEMA DE FILAS PARA TIBIA
+        </div>
+
+        <h1
+          className="font-display font-bold leading-tight mb-5 max-w-3xl"
+          style={{ fontSize: 'clamp(28px, 6vw, 64px)' }}
+        >
+          Organização e fairness
+          <br />
+          <span
+            className="text-gold"
+            style={{ textShadow: '0 0 40px var(--gold-glow)' }}
+          >
+            para toda a comunidade.
+          </span>
+        </h1>
+
+        <p className="text-text-muted text-base sm:text-lg max-w-lg leading-relaxed mb-9">
+          Tibia Letter substitui o sistema de cartas com uma fila digital
+          transparente, em tempo real. Primeiro a chegar, primeiro a caçar —
+          para todos.
+        </p>
+
+        <div className="flex gap-3 flex-wrap justify-center">
+          <Button size="lg" onClick={handleLogin}>
+            ⚔ Entrar com Discord — é grátis
+          </Button>
+          <Button size="lg" variant="secondary" onClick={() => scrollTo('hw')}>
+            Como funciona →
+          </Button>
+        </div>
+
+        {/* Stats row */}
+        <div className="flex gap-8 sm:gap-12 mt-14 pt-9 border-t border-border flex-wrap justify-center">
           {[
-            { icon: '⚔️', title: 'Filas em tempo real', desc: 'Acompanhe sua posição na fila ao vivo, sem precisar recarregar.' },
-            { icon: '🛡️', title: 'Verificação de char', desc: 'Apenas personagens verificados na API do Tibia participam.' },
-            { icon: '⚡', title: 'Sistema de reports', desc: 'Reporte jogadores ausentes. 5 reports = remoção automática.' },
-          ].map((f) => (
-            <div key={f.title} className="bg-bg2 border border-border rounded-xl p-5 text-left">
-              <div className="text-2xl mb-3">{f.icon}</div>
-              <h3 className="text-text font-semibold mb-1.5">{f.title}</h3>
-              <p className="text-text-muted text-sm leading-relaxed">{f.desc}</p>
+            ['Globais', 'spawns compartilhados'],
+            ['Por world', 'filas independentes'],
+            ['Anti-fake', 'verificação de personagem'],
+            ['100% justo', 'ordem de chegada'],
+          ].map(([n, l]) => (
+            <div key={n} className="text-center">
+              <p className="font-display text-lg font-bold text-gold">{n}</p>
+              <p className="text-xs text-text-muted mt-1">{l}</p>
             </div>
           ))}
         </div>
       </section>
+
+      {/* ── Como funciona ── */}
+      <section id="hw" className="py-16 sm:py-20 px-4 max-w-4xl mx-auto w-full">
+        <div className="text-center mb-12">
+          <p className="text-xs text-[var(--gold-dim)] tracking-widest font-semibold mb-3">
+            COMO FUNCIONA
+          </p>
+          <h2 className="font-display text-2xl sm:text-3xl font-semibold">
+            Simples, transparente, justo.
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            {
+              ic: '🔐',
+              n: '01',
+              t: 'Entre com Discord',
+              d: 'Login via Discord OAuth. Rápido, sem formulário.',
+            },
+            {
+              ic: '🎮',
+              n: '02',
+              t: 'Vincule seu char',
+              d: 'Cole um código no Comment do personagem em tibia.com para verificar.',
+            },
+            {
+              ic: '🌍',
+              n: '03',
+              t: 'Escolha o world',
+              d: 'Selecione seu servidor. Spawns são globais, filas são por world.',
+            },
+            {
+              ic: '⚔️',
+              n: '04',
+              t: 'Entre na fila',
+              d: 'Nível validado automaticamente. Timer, notificações e fluxo automático.',
+            },
+          ].map((s) => (
+            <div
+              key={s.n}
+              className="bg-bg2 border border-border rounded-xl p-5 sm:p-6"
+            >
+              <div className="text-3xl mb-3">{s.ic}</div>
+              <p className="text-xs text-[var(--gold-dim)] font-semibold tracking-widest mb-1">
+                {s.n}
+              </p>
+              <p className="text-sm font-semibold text-text mb-2">{s.t}</p>
+              <p className="text-xs text-text-muted leading-relaxed">{s.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Funcionalidades ── */}
+      <section className="py-16 px-4" style={{ background: 'var(--bg-1)' }}>
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-xs text-[var(--gold-dim)] tracking-widest font-semibold mb-3">
+              FUNCIONALIDADES
+            </p>
+            <h2 className="font-display text-2xl sm:text-3xl font-semibold">
+              Feito para toda a comunidade.
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              {
+                ic: '🔒',
+                t: 'Verificação de personagem',
+                d: 'Código único no Comment do char. Confirma identidade e level real do jogador.',
+              },
+              {
+                ic: '⏱',
+                t: 'Timer automático',
+                d: 'Tempo de caça corre sozinho. Ao fim, próximo é notificado com countdown de 10min.',
+              },
+              {
+                ic: '🚨',
+                t: 'Sistema de reports',
+                d: 'Free: 1/2h · Premium: 4/2h. 5 reports únicos = remoção automática com log completo.',
+              },
+              {
+                ic: '📅',
+                t: 'Multi-fila (Premium)',
+                d: 'Entre em várias filas sem conflito de horário entre seus personagens.',
+              },
+              {
+                ic: '🎯',
+                t: 'Validação de level',
+                d: 'Bloqueio automático se o level do personagem ativo não atende o range do spawn.',
+              },
+              {
+                ic: '👑',
+                t: 'Painel admin',
+                d: 'Gerenciamento de spawns, players, warnings, bans e log de remoções.',
+              },
+            ].map((f) => (
+              <div
+                key={f.t}
+                className="flex gap-4 p-4 border border-border rounded-xl bg-bg2"
+              >
+                <div className="text-2xl flex-shrink-0 mt-0.5">{f.ic}</div>
+                <div>
+                  <p className="text-sm font-semibold text-text mb-1">{f.t}</p>
+                  <p className="text-xs text-text-muted leading-relaxed">{f.d}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Planos ── */}
+      <section id="pr" className="py-16 sm:py-20 px-4 max-w-3xl mx-auto w-full">
+        <div className="text-center mb-11">
+          <p className="text-xs text-[var(--gold-dim)] tracking-widest font-semibold mb-3">
+            PLANOS
+          </p>
+          <h2 className="font-display text-2xl sm:text-3xl font-semibold">
+            Grátis para começar.
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {/* Free */}
+          <div className="bg-bg2 border border-border rounded-2xl p-7">
+            <p className="text-xs text-text-muted mb-1">Free</p>
+            <p className="font-display text-4xl font-bold text-text mb-0.5">R$ 0</p>
+            <p className="text-xs text-text-muted mb-6">para sempre</p>
+            <hr className="border-border mb-5" />
+            <ul className="flex flex-col gap-2 mb-7">
+              {[
+                '1 personagem ativo na fila',
+                'Hunt de 1h',
+                '1 report a cada 2h',
+                'Todos os worlds',
+                'Verificação de personagem',
+              ].map((f) => (
+                <li key={f} className="flex gap-2 text-xs text-text-muted">
+                  <span className="text-green">✓</span> {f}
+                </li>
+              ))}
+              {['2 chars simultâneos', 'Hunt de 2h', '4 reports a cada 2h'].map((f) => (
+                <li key={f} className="flex gap-2 text-xs text-text-dim">
+                  <span>✕</span> {f}
+                </li>
+              ))}
+            </ul>
+            <Button variant="secondary" className="w-full" onClick={handleLogin}>
+              Começar grátis
+            </Button>
+          </div>
+
+          {/* Premium */}
+          <div
+            className="bg-bg2 rounded-2xl p-7"
+            style={{
+              border: '1.5px solid var(--gold)',
+              boxShadow: '0 0 28px var(--gold-glow)',
+            }}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-xs text-gold">Premium</p>
+              <span
+                className="text-xs font-medium px-2 py-0.5 rounded"
+                style={{
+                  background: 'var(--gold-glow)',
+                  border: '0.5px solid var(--gold-dim)',
+                  color: 'var(--gold)',
+                }}
+              >
+                Recomendado
+              </span>
+            </div>
+            <p className="font-display text-4xl font-bold text-gold mb-0.5">R$ 19</p>
+            <p className="text-xs text-text-muted mb-6">por mês</p>
+            <hr className="border-border mb-5" />
+            <ul className="flex flex-col gap-2 mb-7">
+              {[
+                '2 chars simultâneos na fila',
+                'Hunt de 2h',
+                '4 reports a cada 2h',
+                'Todos os worlds',
+                'Verificação ilimitada de chars',
+                'Suporte prioritário',
+              ].map((f) => (
+                <li key={f} className="flex gap-2 text-xs text-text">
+                  <span className="text-gold">✓</span> {f}
+                </li>
+              ))}
+            </ul>
+            <Button className="w-full" onClick={handleLogin}>
+              Assinar Premium
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="border-t border-border px-5 sm:px-10 py-5 flex items-center justify-between flex-wrap gap-3">
+        <span className="font-display text-sm text-[var(--gold-dim)]">⚔ Tibia Letter</span>
+        <span className="text-xs text-text-dim">
+          Não afiliado à CipSoft. Projeto independente da comunidade.
+        </span>
+      </footer>
     </div>
   )
 }
