@@ -26,7 +26,7 @@ Player, Character, Spawn, QueueEntry, Report, RemovalLog, World, VerificationCod
 
 ### Stores (Zustand)
 - `authStore.ts`: player, activeChar, isLoading, isBanned(), banSecondsLeft()
-- `queueStore.ts`: entries por spawnId, setEntries, upsertEntry, removeEntry, getSpawnQueue, getMyEntries
+- `queueStore.ts`: entries por spawnId, setEntries, upsertEntry, removeEntry, removePlayerFromAllQueues, getSpawnQueue, getMyEntries
 
 ### Hooks
 - `useAuth.ts`: carrega sessão Supabase, listener de auth state change
@@ -44,9 +44,16 @@ Player, Character, Spawn, QueueEntry, Report, RemovalLog, World, VerificationCod
 
 ### Spawn/Queue
 - SpawnCard: expansível (aria-expanded), status dot, borda dourada pulsante quando é vez do user, AcceptTimer integrado, bloqueio por level
-- MyQueuesBanner: banner com suas filas ativas, scroll horizontal mobile
+- MyQueuesBanner: 3 seções (aceites pendentes com countdown + botão pular, hunts ativas em verde, aguardando em cinza); detecta conflito de duplo aceite simultâneo e exibe aviso
 - QueueSlot: linha de fila com posição, char, level, HuntTimer/AcceptTimer inline
 - HuntTimer + AcceptTimer em `InlineTimer.tsx`
+
+### Regras de fila (lógica frontend — backend é fonte de verdade)
+- **Limite**: Free = 1 fila simultânea · Premium = 2 filas simultâneas
+- **Bloqueio de join se caçando**: se o player tem qualquer entry com `status === 'active'`, não pode entrar em nova fila
+- **Ao aceitar**: `removePlayerFromAllQueues(playerId, exceptSpawnId)` remove otimisticamente o player de todas as outras filas; o backend confirma e repassa os aceites pendentes para o próximo na fila
+- **Duplo aceite simultâneo**: se dois spawns ficam vagos ao mesmo tempo (`pending_accept` em ambos), MyQueuesBanner exibe ambos com aviso de conflito; aceitar um chama `leave` no outro via backend
+- **Pular aceite**: botão "Pular" no chip de aceite chama `leaveMutation` — o backend repassa para o próximo
 
 ### Character
 - CharVerifyModal: stepper 3 etapas (Nome → Código → Verificar), polling 15s, TTL countdown, cópia do código

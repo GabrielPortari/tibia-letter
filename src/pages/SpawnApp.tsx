@@ -15,10 +15,12 @@ import { BannedGuard } from '../components/layout/RouteGuards'
 import { Spinner } from '../components/ui/Spinner'
 import type { Spawn, QueueEntry } from '../types'
 
+const QUEUE_LIMIT = { free: 1, premium: 2 }
+
 export default function SpawnApp() {
   const { worldId } = useParams<{ worldId: string }>()
   const { player, activeChar } = useAuthStore()
-  const { setEntries } = useQueueStore()
+  const { setEntries, removePlayerFromAllQueues } = useQueueStore()
   const { addToast } = useToasts()
   const navigate = useNavigate()
 
@@ -54,11 +56,32 @@ export default function SpawnApp() {
     if (!player) return 'Não autenticado'
     if (!activeChar) return 'Sem personagem ativo'
     if (useAuthStore.getState().isBanned()) return 'Conta banida'
+
     const spawn = spawns?.find((s) => s.id === spawnId)
     if (!spawn) return 'Spawn não encontrado'
     if (!validateLevelRange(activeChar.level, spawn.min_level, spawn.max_level)) {
       return `Nível ${activeChar.level} fora do range (Lv. ${spawn.min_level}–${spawn.max_level})`
     }
+
+    const myEntries = useQueueStore.getState().getMyEntries(player.id)
+
+    // Bloqueia se está caçando ativamente em qualquer spawn
+    const isHunting = myEntries.some((e) => e.status === 'active')
+    if (isHunting) return 'Você já está caçando. Finalize a hunt antes de entrar em outra fila.'
+
+    // Bloqueia se já está neste spawn
+    const alreadyInThisSpawn = myEntries.some((e) => e.spawn_id === spawnId)
+    if (alreadyInThisSpawn) return 'Você já está na fila deste spawn.'
+
+    // Bloqueia por limite de filas simultâneas
+    const limit = player.is_premium ? QUEUE_LIMIT.premium : QUEUE_LIMIT.free
+    const activeQueues = myEntries.filter((e) => e.status !== 'active').length
+    if (activeQueues >= limit) {
+      return player.is_premium
+        ? 'Limite de 2 filas simultâneas atingido (Premium).'
+        : 'Plano Free permite apenas 1 fila por vez. Assine Premium para até 2.'
+    }
+
     return null
   }
 
@@ -85,6 +108,10 @@ export default function SpawnApp() {
         body: { spawnId, worldId, playerId: player!.id },
       })
       if (error) throw error
+    },
+    onSuccess: (_data, spawnId) => {
+      // Otimista: remove o player de todas as outras filas (exceto a que aceitou)
+      removePlayerFromAllQueues(player!.id, spawnId)
     },
     onError: () => addToast('error', 'Falha ao aceitar respawn.'),
   })
@@ -127,7 +154,10 @@ export default function SpawnApp() {
           </h1>
         </div>
 
-        <MyQueuesBanner />
+        <MyQueuesBanner
+          onAccept={(spawnId) => acceptMutation.mutateAsync(spawnId)}
+          onLeave={(spawnId) => leaveMutation.mutateAsync(spawnId)}
+        />
 
         {isLoading ? (
           <div className="flex justify-center py-16"><Spinner size="lg" /></div>

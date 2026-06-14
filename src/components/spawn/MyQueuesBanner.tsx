@@ -1,32 +1,165 @@
 import { useAuthStore } from '../../stores/authStore'
 import { useQueueStore } from '../../stores/queueStore'
+import { useCountdown } from '../../hooks/useCountdown'
+import { fmt } from '../../utils/time'
 
-export function MyQueuesBanner() {
+interface MyQueuesBannerProps {
+  onAccept: (spawnId: string) => Promise<void>
+  onLeave: (spawnId: string) => Promise<void>
+}
+
+function AcceptChip({
+  spawnId,
+  spawnName,
+  deadline,
+  isConflict,
+  onAccept,
+  onLeave,
+}: {
+  spawnId: string
+  spawnName: string
+  deadline: string
+  isConflict: boolean
+  onAccept: (id: string) => Promise<void>
+  onLeave: (id: string) => Promise<void>
+}) {
+  const secs = useCountdown(new Date(deadline).getTime(), () => {})
+  return (
+    <div
+      className="flex-shrink-0 rounded-xl px-4 py-3 space-y-2 min-w-[200px]"
+      style={{
+        background: 'var(--gold-glow)',
+        border: '1px solid var(--gold)',
+        animation: 'glow 2s ease-in-out infinite',
+      }}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-sm font-semibold text-gold truncate">{spawnName}</span>
+        <span
+          className="font-mono font-bold text-sm flex-shrink-0"
+          style={{ color: secs <= 60 ? 'var(--red)' : 'var(--gold)' }}
+          aria-live="polite"
+        >
+          {fmt(secs)}
+        </span>
+      </div>
+      {isConflict && (
+        <p className="text-xs text-amber leading-snug">
+          ⚠ Dois respawns livres ao mesmo tempo. Aceite um — o outro será repassado.
+        </p>
+      )}
+      <div className="flex gap-2">
+        <button
+          onClick={() => onAccept(spawnId)}
+          className="flex-1 py-1.5 rounded-lg text-xs font-semibold text-bg0 transition-opacity hover:opacity-90"
+          style={{ background: 'var(--gold)' }}
+        >
+          ⚔ Aceitar
+        </button>
+        <button
+          onClick={() => onLeave(spawnId)}
+          className="py-1.5 px-3 rounded-lg text-xs transition-opacity hover:opacity-80"
+          style={{
+            background: 'var(--red-bg)',
+            border: '0.5px solid var(--red)',
+            color: 'var(--red)',
+          }}
+        >
+          Pular
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export function MyQueuesBanner({ onAccept, onLeave }: MyQueuesBannerProps) {
   const { player } = useAuthStore()
   const getMyEntries = useQueueStore((s) => s.getMyEntries)
+  const getSpawnQueue = useQueueStore((s) => s.getSpawnQueue)
 
   if (!player) return null
   const myEntries = getMyEntries(player.id)
   if (myEntries.length === 0) return null
 
+  const pendingAccepts = myEntries.filter((e) => e.status === 'pending_accept' && e.accept_deadline)
+  const activeHunts = myEntries.filter((e) => e.status === 'active')
+  const waiting = myEntries.filter((e) => e.status === 'waiting')
+
+  const hasConflict = pendingAccepts.length > 1
+
+  if (pendingAccepts.length === 0 && activeHunts.length === 0 && waiting.length === 0) return null
+
   return (
     <div
       role="status"
       aria-live="polite"
-      className="bg-[var(--blue-bg)] border border-blue rounded-xl px-4 py-3 mb-4"
+      className="mb-4 space-y-3"
     >
-      <p className="text-sm font-semibold text-blue mb-2">Suas Filas Ativas</p>
-      <div className="flex gap-2 overflow-x-auto sm:flex-wrap pb-1">
-        {myEntries.map((e) => (
-          <span
-            key={e.id}
-            className="flex-shrink-0 bg-bg2 border border-border rounded-lg px-3 py-1.5 text-xs text-text-muted whitespace-nowrap"
-          >
-            <span className="text-text font-medium">{e.character_name}</span>
-            {' '}— posição #{e.position + 1}
-          </span>
-        ))}
-      </div>
+      {/* Aceites pendentes (destaque máximo) */}
+      {pendingAccepts.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--gold-dim)' }}>
+            SUA VEZ DE ACEITAR
+          </p>
+          <div className="flex gap-3 overflow-x-auto pb-1 sm:flex-wrap">
+            {pendingAccepts.map((e) => {
+              const queue = getSpawnQueue(e.spawn_id)
+              const spawnName = queue[0]?.spawn_id ?? e.spawn_id
+              return (
+                <AcceptChip
+                  key={e.id}
+                  spawnId={e.spawn_id}
+                  spawnName={e.character_name}
+                  deadline={e.accept_deadline!}
+                  isConflict={hasConflict}
+                  onAccept={onAccept}
+                  onLeave={onLeave}
+                />
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Hunts ativas */}
+      {activeHunts.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto sm:flex-wrap pb-1">
+          {activeHunts.map((e) => (
+            <span
+              key={e.id}
+              className="flex-shrink-0 rounded-lg px-3 py-1.5 text-xs whitespace-nowrap"
+              style={{
+                background: 'var(--green-bg)',
+                border: '0.5px solid var(--green)',
+                color: 'var(--green)',
+              }}
+            >
+              ⚔ <span className="font-medium">{e.character_name}</span> caçando
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Aguardando na fila */}
+      {waiting.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--text-dim)' }}>
+            AGUARDANDO NA FILA
+          </p>
+          <div className="flex gap-2 overflow-x-auto sm:flex-wrap pb-1">
+            {waiting.map((e) => (
+              <span
+                key={e.id}
+                className="flex-shrink-0 rounded-lg px-3 py-1.5 text-xs whitespace-nowrap"
+                style={{ background: 'var(--bg-2)', border: '0.5px solid var(--border)', color: 'var(--text-muted)' }}
+              >
+                <span className="text-text font-medium">{e.character_name}</span>
+                {' '}— #{e.position + 1} na fila
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
