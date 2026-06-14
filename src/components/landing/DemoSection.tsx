@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { fmt } from '../../utils/time'
 
 // ── Mock data ──────────────────────────────────────────────────────────────────
@@ -204,50 +204,83 @@ function SpawnCardMock({ spawn, defaultOpen }: { spawn: MockSpawn; defaultOpen?:
           {spawn.queue.length > 0 && (
             <div className="space-y-1 pt-2">
               <p className="text-xs text-text-dim font-semibold tracking-widest mb-2">FILA ATUAL</p>
-              {spawn.queue.map((entry, i) => (
-                <div
-                  key={entry.name}
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm"
-                  style={{
-                    background: entry.isYou ? 'var(--gold-glow)' : i === 0 ? 'var(--bg-3)' : 'transparent',
-                    border: `0.5px solid ${entry.isYou ? 'var(--gold-dim)' : 'var(--border)'}`,
-                  }}
-                >
-                  <span
-                    className="w-5 text-center text-xs font-mono flex-shrink-0"
-                    style={{ color: 'var(--text-dim)' }}
+              {spawn.queue.map((entry, i) => {
+                const isActive = !!entry.startedAt
+                return (
+                  <div
+                    key={entry.name}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm"
+                    style={{
+                      background: isActive
+                        ? 'var(--green-bg)'
+                        : entry.isYou
+                        ? 'var(--gold-glow)'
+                        : i === 0
+                        ? 'var(--bg-3)'
+                        : 'transparent',
+                      border: `0.5px solid ${
+                        isActive
+                          ? 'var(--green)'
+                          : entry.isYou
+                          ? 'var(--gold-dim)'
+                          : 'var(--border)'
+                      }`,
+                    }}
                   >
-                    {i === 0 ? '⚔' : `${i + 1}º`}
-                  </span>
-                  <span
-                    className="flex-1 font-medium truncate text-sm"
-                    style={{ color: entry.isYou ? 'var(--gold)' : 'var(--text)' }}
-                  >
-                    {entry.name}
-                    {entry.isYou && (
-                      <span className="text-xs ml-1" style={{ color: 'var(--gold-dim)' }}>
-                        (você)
-                      </span>
-                    )}
-                  </span>
-                  <span className="text-xs flex-shrink-0" style={{ color: 'var(--text-muted)' }}>
-                    Lv.{entry.level}
-                  </span>
-                  {entry.startedAt && <ElapsedTimer startedAt={entry.startedAt} />}
-                  {i === 0 && !entry.startedAt && !entry.isYou && (
-                    <button
-                      className="text-xs px-2 py-0.5 rounded flex-shrink-0 transition-opacity hover:opacity-80"
+                    <span
+                      className="w-5 text-center text-xs font-mono flex-shrink-0"
+                      style={{ color: isActive ? 'var(--green)' : 'var(--text-dim)' }}
+                    >
+                      {i === 0 ? '⚔' : `${i + 1}º`}
+                    </span>
+                    <span
+                      className="flex-1 font-medium truncate text-sm"
                       style={{
-                        background: 'var(--red-bg)',
-                        border: '0.5px solid var(--red)',
-                        color: 'var(--red)',
+                        color: isActive
+                          ? 'var(--green)'
+                          : entry.isYou
+                          ? 'var(--gold)'
+                          : 'var(--text)',
                       }}
                     >
-                      reportar
-                    </button>
-                  )}
-                </div>
-              ))}
+                      {entry.name}
+                      {entry.isYou && (
+                        <span className="text-xs ml-1" style={{ color: 'var(--gold-dim)' }}>
+                          (você)
+                        </span>
+                      )}
+                    </span>
+                    <span className="text-xs flex-shrink-0" style={{ color: 'var(--text-muted)' }}>
+                      Lv.{entry.level}
+                    </span>
+                    {isActive && (
+                      <span
+                        className="text-xs px-1.5 py-0.5 rounded font-semibold flex-shrink-0"
+                        style={{
+                          background: 'var(--green-bg)',
+                          border: '0.5px solid var(--green)',
+                          color: 'var(--green)',
+                        }}
+                      >
+                        caçando
+                      </span>
+                    )}
+                    {isActive && <ElapsedTimer startedAt={entry.startedAt!} />}
+                    {i === 0 && !isActive && !entry.isYou && (
+                      <button
+                        className="text-xs px-2 py-0.5 rounded flex-shrink-0 transition-opacity hover:opacity-80"
+                        style={{
+                          background: 'var(--red-bg)',
+                          border: '0.5px solid var(--red)',
+                          color: 'var(--red)',
+                        }}
+                      >
+                        reportar
+                      </button>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           )}
 
