@@ -48,11 +48,21 @@ Player, Character, Spawn, QueueEntry, Report, RemovalLog, World, VerificationCod
 - QueueSlot: linha de fila com posição, char, level, HuntTimer/AcceptTimer inline
 - HuntTimer + AcceptTimer em `InlineTimer.tsx`
 
+### Planos
+
+| | Free | Premium |
+|---|---|---|
+| Filas simultâneas | 1 | 3 |
+| Personagens verificados | 1 | ilimitado |
+| Peso de report | 1 | 3 (triplo) |
+
 ### Regras de fila (lógica frontend — backend é fonte de verdade)
-- **Limite**: Free = 1 fila simultânea · Premium = 2 filas simultâneas
+- **Limite**: Free = 1 fila simultânea · Premium = 3 filas simultâneas
+- **Limite de chars**: Free = máx 1 char verificado (aplicado na Edge Function `init-character`); Premium = ilimitado
+- **Peso de report**: Premium conta 3 pontos por report enviado (aplicado na Edge Function de processamento); limiar de remoção: 5 pontos de reporters únicos
 - **Bloqueio de join se caçando**: se o player tem qualquer entry com `status === 'active'`, não pode entrar em nova fila
 - **Ao aceitar**: `removePlayerFromAllQueues(playerId, exceptSpawnId)` remove otimisticamente o player de todas as outras filas; o backend confirma e repassa os aceites pendentes para o próximo na fila
-- **Duplo aceite simultâneo**: se dois spawns ficam vagos ao mesmo tempo (`pending_accept` em ambos), MyQueuesBanner exibe ambos com aviso de conflito; aceitar um chama `leave` no outro via backend
+- **Duplo aceite simultâneo**: se dois spawns ficam vagos ao mesmo tempo (`pending_accept` em ambos), MyQueuesBanner exibe ambos em modo "ESCOLHA UM RESPAWN" — cada chip mostra apenas o botão "Aceitar" (sem "Pular"); ao aceitar um, `removePlayerFromAllQueues` limpa o outro otimisticamente e o backend repassa para o próximo da fila
 - **Pular aceite**: botão "Pular" no chip de aceite chama `leaveMutation` — o backend repassa para o próximo
 
 ### Character

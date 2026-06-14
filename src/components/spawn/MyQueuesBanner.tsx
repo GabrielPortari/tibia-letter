@@ -2,8 +2,10 @@ import { useAuthStore } from '../../stores/authStore'
 import { useQueueStore } from '../../stores/queueStore'
 import { useCountdown } from '../../hooks/useCountdown'
 import { fmt } from '../../utils/time'
+import type { Spawn } from '../../types'
 
 interface MyQueuesBannerProps {
+  spawns: Spawn[]
   onAccept: (spawnId: string) => Promise<void>
   onLeave: (spawnId: string) => Promise<void>
 }
@@ -12,18 +14,19 @@ function AcceptChip({
   spawnId,
   spawnName,
   deadline,
-  isConflict,
+  showSkip,
   onAccept,
   onLeave,
 }: {
   spawnId: string
   spawnName: string
   deadline: string
-  isConflict: boolean
+  showSkip: boolean
   onAccept: (id: string) => Promise<void>
   onLeave: (id: string) => Promise<void>
 }) {
   const secs = useCountdown(new Date(deadline).getTime(), () => {})
+
   return (
     <div
       className="flex-shrink-0 rounded-xl px-4 py-3 space-y-2 min-w-[200px]"
@@ -43,11 +46,7 @@ function AcceptChip({
           {fmt(secs)}
         </span>
       </div>
-      {isConflict && (
-        <p className="text-xs text-amber leading-snug">
-          ⚠ Dois respawns livres ao mesmo tempo. Aceite um — o outro será repassado.
-        </p>
-      )}
+
       <div className="flex gap-2">
         <button
           onClick={() => onAccept(spawnId)}
@@ -56,26 +55,27 @@ function AcceptChip({
         >
           ⚔ Aceitar
         </button>
-        <button
-          onClick={() => onLeave(spawnId)}
-          className="py-1.5 px-3 rounded-lg text-xs transition-opacity hover:opacity-80"
-          style={{
-            background: 'var(--red-bg)',
-            border: '0.5px solid var(--red)',
-            color: 'var(--red)',
-          }}
-        >
-          Pular
-        </button>
+        {showSkip && (
+          <button
+            onClick={() => onLeave(spawnId)}
+            className="py-1.5 px-3 rounded-lg text-xs transition-opacity hover:opacity-80"
+            style={{
+              background: 'var(--red-bg)',
+              border: '0.5px solid var(--red)',
+              color: 'var(--red)',
+            }}
+          >
+            Pular
+          </button>
+        )}
       </div>
     </div>
   )
 }
 
-export function MyQueuesBanner({ onAccept, onLeave }: MyQueuesBannerProps) {
+export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProps) {
   const { player } = useAuthStore()
   const getMyEntries = useQueueStore((s) => s.getMyEntries)
-  const getSpawnQueue = useQueueStore((s) => s.getSpawnQueue)
 
   if (!player) return null
   const myEntries = getMyEntries(player.id)
@@ -89,34 +89,43 @@ export function MyQueuesBanner({ onAccept, onLeave }: MyQueuesBannerProps) {
 
   if (pendingAccepts.length === 0 && activeHunts.length === 0 && waiting.length === 0) return null
 
+  function spawnName(spawnId: string) {
+    return spawns.find((s) => s.id === spawnId)?.name ?? spawnId
+  }
+
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      className="mb-4 space-y-3"
-    >
-      {/* Aceites pendentes (destaque máximo) */}
+    <div role="status" aria-live="polite" className="mb-4 space-y-3">
+
+      {/* Aceites pendentes */}
       {pendingAccepts.length > 0 && (
         <div>
-          <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--gold-dim)' }}>
-            SUA VEZ DE ACEITAR
-          </p>
+          {hasConflict ? (
+            <>
+              <p className="text-xs font-semibold tracking-widest mb-1" style={{ color: 'var(--gold-dim)' }}>
+                ESCOLHA UM RESPAWN
+              </p>
+              <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
+                Dois respawns vagos ao mesmo tempo. Aceite um — o outro será repassado automaticamente para o próximo da fila.
+              </p>
+            </>
+          ) : (
+            <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--gold-dim)' }}>
+              SUA VEZ DE ACEITAR
+            </p>
+          )}
+
           <div className="flex gap-3 overflow-x-auto pb-1 sm:flex-wrap">
-            {pendingAccepts.map((e) => {
-              const queue = getSpawnQueue(e.spawn_id)
-              const spawnName = queue[0]?.spawn_id ?? e.spawn_id
-              return (
-                <AcceptChip
-                  key={e.id}
-                  spawnId={e.spawn_id}
-                  spawnName={e.character_name}
-                  deadline={e.accept_deadline!}
-                  isConflict={hasConflict}
-                  onAccept={onAccept}
-                  onLeave={onLeave}
-                />
-              )
-            })}
+            {pendingAccepts.map((e) => (
+              <AcceptChip
+                key={e.id}
+                spawnId={e.spawn_id}
+                spawnName={spawnName(e.spawn_id)}
+                deadline={e.accept_deadline!}
+                showSkip={!hasConflict}
+                onAccept={onAccept}
+                onLeave={onLeave}
+              />
+            ))}
           </div>
         </div>
       )}
@@ -134,7 +143,8 @@ export function MyQueuesBanner({ onAccept, onLeave }: MyQueuesBannerProps) {
                 color: 'var(--green)',
               }}
             >
-              ⚔ <span className="font-medium">{e.character_name}</span> caçando
+              ⚔ <span className="font-medium">{e.character_name}</span>
+              {' '}caçando em <span className="font-medium">{spawnName(e.spawn_id)}</span>
             </span>
           ))}
         </div>
@@ -153,13 +163,14 @@ export function MyQueuesBanner({ onAccept, onLeave }: MyQueuesBannerProps) {
                 className="flex-shrink-0 rounded-lg px-3 py-1.5 text-xs whitespace-nowrap"
                 style={{ background: 'var(--bg-2)', border: '0.5px solid var(--border)', color: 'var(--text-muted)' }}
               >
-                <span className="text-text font-medium">{e.character_name}</span>
+                <span className="text-text font-medium">{spawnName(e.spawn_id)}</span>
                 {' '}— #{e.position + 1} na fila
               </span>
             ))}
           </div>
         </div>
       )}
+
     </div>
   )
 }

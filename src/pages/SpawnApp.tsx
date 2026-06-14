@@ -15,7 +15,7 @@ import { BannedGuard } from '../components/layout/RouteGuards'
 import { Spinner } from '../components/ui/Spinner'
 import type { Spawn, QueueEntry } from '../types'
 
-const QUEUE_LIMIT = { free: 1, premium: 2 }
+const QUEUE_LIMIT = { free: 1, premium: 3 }
 
 export default function SpawnApp() {
   const { worldId } = useParams<{ worldId: string }>()
@@ -78,8 +78,8 @@ export default function SpawnApp() {
     const activeQueues = myEntries.filter((e) => e.status !== 'active').length
     if (activeQueues >= limit) {
       return player.is_premium
-        ? 'Limite de 2 filas simultâneas atingido (Premium).'
-        : 'Plano Free permite apenas 1 fila por vez. Assine Premium para até 2.'
+        ? 'Limite de 3 filas simultâneas atingido (Premium).'
+        : 'Plano Free permite apenas 1 fila por vez. Assine Premium para até 3.'
     }
 
     return null
@@ -155,6 +155,7 @@ export default function SpawnApp() {
         </div>
 
         <MyQueuesBanner
+          spawns={spawns ?? []}
           onAccept={(spawnId) => acceptMutation.mutateAsync(spawnId)}
           onLeave={(spawnId) => leaveMutation.mutateAsync(spawnId)}
         />

@@ -1,31 +1,31 @@
-import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
-import { useAuthStore } from '../stores/authStore'
-import { Button } from '../components/ui/Button'
-import { Spinner } from '../components/ui/Spinner'
-import { DemoSection } from '../components/landing/DemoSection'
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
+import { useAuthStore } from "../stores/authStore";
+import { Button } from "../components/ui/Button";
+import { Spinner } from "../components/ui/Spinner";
+import { DemoSection } from "../components/landing/DemoSection";
 
 function scrollTo(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 }
 
 export default function Landing() {
-  const { player, isLoading } = useAuthStore()
-  const navigate = useNavigate()
+  const { player, isLoading } = useAuthStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoading && player) navigate('/worlds', { replace: true })
-  }, [player, isLoading, navigate])
+    if (!isLoading && player) navigate("/worlds", { replace: true });
+  }, [player, isLoading, navigate]);
 
   async function handleLogin() {
     await supabase.auth.signInWithOAuth({
-      provider: 'discord',
+      provider: "discord",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
-        scopes: 'identify',
+        scopes: "identify",
       },
-    })
+    });
   }
 
   if (isLoading) {
@@ -33,7 +33,7 @@ export default function Landing() {
       <div className="flex-1 flex items-center justify-center">
         <Spinner size="lg" />
       </div>
-    )
+    );
   }
 
   return (
@@ -45,7 +45,7 @@ export default function Landing() {
         </span>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => scrollTo('pr')}
+            onClick={() => scrollTo("pr")}
             className="hidden sm:inline-flex px-3 py-1.5 text-sm text-text-muted hover:text-gold border border-border hover:border-gold rounded-lg transition-colors"
           >
             Planos
@@ -61,24 +61,22 @@ export default function Landing() {
         className="flex flex-col items-center justify-center text-center px-4 py-16 sm:py-24"
         style={{
           backgroundImage:
-            'radial-gradient(ellipse 60% 40% at 50% 0%, var(--gold-glow) 0%, transparent 70%)',
+            "radial-gradient(ellipse 60% 40% at 50% 0%, var(--gold-glow) 0%, transparent 70%)",
         }}
       >
-        <div
-          className="inline-flex items-center px-3 py-1 border border-[var(--gold-dim)] rounded-full text-xs text-gold tracking-widest mb-6"
-        >
+        <div className="inline-flex items-center px-3 py-1 border border-[var(--gold-dim)] rounded-full text-xs text-gold tracking-widest mb-6">
           SISTEMA DE FILAS PARA TIBIA
         </div>
 
         <h1
           className="font-display font-bold leading-tight mb-5 max-w-3xl"
-          style={{ fontSize: 'clamp(28px, 6vw, 64px)' }}
+          style={{ fontSize: "clamp(28px, 6vw, 64px)" }}
         >
           Organização e fairness
           <br />
           <span
             className="text-gold"
-            style={{ textShadow: '0 0 40px var(--gold-glow)' }}
+            style={{ textShadow: "0 0 40px var(--gold-glow)" }}
           >
             para toda a comunidade.
           </span>
@@ -94,7 +92,7 @@ export default function Landing() {
           <Button size="lg" onClick={handleLogin}>
             ⚔ Entrar com Discord — é grátis
           </Button>
-          <Button size="lg" variant="secondary" onClick={() => scrollTo('hw')}>
+          <Button size="lg" variant="secondary" onClick={() => scrollTo("hw")}>
             Como funciona →
           </Button>
         </div>
@@ -102,10 +100,10 @@ export default function Landing() {
         {/* Stats row */}
         <div className="flex gap-8 sm:gap-12 mt-14 pt-9 border-t border-border flex-wrap justify-center">
           {[
-            ['Globais', 'spawns compartilhados'],
-            ['Por world', 'filas independentes'],
-            ['Anti-fake', 'verificação de personagem'],
-            ['100% justo', 'ordem de chegada'],
+            ["Globais", "spawns compartilhados"],
+            ["Por world", "filas independentes"],
+            ["Anti-fake", "verificação de personagem"],
+            ["100% justo", "ordem de chegada"],
           ].map(([n, l]) => (
             <div key={n} className="text-center">
               <p className="font-display text-lg font-bold text-gold">{n}</p>
@@ -128,28 +126,28 @@ export default function Landing() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             {
-              ic: '🔐',
-              n: '01',
-              t: 'Entre com Discord',
-              d: 'Login via Discord OAuth. Rápido, sem formulário.',
+              ic: "🔐",
+              n: "01",
+              t: "Entre com Discord",
+              d: "Login via Discord OAuth. Rápido, sem formulário.",
             },
             {
-              ic: '🎮',
-              n: '02',
-              t: 'Vincule seu char',
-              d: 'Cole um código no Comment do personagem em tibia.com para verificar.',
+              ic: "🎮",
+              n: "02",
+              t: "Vincule seu char",
+              d: "Cole um código no Comment do personagem em tibia.com para verificar.",
             },
             {
-              ic: '🌍',
-              n: '03',
-              t: 'Escolha o world',
-              d: 'Selecione seu servidor. Spawns são globais, filas são por world.',
+              ic: "🌍",
+              n: "03",
+              t: "Escolha o world",
+              d: "Selecione seu servidor. Spawns são globais, filas são por world.",
             },
             {
-              ic: '⚔️',
-              n: '04',
-              t: 'Entre na fila',
-              d: 'Nível validado automaticamente. Timer, notificações e fluxo automático.',
+              ic: "⚔️",
+              n: "04",
+              t: "Entre na fila",
+              d: "Nível validado automaticamente. Timer, notificações e fluxo automático.",
             },
           ].map((s) => (
             <div
@@ -168,7 +166,7 @@ export default function Landing() {
       </section>
 
       {/* ── Funcionalidades ── */}
-      <section className="py-16 px-4" style={{ background: 'var(--bg-1)' }}>
+      <section className="py-16 px-4" style={{ background: "var(--bg-1)" }}>
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
             <p className="text-xs text-[var(--gold-dim)] tracking-widest font-semibold mb-3">
@@ -181,34 +179,34 @@ export default function Landing() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               {
-                ic: '🔒',
-                t: 'Verificação de personagem',
-                d: 'Código único no Comment do char. Confirma identidade e level real do jogador.',
+                ic: "🔒",
+                t: "Anti-fake garantido",
+                d: "Cada personagem é verificado direto no tibia.com. Ninguém entra na fila com char falso.",
               },
               {
-                ic: '⏱',
-                t: 'Timer automático',
-                d: 'Tempo de caça corre sozinho. Ao fim, próximo é notificado com countdown de 10min.',
+                ic: "⏱",
+                t: "Tudo automático",
+                d: "O timer corre sozinho. Quando a hunt acaba, o próximo já recebe o aviso — sem depender de ninguém.",
               },
               {
-                ic: '🚨',
-                t: 'Sistema de reports',
-                d: 'Free: 1/2h · Premium: 4/2h. 5 reports únicos = remoção automática com log completo.',
+                ic: "🚨",
+                t: "Comunidade se protege",
+                d: "Viu alguém abusando? Reporte. Acumulou reports suficientes, saiu. Tudo registrado e transparente.",
               },
               {
-                ic: '📅',
-                t: 'Multi-fila (Premium)',
-                d: 'Entre em várias filas sem conflito de horário entre seus personagens.',
+                ic: "📅",
+                t: "Mais filas, mais hunts",
+                d: "Com Premium, entre em até 3 filas ao mesmo tempo. Aproveite cada respawn disponível no seu world.",
               },
               {
-                ic: '🎯',
-                t: 'Validação de level',
-                d: 'Bloqueio automático se o level do personagem ativo não atende o range do spawn.',
+                ic: "🎯",
+                t: "Fila só pra quem pode",
+                d: "O level do seu personagem é validado na hora. Sem surpresa — só entra quem está no level mínimo do spawn.",
               },
               {
-                ic: '👑',
-                t: 'Painel admin',
-                d: 'Gerenciamento de spawns, players, warnings, bans e log de remoções.',
+                ic: "👑",
+                t: "Painel admin",
+                d: "Controle total para moderadores: spawns, jogadores, warnings, bans e histórico completo.",
               },
             ].map((f) => (
               <div
@@ -218,7 +216,9 @@ export default function Landing() {
                 <div className="text-2xl flex-shrink-0 mt-0.5">{f.ic}</div>
                 <div>
                   <p className="text-sm font-semibold text-text mb-1">{f.t}</p>
-                  <p className="text-xs text-text-muted leading-relaxed">{f.d}</p>
+                  <p className="text-xs text-text-muted leading-relaxed">
+                    {f.d}
+                  </p>
                 </div>
               </div>
             ))}
@@ -243,28 +243,37 @@ export default function Landing() {
           {/* Free */}
           <div className="bg-bg2 border border-border rounded-2xl p-7">
             <p className="text-xs text-text-muted mb-1">Free</p>
-            <p className="font-display text-4xl font-bold text-text mb-0.5">R$ 0</p>
+            <p className="font-display text-4xl font-bold text-text mb-0.5">
+              R$ 0
+            </p>
             <p className="text-xs text-text-muted mb-6">para sempre</p>
             <hr className="border-border mb-5" />
             <ul className="flex flex-col gap-2 mb-7">
               {[
-                '1 personagem ativo na fila',
-                'Hunt de 1h',
-                '1 report a cada 2h',
-                'Todos os worlds',
-                'Verificação de personagem',
+                "Entre na fila de 1 respawn por vez",
+                "1 personagem verificado",
+                "Acesso a todos os worlds",
+                "Tudo em tempo real",
               ].map((f) => (
                 <li key={f} className="flex gap-2 text-xs text-text-muted">
                   <span className="text-green">✓</span> {f}
                 </li>
               ))}
-              {['2 chars simultâneos', 'Hunt de 2h', '4 reports a cada 2h'].map((f) => (
+              {[
+                "Até 3 filas ao mesmo tempo",
+                "Personagens ilimitados",
+                "Voz tripla nos reports",
+              ].map((f) => (
                 <li key={f} className="flex gap-2 text-xs text-text-dim">
                   <span>✕</span> {f}
                 </li>
               ))}
             </ul>
-            <Button variant="secondary" className="w-full" onClick={handleLogin}>
+            <Button
+              variant="secondary"
+              className="w-full"
+              onClick={handleLogin}
+            >
               Começar grátis
             </Button>
           </div>
@@ -273,8 +282,8 @@ export default function Landing() {
           <div
             className="bg-bg2 rounded-2xl p-7"
             style={{
-              border: '1.5px solid var(--gold)',
-              boxShadow: '0 0 28px var(--gold-glow)',
+              border: "1.5px solid var(--gold)",
+              boxShadow: "0 0 28px var(--gold-glow)",
             }}
           >
             <div className="flex items-center justify-between mb-1">
@@ -282,25 +291,26 @@ export default function Landing() {
               <span
                 className="text-xs font-medium px-2 py-0.5 rounded"
                 style={{
-                  background: 'var(--gold-glow)',
-                  border: '0.5px solid var(--gold-dim)',
-                  color: 'var(--gold)',
+                  background: "var(--gold-glow)",
+                  border: "0.5px solid var(--gold-dim)",
+                  color: "var(--gold)",
                 }}
               >
                 Recomendado
               </span>
             </div>
-            <p className="font-display text-4xl font-bold text-gold mb-0.5">R$ 19</p>
+            <p className="font-display text-4xl font-bold text-gold mb-0.5">
+              R$ 19
+            </p>
             <p className="text-xs text-text-muted mb-6">por mês</p>
             <hr className="border-border mb-5" />
             <ul className="flex flex-col gap-2 mb-7">
               {[
-                '2 chars simultâneos na fila',
-                'Hunt de 2h',
-                '4 reports a cada 2h',
-                'Todos os worlds',
-                'Verificação ilimitada de chars',
-                'Suporte prioritário',
+                "Até 3 filas ao mesmo tempo",
+                "Personagens ilimitados",
+                "Voz tripla nos reports",
+                "Acesso a todos os worlds",
+                "Suporte prioritário",
               ].map((f) => (
                 <li key={f} className="flex gap-2 text-xs text-text">
                   <span className="text-gold">✓</span> {f}
@@ -316,11 +326,13 @@ export default function Landing() {
 
       {/* ── Footer ── */}
       <footer className="border-t border-border px-5 sm:px-10 py-5 flex items-center justify-between flex-wrap gap-3">
-        <span className="font-display text-sm text-[var(--gold-dim)]">⚔ Tibia Letter</span>
+        <span className="font-display text-sm text-[var(--gold-dim)]">
+          ⚔ Tibia Letter
+        </span>
         <span className="text-xs text-text-dim">
           Não afiliado à CipSoft. Projeto independente da comunidade.
         </span>
       </footer>
     </div>
-  )
+  );
 }

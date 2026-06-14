@@ -207,6 +207,9 @@ function SpawnCardMock({ spawn, defaultOpen }: { spawn: MockSpawn; defaultOpen?:
               <p className="text-xs text-text-dim font-semibold tracking-widest mb-2">FILA ATUAL</p>
               {spawn.queue.map((entry, i) => {
                 const isActive = !!entry.startedAt && !spawn.acceptDeadline
+                const firstOccupied =
+                  !!spawn.queue[0]?.startedAt || !!spawn.acceptDeadline
+                const isNext = i === 1 && firstOccupied
                 return (
                   <div
                     key={entry.name}
@@ -254,6 +257,18 @@ function SpawnCardMock({ spawn, defaultOpen }: { spawn: MockSpawn; defaultOpen?:
                     <span className="text-xs flex-shrink-0" style={{ color: 'var(--text-muted)' }}>
                       Lv.{entry.level}
                     </span>
+                    {isNext && (
+                      <span
+                        className="text-xs px-1.5 py-0.5 rounded font-semibold flex-shrink-0"
+                        style={{
+                          background: 'var(--amber-bg, rgba(245,158,11,0.12))',
+                          border: '0.5px solid var(--amber)',
+                          color: 'var(--amber)',
+                        }}
+                      >
+                        próximo
+                      </span>
+                    )}
                     {isActive && (
                       <span
                         className="text-xs px-1.5 py-0.5 rounded font-semibold flex-shrink-0"
@@ -286,8 +301,8 @@ function SpawnCardMock({ spawn, defaultOpen }: { spawn: MockSpawn; defaultOpen?:
           )}
 
           {spawn.queue.length === 0 && (
-            <p className="text-center text-sm pt-2" style={{ color: 'var(--text-dim)' }}>
-              Respawn livre — entre na fila!
+            <p className="text-center text-sm pt-2" style={{ color: 'var(--green)' }}>
+              Respawn livre — comece a caçar!
             </p>
           )}
 
@@ -297,12 +312,11 @@ function SpawnCardMock({ spawn, defaultOpen }: { spawn: MockSpawn; defaultOpen?:
               <button
                 className="flex-1 py-2 rounded-lg text-xs font-semibold transition-opacity hover:opacity-90"
                 style={{
-                  background: 'transparent',
-                  border: '1px solid var(--gold)',
-                  color: 'var(--gold)',
+                  background: 'var(--gold)',
+                  color: 'var(--bg-0)',
                 }}
               >
-                + Entrar na fila
+                ⚔ Caçar agora
               </button>
             )}
             {!myEntry && spawn.queue.length > 0 && !spawn.acceptDeadline && (

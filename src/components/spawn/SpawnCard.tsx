@@ -124,13 +124,19 @@ export function SpawnCard({
                   entry={e}
                   position={i + 1}
                   isMe={e.player_id === player?.id}
+                  isNext={
+                    i === 1 &&
+                    (queue[0]?.status === 'active' || queue[0]?.status === 'pending_accept')
+                  }
                 />
               ))}
             </div>
           )}
 
           {queue.length === 0 && (
-            <p className="text-center text-text-dim text-sm py-2">Respawn livre — entre na fila!</p>
+            <p className="text-center text-sm py-2" style={{ color: 'var(--green)' }}>
+              Respawn livre — comece a caçar!
+            </p>
           )}
 
           {!canJoin && activeChar && (
@@ -148,7 +154,7 @@ export function SpawnCard({
                 onClick={() => wrap('join', () => onJoin(spawn.id))}
                 className="flex-1"
               >
-                Entrar na Fila
+                {queue.length === 0 ? 'Caçar agora' : 'Entrar na Fila'}
               </Button>
             )}
             {myEntry && myEntry.status === 'active' && (

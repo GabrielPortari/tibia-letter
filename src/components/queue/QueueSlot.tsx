@@ -6,9 +6,10 @@ interface QueueSlotProps {
   entry: QueueEntry
   position: number
   isMe: boolean
+  isNext?: boolean
 }
 
-export function QueueSlot({ entry, position, isMe }: QueueSlotProps) {
+export function QueueSlot({ entry, position, isMe, isNext }: QueueSlotProps) {
   return (
     <div
       className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
@@ -20,6 +21,9 @@ export function QueueSlot({ entry, position, isMe }: QueueSlotProps) {
         {entry.character_name}
       </span>
       <span className="text-text-muted text-xs">Lv.{entry.character_level}</span>
+      {isNext && (
+        <Badge variant="amber">próximo</Badge>
+      )}
       {entry.status === 'active' && entry.started_at && (
         <HuntTimer startedAt={entry.started_at} />
       )}
