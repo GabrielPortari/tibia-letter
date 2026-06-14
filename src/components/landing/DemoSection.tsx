@@ -48,7 +48,8 @@ const INITIAL_SPAWNS: MockSpawn[] = [
     minLevel: 200,
     maxLevel: 999,
     queue: [
-      { name: 'Thalindra', level: 445, startedAt: Date.now() - 112 * 60 * 1000 },
+      { name: 'Thalindra', level: 445 },
+      { name: 'Orindel Jr', level: 210 },
     ],
     acceptDeadline: Date.now() + 4 * 60 * 1000 + 33 * 1000,
   },
@@ -205,7 +206,7 @@ function SpawnCardMock({ spawn, defaultOpen }: { spawn: MockSpawn; defaultOpen?:
             <div className="space-y-1 pt-2">
               <p className="text-xs text-text-dim font-semibold tracking-widest mb-2">FILA ATUAL</p>
               {spawn.queue.map((entry, i) => {
-                const isActive = !!entry.startedAt
+                const isActive = !!entry.startedAt && !spawn.acceptDeadline
                 return (
                   <div
                     key={entry.name}
