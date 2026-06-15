@@ -3,20 +3,34 @@ import type { Spawn, QueueEntry } from '../../types'
 import { getEntryStatus } from '../../types'
 import { useAuthStore } from '../../stores/authStore'
 import { useQueueStore } from '../../stores/queueStore'
+import { useCountdown } from '../../hooks/useCountdown'
 import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
 import { QueueSlot } from '../queue/QueueSlot'
 import { AcceptTimer, HuntEndTimer } from '../queue/InlineTimer'
 import { ReportModal } from '../report/ReportModal'
 
+const GRACE_PERIOD_MS = 5 * 60 * 1000
+
 interface SpawnCardProps {
   spawn: Spawn
   worldId: string
-  isGrace?: boolean
   onJoin: (spawnId: string) => Promise<void>
   onAccept: (spawnId: string) => Promise<void>
   onFinish: (spawnId: string) => Promise<void>
   onLeave: (spawnId: string) => Promise<void>
+}
+
+function GraceCountdown({ emptiedAt }: { emptiedAt: string }) {
+  const expiresAt = new Date(emptiedAt).getTime() + GRACE_PERIOD_MS
+  const seconds = useCountdown(expiresAt, () => {})
+  const m = Math.floor(seconds / 60)
+  const s = seconds % 60
+  return (
+    <Badge variant="muted">
+      Encerrando {m}:{String(s).padStart(2, '0')}
+    </Badge>
+  )
 }
 
 function getSpawnStatus(queue: QueueEntry[]) {
@@ -30,7 +44,6 @@ function getSpawnStatus(queue: QueueEntry[]) {
 export function SpawnCard({
   spawn,
   worldId,
-  isGrace = false,
   onJoin,
   onAccept,
   onFinish,
@@ -88,7 +101,7 @@ export function SpawnCard({
           <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${statusDot}`} />
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-text truncate">{spawn.name}</p>
-            {isGrace && <Badge variant="muted">Encerrando</Badge>}
+            {spawn.emptiedAt && <GraceCountdown emptiedAt={spawn.emptiedAt} />}
           </div>
           {isHunting && myEntry?.huntEndsAt && (
             <HuntEndTimer endsAt={myEntry.huntEndsAt} />
@@ -168,10 +181,10 @@ export function SpawnCard({
                 <Button
                   size="sm"
                   isLoading={loading === 'join'}
-                  disabled={!canJoin || isGrace}
+                  disabled={!canJoin}
                   onClick={() => wrap('join', () => onJoin(spawn.id))}
                   className="flex-1"
-                  title={isGrace ? 'Spawn encerrando' : !canJoin ? 'Selecione um personagem para entrar na fila' : undefined}
+                  title={!canJoin ? 'Selecione um personagem para entrar na fila' : undefined}
                 >
                   {queue.length === 0 ? 'Caçar agora' : 'Entrar na Fila'}
                 </Button>

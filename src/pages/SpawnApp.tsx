@@ -165,7 +165,6 @@ export default function SpawnApp() {
                 key={spawn.id}
                 spawn={spawn}
                 worldId={worldId!}
-                isGrace={spawn.emptiedAt !== null}
                 onJoin={(id) => joinMutation.mutateAsync(id)}
                 onAccept={(id) => acceptMutation.mutateAsync(id)}
                 onFinish={(id) => finishMutation.mutateAsync(id)}
