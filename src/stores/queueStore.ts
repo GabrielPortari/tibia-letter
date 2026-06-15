@@ -7,7 +7,7 @@ interface QueueEntryWithSpawn extends QueueEntry {
 
 interface QueueState {
   entries: Record<string, QueueEntry[]>
-  setEntries: (spawnId: string, entries: QueueEntry[]) => void
+  setWorldEntries: (map: Record<string, QueueEntry[]>) => void
   getSpawnQueue: (spawnId: string) => QueueEntry[]
   getMyEntries: (characterName: string) => QueueEntryWithSpawn[]
   clearWorld: () => void
@@ -16,8 +16,7 @@ interface QueueState {
 export const useQueueStore = create<QueueState>((set, get) => ({
   entries: {},
 
-  setEntries: (spawnId, entries) =>
-    set((s) => ({ entries: { ...s.entries, [spawnId]: entries } })),
+  setWorldEntries: (map) => set({ entries: map }),
 
   getSpawnQueue: (spawnId) => {
     const list = get().entries[spawnId] ?? []

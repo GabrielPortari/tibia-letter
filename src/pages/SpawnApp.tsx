@@ -17,7 +17,7 @@ const QUEUE_LIMIT = { free: 1, premium: 3 }
 export default function SpawnApp() {
   const { worldId } = useParams<{ worldId: string }>()
   const { user, activeChar } = useAuthStore()
-  const { setEntries, getMyEntries } = useQueueStore()
+  const { setWorldEntries, getMyEntries } = useQueueStore()
   const { addToast } = useToasts()
   const navigate = useNavigate()
   const qc = useQueryClient()
@@ -38,9 +38,7 @@ export default function SpawnApp() {
         if (!map[entry.spawnId]) map[entry.spawnId] = []
         map[entry.spawnId].push(entry)
       }
-      for (const [spawnId, entries] of Object.entries(map)) {
-        setEntries(spawnId, entries)
-      }
+      setWorldEntries(map)
       return map
     },
     refetchInterval: 10_000,
@@ -127,7 +125,7 @@ const myEntries = getMyEntries(char.name)
         {isLoading ? (
           <div className="flex justify-center py-16"><Spinner size="lg" /></div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-start">
             {spawns?.filter((s) => s.active).map((spawn) => (
               <SpawnCard
                 key={spawn.id}

@@ -89,9 +89,7 @@ export function SpawnCard({
             <p className="font-semibold text-text truncate">{spawn.name}</p>
           </div>
           {isHunting && myEntry?.huntEndsAt && (
-            <span className="text-xs text-green font-mono">
-              {fmt(secondsUntil(myEntry.huntEndsAt))}
-            </span>
+            <HuntEndTimer endsAt={myEntry.huntEndsAt} />
           )}
           <Badge variant={statusBadge[status]}>{statusLabel}</Badge>
           {queue.length > 0 && (

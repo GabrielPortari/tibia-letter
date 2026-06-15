@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useCountdown } from '../../hooks/useCountdown'
 import { fmt, huntDuration } from '../../utils/time'
 
@@ -7,7 +7,13 @@ interface HuntTimerProps {
 }
 
 export function HuntTimer({ startedAt }: HuntTimerProps) {
-  const elapsed = useMemo(() => huntDuration(startedAt), [startedAt])
+  const [elapsed, setElapsed] = useState(() => huntDuration(startedAt))
+
+  useEffect(() => {
+    const id = setInterval(() => setElapsed(huntDuration(startedAt)), 1000)
+    return () => clearInterval(id)
+  }, [startedAt])
+
   return (
     <span
       className="font-mono text-sm text-text-muted"
