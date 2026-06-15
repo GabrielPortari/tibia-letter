@@ -106,14 +106,20 @@ export default function SpawnApp() {
       if (err) throw new Error(err)
       return api.post<QueueEntry>(`/queue/${worldId}/${spawnId}/join`, { characterId: char!.id })
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['queue', worldId] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['queue', worldId] })
+      qc.invalidateQueries({ queryKey: ['spawns', worldId] })
+    },
     onError: (e: Error) => addToast('error', e.message),
   })
 
   const acceptMutation = useMutation({
     mutationFn: (spawnId: string) =>
       api.post<QueueEntry>(`/queue/${worldId}/${spawnId}/accept`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['queue', worldId] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['queue', worldId] })
+      qc.invalidateQueries({ queryKey: ['spawns', worldId] })
+    },
     onError: (e: Error) => addToast('error', e.message),
   })
 
