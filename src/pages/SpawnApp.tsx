@@ -84,7 +84,13 @@ export default function SpawnApp() {
   const createSpawnMutation = useMutation({
     mutationFn: () =>
       api.post<CreateSpawnResponse>('/spawns', { name: newSpawnName.trim(), worldId }),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Update store immediately so SpawnCard shows player as hunting without waiting for refetch
+      const current = useQueueStore.getState().entries
+      useQueueStore.getState().setWorldEntries({
+        ...current,
+        [data.spawn.id]: [data.entry],
+      })
       qc.invalidateQueries({ queryKey: ['spawns', worldId] })
       qc.invalidateQueries({ queryKey: ['queue', worldId] })
       setShowCreateModal(false)
