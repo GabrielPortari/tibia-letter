@@ -27,6 +27,14 @@ export interface Spawn {
   id: string
   name: string
   active: boolean
+  worldId: string
+  emptiedAt: string | null
+  createdBy: string | null
+}
+
+export interface CreateSpawnResponse {
+  spawn: Spawn
+  entry: QueueEntry
 }
 
 export interface QueueEntry {
