@@ -47,18 +47,22 @@ function SpawnManager() {
   const qc = useQueryClient()
   const { addToast } = useToasts()
   const [name, setName] = useState('')
+  const [worldId, setWorldId] = useState('')
+  const [filterWorld, setFilterWorld] = useState('')
 
   const { data: spawns, isLoading } = useQuery<Spawn[]>({
-    queryKey: ['admin-spawns'],
-    queryFn: () => api.get<Spawn[]>('/spawns'),
+    queryKey: ['admin-spawns', filterWorld],
+    queryFn: () => api.get<Spawn[]>(`/spawns?worldId=${filterWorld}`),
+    enabled: /^[a-z]{2,20}$/.test(filterWorld),
   })
 
   const { mutate: createSpawn, isPending } = useMutation({
-    mutationFn: () => api.post<Spawn>('/spawns', { name }),
+    mutationFn: () => api.post<Spawn>('/spawns', { name, worldId }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['admin-spawns'] })
+      qc.invalidateQueries({ queryKey: ['admin-spawns', worldId] })
       addToast('success', 'Spawn criado.')
       setName('')
+      setWorldId('')
     },
     onError: (e: Error) => addToast('error', e.message),
   })
@@ -88,19 +92,40 @@ function SpawnManager() {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
+        <Input
+          label="World (ex: belobra)"
+          value={worldId}
+          onChange={(e) => setWorldId(e.target.value.toLowerCase())}
+        />
         <Button
           isLoading={isPending}
           onClick={() => createSpawn()}
-          disabled={!name}
+          disabled={!name || !/^[a-z]{2,20}$/.test(worldId)}
         >
           Criar Spawn
         </Button>
       </div>
 
+      <div className="bg-bg2 border border-border rounded-xl p-5 space-y-3">
+        <h2 className="font-semibold text-text">Filtrar Spawns por World</h2>
+        <Input
+          label="World"
+          placeholder="ex: belobra"
+          value={filterWorld}
+          onChange={(e) => setFilterWorld(e.target.value.toLowerCase())}
+        />
+      </div>
+
+      {filterWorld && !/^[a-z]{2,20}$/.test(filterWorld) && (
+        <p className="text-sm text-text-muted">World inválido — use apenas letras minúsculas (2–20 chars).</p>
+      )}
       {isLoading ? (
         <div className="flex justify-center py-8"><Spinner /></div>
-      ) : (
+      ) : filterWorld && /^[a-z]{2,20}$/.test(filterWorld) ? (
         <div className="space-y-2">
+          {spawns?.length === 0 && (
+            <p className="text-center py-4 text-text-muted">Nenhum spawn ativo em {filterWorld}.</p>
+          )}
           {spawns?.map((s) => (
             <div
               key={s.id}
@@ -110,7 +135,9 @@ function SpawnManager() {
                 <div className="flex items-center gap-2">
                   <p className="font-medium text-text">{s.name}</p>
                   {!s.active && <Badge variant="muted">Inativo</Badge>}
+                  {s.emptiedAt && <Badge variant="muted">Encerrando</Badge>}
                 </div>
+                <p className="text-xs text-text-muted">{s.worldId}</p>
               </div>
               <div className="flex gap-2">
                 <Button
@@ -131,7 +158,7 @@ function SpawnManager() {
             </div>
           ))}
         </div>
-      )}
+      ) : null}
     </div>
   )
 }
