@@ -53,7 +53,7 @@ function SpawnManager() {
   const { data: spawns, isLoading } = useQuery<Spawn[]>({
     queryKey: ['admin-spawns', filterWorld],
     queryFn: () => api.get<Spawn[]>(`/spawns?worldId=${filterWorld}`),
-    enabled: /^[a-z]{2,20}$/.test(filterWorld),
+    enabled: /^[a-zA-Z]{2,30}$/.test(filterWorld),
   })
 
   const { mutate: createSpawn, isPending } = useMutation({
@@ -95,12 +95,12 @@ function SpawnManager() {
         <Input
           label="World (ex: belobra)"
           value={worldId}
-          onChange={(e) => setWorldId(e.target.value.toLowerCase())}
+          onChange={(e) => setWorldId(e.target.value)}
         />
         <Button
           isLoading={isPending}
           onClick={() => createSpawn()}
-          disabled={!name || !/^[a-z]{2,20}$/.test(worldId)}
+          disabled={!name || !/^[a-zA-Z]{2,30}$/.test(worldId)}
         >
           Criar Spawn
         </Button>
@@ -112,11 +112,11 @@ function SpawnManager() {
           label="World"
           placeholder="ex: belobra"
           value={filterWorld}
-          onChange={(e) => setFilterWorld(e.target.value.toLowerCase())}
+          onChange={(e) => setFilterWorld(e.target.value)}
         />
       </div>
 
-      {filterWorld && !/^[a-z]{2,20}$/.test(filterWorld) && (
+      {filterWorld && !/^[a-zA-Z]{2,30}$/.test(filterWorld) && (
         <p className="text-sm text-text-muted">World inválido — use apenas letras minúsculas (2–20 chars).</p>
       )}
       {isLoading ? (
