@@ -2,6 +2,7 @@ import { useAuthStore } from '../../stores/authStore'
 import { useQueueStore } from '../../stores/queueStore'
 import { useCountdown } from '../../hooks/useCountdown'
 import { fmt, secondsUntil } from '../../utils/time'
+import { HuntEndTimer } from '../queue/InlineTimer'
 import { getEntryStatus } from '../../types'
 import type { Spawn } from '../../types'
 
@@ -148,7 +149,7 @@ export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProp
               ⚔ <span className="font-medium">{e.characterName}</span>
               {' '}caçando em <span className="font-medium">{spawnName(e.spawnId)}</span>
               {e.huntEndsAt && (
-                <span className="text-text-muted ml-1">· {fmt(secondsUntil(e.huntEndsAt))}</span>
+                <span className="text-text-muted ml-1">· <HuntEndTimer endsAt={e.huntEndsAt} /></span>
               )}
             </span>
           ))}
