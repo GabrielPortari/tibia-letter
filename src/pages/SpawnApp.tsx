@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/api'
@@ -9,7 +10,10 @@ import { SpawnCard } from '../components/spawn/SpawnCard'
 import { MyQueuesBanner } from '../components/spawn/MyQueuesBanner'
 import { BannedGuard } from '../components/layout/RouteGuards'
 import { Spinner } from '../components/ui/Spinner'
-import type { Spawn, QueueEntry } from '../types'
+import { Button } from '../components/ui/Button'
+import { Input } from '../components/ui/Input'
+import { Modal } from '../components/ui/Modal'
+import type { Spawn, QueueEntry, CreateSpawnResponse } from '../types'
 import { getEntryStatus } from '../types'
 
 const QUEUE_LIMIT = { free: 1, premium: 3 }
@@ -23,10 +27,14 @@ export default function SpawnApp() {
   const qc = useQueryClient()
   const char = activeChar()
 
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [newSpawnName, setNewSpawnName] = useState('')
+
   const { data: spawns, isLoading } = useQuery<Spawn[]>({
-    queryKey: ['spawns'],
-    queryFn: () => api.get<Spawn[]>('/spawns'),
-    staleTime: 60_000,
+    queryKey: ['spawns', worldId],
+    queryFn: () => api.get<Spawn[]>(`/spawns?worldId=${worldId}`),
+    staleTime: 30_000,
+    enabled: !!worldId,
   })
 
   const { data: queueMap } = useQuery<Record<string, QueueEntry[]>>({
@@ -45,6 +53,9 @@ export default function SpawnApp() {
     enabled: !!worldId,
   })
 
+  const myEntries = char ? getMyEntries(char.name) : []
+  const isActivelyHunting = myEntries.some((e) => getEntryStatus(e) === 'active')
+
   function validateJoin(spawnId: string): string | null {
     if (!user) return 'Não autenticado'
     if (!char) return 'Sem personagem ativo'
@@ -52,7 +63,7 @@ export default function SpawnApp() {
 
     const spawn = spawns?.find((s) => s.id === spawnId)
     if (!spawn) return 'Spawn não encontrado'
-const myEntries = getMyEntries(char.name)
+
     const isHunting = myEntries.some((e) => getEntryStatus(e) === 'active')
     if (isHunting) return 'Você já está caçando. Finalize a hunt antes de entrar em outra fila.'
 
@@ -69,6 +80,19 @@ const myEntries = getMyEntries(char.name)
 
     return null
   }
+
+  const createSpawnMutation = useMutation({
+    mutationFn: () =>
+      api.post<CreateSpawnResponse>('/spawns', { name: newSpawnName.trim(), worldId }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['spawns', worldId] })
+      qc.invalidateQueries({ queryKey: ['queue', worldId] })
+      setShowCreateModal(false)
+      setNewSpawnName('')
+      addToast('success', 'Hunt iniciada!')
+    },
+    onError: (e: Error) => addToast('error', e.message),
+  })
 
   const joinMutation = useMutation({
     mutationFn: async (spawnId: string) => {
@@ -104,16 +128,26 @@ const myEntries = getMyEntries(char.name)
   return (
     <BannedGuard>
       <PageWrapper>
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-6 flex-wrap">
           <button
             onClick={() => navigate('/app/queue')}
             className="text-text-muted hover:text-text transition-colors text-sm"
           >
             ← Mundos
           </button>
-          <h1 className="font-display text-xl sm:text-2xl text-gold font-semibold">
+          <h1 className="font-display text-xl sm:text-2xl text-gold font-semibold flex-1">
             {worldId}
           </h1>
+          {char && (
+            <Button
+              size="sm"
+              onClick={() => setShowCreateModal(true)}
+              disabled={isActivelyHunting}
+              title={isActivelyHunting ? 'Finalize sua hunt atual primeiro' : undefined}
+            >
+              + Iniciar Hunt
+            </Button>
+          )}
         </div>
 
         <MyQueuesBanner
@@ -126,19 +160,51 @@ const myEntries = getMyEntries(char.name)
           <div className="flex justify-center py-16"><Spinner size="lg" /></div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-start">
-            {spawns?.filter((s) => s.active).map((spawn) => (
+            {spawns?.map((spawn) => (
               <SpawnCard
                 key={spawn.id}
                 spawn={spawn}
                 worldId={worldId!}
+                isGrace={spawn.emptiedAt !== null}
                 onJoin={(id) => joinMutation.mutateAsync(id)}
                 onAccept={(id) => acceptMutation.mutateAsync(id)}
                 onFinish={(id) => finishMutation.mutateAsync(id)}
                 onLeave={(id) => leaveMutation.mutateAsync(id)}
               />
             ))}
+            {!isLoading && spawns?.length === 0 && (
+              <p className="col-span-full text-center py-16 text-text-muted">
+                Nenhum spawn ativo neste mundo. Seja o primeiro a iniciar uma hunt!
+              </p>
+            )}
           </div>
         )}
+
+        <Modal
+          isOpen={showCreateModal}
+          onClose={() => { setShowCreateModal(false); setNewSpawnName('') }}
+          title="Iniciar Hunt"
+        >
+          <div className="space-y-4">
+            <Input
+              label="Nome do Spawn"
+              placeholder="ex: Asura Palace"
+              value={newSpawnName}
+              onChange={(e) => setNewSpawnName(e.target.value)}
+            />
+            <p className="text-xs text-text-muted">
+              Você entrará automaticamente como ativo neste spawn.
+            </p>
+            <Button
+              className="w-full"
+              isLoading={createSpawnMutation.isPending}
+              disabled={!newSpawnName.trim()}
+              onClick={() => createSpawnMutation.mutate()}
+            >
+              Iniciar Hunt
+            </Button>
+          </div>
+        </Modal>
       </PageWrapper>
     </BannedGuard>
   )
