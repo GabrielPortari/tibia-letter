@@ -74,8 +74,8 @@ export default function SpawnApp() {
     const waitingQueues = myEntries.filter((e) => getEntryStatus(e) !== 'active').length
     if (waitingQueues >= limit) {
       return user.premium
-        ? 'Limite de 3 filas simultâneas atingido (Premium).'
-        : 'Plano Free permite apenas 1 fila por vez. Assine Premium para até 3.'
+        ? 'Limite de 3 filas simultâneas atingido.'
+        : 'Plano Free permite apenas 1 fila por vez. Assine Premium para até 3 filas e personagens ilimitados.'
     }
 
     return null
