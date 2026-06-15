@@ -1,5 +1,21 @@
 const BASE = ((import.meta.env.VITE_API_URL as string) || '') + '/api/v1'
 
+// Deduplicates concurrent refresh calls into a single request
+let refreshPromise: Promise<boolean> | null = null
+
+async function tryRefresh(): Promise<boolean> {
+  if (!refreshPromise) {
+    refreshPromise = fetch(`${BASE}/auth/refresh`, {
+      method: 'POST',
+      credentials: 'include',
+    })
+      .then((r) => r.ok)
+      .catch(() => false)
+      .finally(() => { refreshPromise = null })
+  }
+  return refreshPromise
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(BASE + path, {
     ...init,
@@ -8,7 +24,18 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   })
 
   if (res.status === 401) {
-    // Session expired mid-session. Go to landing (not /login to avoid redirect loop).
+    const refreshed = await tryRefresh()
+    if (refreshed) {
+      const retry = await fetch(BASE + path, {
+        ...init,
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', ...init?.headers },
+      })
+      if (retry.ok) {
+        if (retry.status === 204 || retry.headers.get('content-length') === '0') return undefined as T
+        return retry.json() as Promise<T>
+      }
+    }
     window.location.href = '/'
     return Promise.reject(new Error('Unauthorized'))
   }

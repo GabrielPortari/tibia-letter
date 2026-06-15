@@ -12,9 +12,19 @@ export function useAuth() {
 
     async function loadMe() {
       try {
-        // Raw fetch — intentionally bypasses the api.ts 401→redirect interceptor.
-        // A 401 here simply means "not logged in yet" and must NOT trigger a redirect.
-        const res = await fetch(`${BASE}/auth/me`, { credentials: 'include' })
+        let res = await fetch(`${BASE}/auth/me`, { credentials: 'include' })
+
+        // Access token may be expired but refresh token still valid — try once
+        if (res.status === 401) {
+          const refreshed = await fetch(`${BASE}/auth/refresh`, {
+            method: 'POST',
+            credentials: 'include',
+          })
+          if (refreshed.ok) {
+            res = await fetch(`${BASE}/auth/me`, { credentials: 'include' })
+          }
+        }
+
         if (!mounted) return
         if (res.ok) {
           const me: User = await res.json()
