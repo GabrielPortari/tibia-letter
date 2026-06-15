@@ -12,6 +12,7 @@ import { ReportModal } from '../report/ReportModal'
 interface SpawnCardProps {
   spawn: Spawn
   worldId: string
+  isGrace?: boolean
   onJoin: (spawnId: string) => Promise<void>
   onAccept: (spawnId: string) => Promise<void>
   onFinish: (spawnId: string) => Promise<void>
@@ -29,6 +30,7 @@ function getSpawnStatus(queue: QueueEntry[]) {
 export function SpawnCard({
   spawn,
   worldId,
+  isGrace = false,
   onJoin,
   onAccept,
   onFinish,
@@ -86,6 +88,7 @@ export function SpawnCard({
           <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${statusDot}`} />
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-text truncate">{spawn.name}</p>
+            {isGrace && <Badge variant="muted">Encerrando</Badge>}
           </div>
           {isHunting && myEntry?.huntEndsAt && (
             <HuntEndTimer endsAt={myEntry.huntEndsAt} />
@@ -165,10 +168,10 @@ export function SpawnCard({
                 <Button
                   size="sm"
                   isLoading={loading === 'join'}
-                  disabled={!canJoin}
+                  disabled={!canJoin || isGrace}
                   onClick={() => wrap('join', () => onJoin(spawn.id))}
                   className="flex-1"
-                  title={!canJoin ? 'Selecione um personagem para entrar na fila' : undefined}
+                  title={isGrace ? 'Spawn encerrando' : !canJoin ? 'Selecione um personagem para entrar na fila' : undefined}
                 >
                   {queue.length === 0 ? 'Caçar agora' : 'Entrar na Fila'}
                 </Button>
