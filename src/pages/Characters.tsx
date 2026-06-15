@@ -2,13 +2,16 @@ import { useState, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
+import { useQueueStore } from '../stores/queueStore'
 import { api } from '../lib/api'
 import { useToasts } from '../hooks/useToasts'
 import { secondsUntil, fmt } from '../utils/time'
 import { PageWrapper } from '../components/layout/PageWrapper'
 import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
+import { Modal } from '../components/ui/Modal'
 import { CharVerifyModal } from '../components/character/CharVerifyModal'
+import { getEntryStatus } from '../types'
 import type { User, Character } from '../types'
 
 const BASE = ((import.meta.env.VITE_API_URL as string) || '') + '/api/v1'
@@ -29,10 +32,12 @@ function getCharState(char: Character): CharState {
 
 export default function Characters() {
   const { user, setUser } = useAuthStore()
+  const { getMyEntries } = useQueueStore()
   const { addToast } = useToasts()
   const navigate = useNavigate()
   const [modalOpen, setModalOpen] = useState(false)
   const [reInitChar, setReInitChar] = useState<Character | null>(null)
+  const [confirmSwitch, setConfirmSwitch] = useState<Character | null>(null)
 
   const activateMutation = useMutation({
     mutationFn: (id: string) => api.patch(`/characters/${id}/activate`),
@@ -66,6 +71,20 @@ export default function Characters() {
 
   const characters = user?.characters ?? []
   const activeChar = characters.find((c) => c.active)
+
+  function handleActivate(char: Character) {
+    if (!activeChar || activeChar.id === char.id) {
+      activateMutation.mutate(char.id)
+      return
+    }
+    const entries = getMyEntries(activeChar.name)
+    const hasWaiting = entries.some((e) => getEntryStatus(e) === 'waiting')
+    if (hasWaiting) {
+      setConfirmSwitch(char)
+    } else {
+      activateMutation.mutate(char.id)
+    }
+  }
 
   function openReInit(char: Character) {
     setReInitChar(char)
@@ -130,7 +149,7 @@ export default function Characters() {
               isActivating={activateMutation.isPending && activateMutation.variables === char.id}
               isDeleting={deleteMutation.isPending && deleteMutation.variables === char.id}
               isVerifying={verifyMutation.isPending && verifyMutation.variables === char.name}
-              onActivate={() => activateMutation.mutate(char.id)}
+              onActivate={() => handleActivate(char)}
               onDelete={() => confirmDelete(char)}
               onVerify={() => verifyMutation.mutate(char.name)}
               onReInit={() => openReInit(char)}
@@ -138,6 +157,43 @@ export default function Characters() {
           ))}
         </div>
       )}
+
+      <Modal
+        isOpen={!!confirmSwitch}
+        onClose={() => setConfirmSwitch(null)}
+        title="Trocar de personagem?"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-text-muted">
+            Você está aguardando em{' '}
+            <span className="text-text font-medium">
+              {getMyEntries(activeChar?.name ?? '').filter((e) => getEntryStatus(e) === 'waiting').length}
+            </span>{' '}
+            fila(s). Ao trocar para{' '}
+            <span className="text-text font-medium">{confirmSwitch?.name}</span>, você será
+            removido de todas elas automaticamente.
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              className="flex-1"
+              onClick={() => setConfirmSwitch(null)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              className="flex-1"
+              isLoading={activateMutation.isPending}
+              onClick={() => {
+                if (confirmSwitch) activateMutation.mutate(confirmSwitch.id)
+                setConfirmSwitch(null)
+              }}
+            >
+              Trocar mesmo assim
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       <CharVerifyModal
         isOpen={modalOpen}

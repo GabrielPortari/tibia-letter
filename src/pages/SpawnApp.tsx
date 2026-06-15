@@ -29,6 +29,7 @@ export default function SpawnApp() {
 
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [newSpawnName, setNewSpawnName] = useState('')
+  const [search, setSearch] = useState('')
 
   const { data: spawns, isLoading } = useQuery<Spawn[]>({
     queryKey: ['spawns', worldId],
@@ -55,6 +56,15 @@ export default function SpawnApp() {
 
   const myEntries = char ? getMyEntries(char.name) : []
   const isActivelyHunting = myEntries.some((e) => getEntryStatus(e) === 'active')
+
+  const trimmedSearch = search.trim().toLowerCase()
+  const filteredSpawns = trimmedSearch
+    ? (spawns ?? []).filter((s) => s.name.toLowerCase().includes(trimmedSearch))
+    : (spawns ?? [])
+
+  const nameAlreadyExists = !!spawns?.some(
+    (s) => s.name.toLowerCase() === newSpawnName.trim().toLowerCase(),
+  )
 
   function validateJoin(spawnId: string): string | null {
     if (!user) return 'Não autenticado'
@@ -146,7 +156,7 @@ export default function SpawnApp() {
   return (
     <BannedGuard>
       <PageWrapper>
-        <div className="flex items-center gap-3 mb-6 flex-wrap">
+        <div className="flex items-center gap-3 mb-4 flex-wrap">
           <button
             onClick={() => navigate('/app/queue')}
             className="text-text-muted hover:text-text transition-colors text-sm"
@@ -168,6 +178,14 @@ export default function SpawnApp() {
           )}
         </div>
 
+        <div className="mb-5">
+          <Input
+            placeholder="Buscar spawn..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
         <MyQueuesBanner
           spawns={spawns ?? []}
           onAccept={(spawnId) => acceptMutation.mutateAsync(spawnId)}
@@ -178,7 +196,7 @@ export default function SpawnApp() {
           <div className="flex justify-center py-16"><Spinner size="lg" /></div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-start">
-            {spawns?.map((spawn) => (
+            {filteredSpawns.map((spawn) => (
               <SpawnCard
                 key={spawn.id}
                 spawn={spawn}
@@ -192,6 +210,11 @@ export default function SpawnApp() {
             {!isLoading && spawns?.length === 0 && (
               <p className="col-span-full text-center py-16 text-text-muted">
                 Nenhum spawn ativo neste mundo. Seja o primeiro a iniciar uma hunt!
+              </p>
+            )}
+            {!isLoading && spawns && spawns.length > 0 && filteredSpawns.length === 0 && (
+              <p className="col-span-full text-center py-16 text-text-muted">
+                Nenhum spawn encontrado para "{search.trim()}".
               </p>
             )}
           </div>
@@ -209,13 +232,20 @@ export default function SpawnApp() {
               value={newSpawnName}
               onChange={(e) => setNewSpawnName(e.target.value)}
             />
-            <p className="text-xs text-text-muted">
-              Você entrará automaticamente como ativo neste spawn.
-            </p>
+            {nameAlreadyExists && newSpawnName.trim() && (
+              <p className="text-xs text-amber">
+                Já existe um spawn com este nome neste mundo.
+              </p>
+            )}
+            {!nameAlreadyExists && (
+              <p className="text-xs text-text-muted">
+                Você entrará automaticamente como ativo neste spawn.
+              </p>
+            )}
             <Button
               className="w-full"
               isLoading={createSpawnMutation.isPending}
-              disabled={!newSpawnName.trim()}
+              disabled={!newSpawnName.trim() || nameAlreadyExists}
               onClick={() => createSpawnMutation.mutate()}
             >
               Iniciar Hunt
