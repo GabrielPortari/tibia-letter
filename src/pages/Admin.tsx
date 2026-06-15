@@ -46,7 +46,7 @@ export default function Admin() {
 function SpawnManager() {
   const qc = useQueryClient()
   const { addToast } = useToasts()
-  const [form, setForm] = useState({ name: '', minLevel: '', maxLevel: '', location: '' })
+  const [name, setName] = useState('')
 
   const { data: spawns, isLoading } = useQuery<Spawn[]>({
     queryKey: ['admin-spawns'],
@@ -54,17 +54,11 @@ function SpawnManager() {
   })
 
   const { mutate: createSpawn, isPending } = useMutation({
-    mutationFn: () =>
-      api.post<Spawn>('/spawns', {
-        name: form.name,
-        minLevel: Number(form.minLevel),
-        maxLevel: Number(form.maxLevel),
-        location: form.location || undefined,
-      }),
+    mutationFn: () => api.post<Spawn>('/spawns', { name }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-spawns'] })
       addToast('success', 'Spawn criado.')
-      setForm({ name: '', minLevel: '', maxLevel: '', location: '' })
+      setName('')
     },
     onError: (e: Error) => addToast('error', e.message),
   })
@@ -89,34 +83,15 @@ function SpawnManager() {
     <div className="space-y-6">
       <div className="bg-bg2 border border-border rounded-xl p-5 space-y-3">
         <h2 className="font-semibold text-text">Novo Spawn</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Input
-            label="Nome"
-            value={form.name}
-            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-          />
-          <Input
-            label="Localização"
-            value={form.location}
-            onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
-          />
-          <Input
-            label="Nível mínimo"
-            type="number"
-            value={form.minLevel}
-            onChange={(e) => setForm((f) => ({ ...f, minLevel: e.target.value }))}
-          />
-          <Input
-            label="Nível máximo"
-            type="number"
-            value={form.maxLevel}
-            onChange={(e) => setForm((f) => ({ ...f, maxLevel: e.target.value }))}
-          />
-        </div>
+        <Input
+          label="Nome"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
         <Button
           isLoading={isPending}
           onClick={() => createSpawn()}
-          disabled={!form.name || !form.minLevel || !form.maxLevel}
+          disabled={!name}
         >
           Criar Spawn
         </Button>
@@ -136,9 +111,6 @@ function SpawnManager() {
                   <p className="font-medium text-text">{s.name}</p>
                   {!s.active && <Badge variant="muted">Inativo</Badge>}
                 </div>
-                <p className="text-xs text-text-muted">
-                  Lv. {s.minLevel}–{s.maxLevel} · {s.location || '—'}
-                </p>
               </div>
               <div className="flex gap-2">
                 <Button
@@ -175,7 +147,7 @@ function PlayerManager() {
 
   const { data: players, isLoading } = useQuery<User[]>({
     queryKey: ['admin-players'],
-    queryFn: () => api.get<User[]>('/admin/players'),
+    queryFn: () => api.get<{ data: User[]; total: number }>('/admin/players').then((r) => r.data),
   })
 
   const updateMutation = useMutation({

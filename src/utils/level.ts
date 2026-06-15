@@ -1,7 +1,4 @@
-export function validateLevelRange(
-  level: number,
-  minLevel: number,
-  maxLevel: number,
-): boolean {
-  return level >= minLevel && level <= maxLevel
+export function validateLevelRange(level: number, minLevel?: number): boolean {
+  if (minLevel && level < minLevel) return false
+  return true
 }

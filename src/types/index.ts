@@ -26,14 +26,12 @@ export interface User {
 export interface Spawn {
   id: string
   name: string
-  location: string
-  minLevel: number
-  maxLevel: number
   active: boolean
 }
 
 export interface QueueEntry {
   id: string
+  spawnId: string
   characterName: string
   characterLevel: number
   position: number

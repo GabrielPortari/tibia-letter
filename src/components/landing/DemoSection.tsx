@@ -14,8 +14,6 @@ interface MockSpawn {
   id: string
   name: string
   location: string
-  minLevel: number
-  maxLevel: number
   queue: MockEntry[]
   acceptDeadline?: number
 }
@@ -25,8 +23,6 @@ const INITIAL_SPAWNS: MockSpawn[] = [
     id: 's1',
     name: 'Dragon Lair',
     location: 'Mount Sternum',
-    minLevel: 80,
-    maxLevel: 150,
     queue: [
       { name: 'Drakenheim', level: 120, startedAt: Date.now() - 41 * 60 * 1000 },
       { name: 'Seraphion', level: 87, isYou: true },
@@ -37,16 +33,12 @@ const INITIAL_SPAWNS: MockSpawn[] = [
     id: 's2',
     name: 'Cyclops Camp',
     location: 'North Plains',
-    minLevel: 40,
-    maxLevel: 80,
     queue: [],
   },
   {
     id: 's3',
     name: 'Demon Oak',
     location: 'Edron Plains',
-    minLevel: 200,
-    maxLevel: 999,
     queue: [
       { name: 'Thalindra', level: 445 },
       { name: 'Orindel Jr', level: 210 },
@@ -57,8 +49,6 @@ const INITIAL_SPAWNS: MockSpawn[] = [
     id: 's4',
     name: 'Orc Fortress',
     location: 'Ulderek Rock',
-    minLevel: 60,
-    maxLevel: 120,
     queue: [
       { name: 'Orindel', level: 88 },
       { name: 'Thal Maker', level: 72 },
@@ -148,7 +138,7 @@ function SpawnCardMock({ spawn, defaultOpen }: { spawn: MockSpawn; defaultOpen?:
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-text truncate">{spawn.name}</p>
           <p className="text-xs text-text-muted">
-            {spawn.location} · Lv. {spawn.minLevel}–{spawn.maxLevel === 999 ? '∞' : spawn.maxLevel}
+            {spawn.location}
           </p>
         </div>
 

@@ -4,7 +4,6 @@ import { api } from '../lib/api'
 import { useAuthStore } from '../stores/authStore'
 import { useQueueStore } from '../stores/queueStore'
 import { useToasts } from '../hooks/useToasts'
-import { validateLevelRange } from '../utils/level'
 import { PageWrapper } from '../components/layout/PageWrapper'
 import { SpawnCard } from '../components/spawn/SpawnCard'
 import { MyQueuesBanner } from '../components/spawn/MyQueuesBanner'
@@ -33,7 +32,12 @@ export default function SpawnApp() {
   const { data: queueMap } = useQuery<Record<string, QueueEntry[]>>({
     queryKey: ['queue', worldId],
     queryFn: async () => {
-      const map = await api.get<Record<string, QueueEntry[]>>(`/queue/${worldId}`)
+      const list = await api.get<QueueEntry[]>(`/queue/${worldId}`)
+      const map: Record<string, QueueEntry[]> = {}
+      for (const entry of list) {
+        if (!map[entry.spawnId]) map[entry.spawnId] = []
+        map[entry.spawnId].push(entry)
+      }
       for (const [spawnId, entries] of Object.entries(map)) {
         setEntries(spawnId, entries)
       }
@@ -50,11 +54,7 @@ export default function SpawnApp() {
 
     const spawn = spawns?.find((s) => s.id === spawnId)
     if (!spawn) return 'Spawn não encontrado'
-    if (!validateLevelRange(char.level, spawn.minLevel, spawn.maxLevel)) {
-      return `Nível ${char.level} fora do range (Lv. ${spawn.minLevel}–${spawn.maxLevel})`
-    }
-
-    const myEntries = getMyEntries(char.name)
+const myEntries = getMyEntries(char.name)
     const isHunting = myEntries.some((e) => getEntryStatus(e) === 'active')
     if (isHunting) return 'Você já está caçando. Finalize a hunt antes de entrar em outra fila.'
 

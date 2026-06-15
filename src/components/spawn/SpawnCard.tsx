@@ -3,7 +3,6 @@ import type { Spawn, QueueEntry } from '../../types'
 import { getEntryStatus } from '../../types'
 import { useAuthStore } from '../../stores/authStore'
 import { useQueueStore } from '../../stores/queueStore'
-import { validateLevelRange } from '../../utils/level'
 import { fmt, secondsUntil } from '../../utils/time'
 import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
@@ -55,10 +54,7 @@ export function SpawnCard({
   const isMyTurnToAccept = myStatus === 'pending_accept'
   const isHunting = myStatus === 'active'
 
-  const canJoin = useMemo(() => {
-    if (!char) return false
-    return validateLevelRange(char.level, spawn.minLevel, spawn.maxLevel)
-  }, [char, spawn])
+  const canJoin = !!char
 
   const statusDot = { free: 'bg-green', occupied: 'bg-amber', pending: 'bg-gold animate-pulse' }[status]
   const statusLabel = { free: 'Livre', occupied: 'Ocupado', pending: 'Aguard. aceite' }[status]
@@ -91,7 +87,6 @@ export function SpawnCard({
           <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${statusDot}`} />
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-text truncate">{spawn.name}</p>
-            <p className="text-xs text-text-muted">Lv. {spawn.minLevel}–{spawn.maxLevel}</p>
           </div>
           {isHunting && myEntry?.huntEndsAt && (
             <span className="text-xs text-green font-mono">
@@ -167,12 +162,6 @@ export function SpawnCard({
               </p>
             )}
 
-            {!canJoin && char && (
-              <p className="text-xs text-text-muted text-center py-1">
-                Nível {char.level} fora do range (Lv. {spawn.minLevel}–{spawn.maxLevel})
-              </p>
-            )}
-
             {/* Action buttons */}
             <div className="flex gap-2 flex-wrap">
               {!myEntry && (
@@ -182,7 +171,7 @@ export function SpawnCard({
                   disabled={!canJoin}
                   onClick={() => wrap('join', () => onJoin(spawn.id))}
                   className="flex-1"
-                  title={!canJoin ? `Level ${char?.level ?? 0} fora do range (${spawn.minLevel}–${spawn.maxLevel})` : undefined}
+                  title={!canJoin ? 'Selecione um personagem para entrar na fila' : undefined}
                 >
                   {queue.length === 0 ? 'Caçar agora' : 'Entrar na Fila'}
                 </Button>
