@@ -4,6 +4,7 @@ import { useAuthStore } from "../stores/authStore";
 import { Button } from "../components/ui/Button";
 import { Spinner } from "../components/ui/Spinner";
 import { DemoSection } from "../components/landing/DemoSection";
+import letterIcon from "../assets/letter.png";
 
 function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -36,8 +37,9 @@ export default function Landing() {
     <div className="flex-1 flex flex-col">
       {/* ── Nav ── */}
       <nav className="sticky top-0 z-40 bg-bg0/95 backdrop-blur border-b border-border flex items-center justify-between px-5 sm:px-10 h-14">
-        <span className="font-display text-gold text-base font-bold tracking-widest">
-          ⚔ Tibia Letter
+        <span className="font-display text-gold text-base font-bold tracking-widest flex items-center gap-2">
+          <img src={letterIcon} alt="" className="w-6 h-6 object-contain" />
+          Tibia Letter
         </span>
         <div className="flex items-center gap-2">
           <button
@@ -66,6 +68,7 @@ export default function Landing() {
             "radial-gradient(ellipse 60% 40% at 50% 0%, var(--gold-glow) 0%, transparent 70%)",
         }}
       >
+        <img src={letterIcon} alt="Tibia Letter" className="w-16 h-16 object-contain mb-4" />
         <div className="inline-flex items-center px-3 py-1 border border-[var(--gold-dim)] rounded-full text-xs text-gold tracking-widest mb-6">
           SISTEMA DE FILAS PARA TIBIA
         </div>
@@ -334,8 +337,9 @@ export default function Landing() {
 
       {/* ── Footer ── */}
       <footer className="border-t border-border px-5 sm:px-10 py-5 flex items-center justify-between flex-wrap gap-3">
-        <span className="font-display text-sm text-[var(--gold-dim)]">
-          ⚔ Tibia Letter
+        <span className="font-display text-sm text-[var(--gold-dim)] flex items-center gap-2">
+          <img src={letterIcon} alt="" className="w-4 h-4 object-contain opacity-70" />
+          Tibia Letter
         </span>
         <span className="text-xs text-text-dim">
           Não afiliado à CipSoft. Projeto independente da comunidade.
