@@ -49,7 +49,10 @@ export default function Landing() {
             Planos
           </button>
           {user ? (
-            <Button size="sm" onClick={() => navigate(char ? "/app/queue" : "/app/characters")}>
+            <Button
+              size="sm"
+              onClick={() => navigate(char ? "/app/queue" : "/app/characters")}
+            >
               {char ? `Ir para as filas →` : "Configurar personagem →"}
             </Button>
           ) : (
@@ -68,7 +71,11 @@ export default function Landing() {
             "radial-gradient(ellipse 60% 40% at 50% 0%, var(--gold-glow) 0%, transparent 70%)",
         }}
       >
-        <img src={letterIcon} alt="Tibia Letter" className="w-16 h-16 object-contain mb-4" />
+        <img
+          src={letterIcon}
+          alt="Tibia Letter"
+          className="w-16 h-16 object-contain mb-4"
+        />
         <div className="inline-flex items-center px-3 py-1 border border-[var(--gold-dim)] rounded-full text-xs text-gold tracking-widest mb-6">
           SISTEMA DE FILAS PARA TIBIA
         </div>
@@ -96,10 +103,19 @@ export default function Landing() {
         <div className="flex gap-3 flex-wrap justify-center">
           {user ? (
             <>
-              <Button size="lg" onClick={() => navigate(char ? "/app/queue" : "/app/characters")}>
+              <Button
+                size="lg"
+                onClick={() =>
+                  navigate(char ? "/app/queue" : "/app/characters")
+                }
+              >
                 {char ? `⚔ Ir para as filas` : "⚔ Configurar personagem"}
               </Button>
-              <Button size="lg" variant="secondary" onClick={() => navigate("/app/characters")}>
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={() => navigate("/app/characters")}
+              >
                 Meus personagens →
               </Button>
             </>
@@ -108,7 +124,11 @@ export default function Landing() {
               <Button size="lg" onClick={handleLogin}>
                 ⚔ Entrar com Discord — é grátis
               </Button>
-              <Button size="lg" variant="secondary" onClick={() => scrollTo("hw")}>
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={() => scrollTo("hw")}
+              >
                 Como funciona →
               </Button>
             </>
@@ -211,16 +231,6 @@ export default function Landing() {
                 t: "3 filas ao mesmo tempo",
                 d: "Com Premium, entre em até 3 respawns simultâneos. Maximize cada minuto de jogo.",
               },
-              {
-                ic: "🎯",
-                t: "Level mínimo respeitado",
-                d: "O sistema valida seu level antes de entrar. Sem jogador low tentando pegar spawn de high.",
-              },
-              {
-                ic: "👑",
-                t: "Moderação completa",
-                d: "Admins têm painel com controle total: jogadores, warnings, bans e histórico de remoções.",
-              },
             ].map((f) => (
               <div
                 key={f.t}
@@ -252,17 +262,22 @@ export default function Landing() {
             Grátis para começar. Premium para dominar.
           </h2>
           <p className="text-sm text-text-muted mt-3 max-w-md mx-auto">
-            Comece sem pagar nada. Quando quiser mais respawns e chars, o upgrade é simples.
+            Comece sem pagar nada. Quando quiser mais respawns e chars, o
+            upgrade é simples.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-stretch">
           {/* Free */}
           <div className="bg-bg2 border border-border rounded-2xl p-7 flex flex-col">
-            <p className="text-xs text-text-muted tracking-widest font-semibold mb-1">FREE</p>
+            <p className="text-xs text-text-muted tracking-widest font-semibold mb-1">
+              FREE
+            </p>
             <p className="font-display text-4xl font-bold text-text mb-0.5">
               R$ 0
             </p>
-            <p className="text-xs text-text-muted mb-6">para sempre, sem cartão</p>
+            <p className="text-xs text-text-muted mb-6">
+              para sempre, sem cartão
+            </p>
             <hr className="border-border mb-5" />
             <ul className="flex flex-col gap-3 flex-1">
               {[
@@ -272,20 +287,27 @@ export default function Landing() {
                 "Acesso a todos os worlds",
                 "Filas em tempo real",
               ].map((f) => (
-                <li key={f} className="flex gap-2.5 text-xs text-text-muted items-start">
+                <li
+                  key={f}
+                  className="flex gap-2.5 text-xs text-text-muted items-start"
+                >
                   <span className="text-green mt-px">✓</span> {f}
                 </li>
               ))}
-              {[
-                "3 filas simultâneas",
-                "Personagens ilimitados",
-              ].map((f) => (
-                <li key={f} className="flex gap-2.5 text-xs text-text-dim items-start">
+              {["3 filas simultâneas", "Personagens ilimitados"].map((f) => (
+                <li
+                  key={f}
+                  className="flex gap-2.5 text-xs text-text-dim items-start"
+                >
                   <span className="mt-px opacity-40">✕</span> {f}
                 </li>
               ))}
             </ul>
-            <Button variant="secondary" className="w-full mt-7" onClick={handleLogin}>
+            <Button
+              variant="secondary"
+              className="w-full mt-7"
+              onClick={handleLogin}
+            >
               Começar grátis
             </Button>
           </div>
@@ -294,19 +316,26 @@ export default function Landing() {
           <div
             className="rounded-2xl p-7 flex flex-col relative overflow-hidden"
             style={{
-              background: "linear-gradient(145deg, var(--bg-2) 0%, color-mix(in srgb, var(--gold) 6%, var(--bg-2)) 100%)",
+              background:
+                "linear-gradient(145deg, var(--bg-2) 0%, color-mix(in srgb, var(--gold) 6%, var(--bg-2)) 100%)",
               border: "1.5px solid var(--gold)",
-              boxShadow: "0 0 40px var(--gold-glow), inset 0 1px 0 rgba(212,175,55,0.15)",
+              boxShadow:
+                "0 0 40px var(--gold-glow), inset 0 1px 0 rgba(212,175,55,0.15)",
             }}
           >
             {/* Glow strip top */}
             <div
               className="absolute top-0 left-0 right-0 h-px"
-              style={{ background: "linear-gradient(90deg, transparent, var(--gold), transparent)" }}
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, var(--gold), transparent)",
+              }}
             />
 
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs text-gold tracking-widest font-semibold">PREMIUM</p>
+              <p className="text-xs text-gold tracking-widest font-semibold">
+                PREMIUM
+              </p>
               <span
                 className="text-xs font-semibold px-2.5 py-1 rounded-full"
                 style={{
@@ -340,15 +369,22 @@ export default function Landing() {
                   <span className="text-gold mt-px text-sm">✓</span>
                   <span>
                     <span className="text-xs text-text font-medium">{f}</span>
-                    {sub && <span className="text-xs text-text-muted block">{sub}</span>}
+                    {sub && (
+                      <span className="text-xs text-text-muted block">
+                        {sub}
+                      </span>
+                    )}
                   </span>
                 </li>
               ))}
             </ul>
 
-            <Button className="w-full mt-7" onClick={handleLogin}
+            <Button
+              className="w-full mt-7"
+              onClick={handleLogin}
               style={{
-                background: "linear-gradient(135deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 70%, #fff) 100%)",
+                background:
+                  "linear-gradient(135deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 70%, #fff) 100%)",
                 color: "#1a1200",
                 fontWeight: 700,
                 boxShadow: "0 0 20px var(--gold-glow)",
@@ -366,7 +402,11 @@ export default function Landing() {
       {/* ── Footer ── */}
       <footer className="border-t border-border px-5 sm:px-10 py-5 flex items-center justify-between flex-wrap gap-3">
         <span className="font-display text-sm text-[var(--gold-dim)] flex items-center gap-2">
-          <img src={letterIcon} alt="" className="w-4 h-4 object-contain opacity-70" />
+          <img
+            src={letterIcon}
+            alt=""
+            className="w-4 h-4 object-contain opacity-70"
+          />
           Tibia Letter
         </span>
         <span className="text-xs text-text-dim">

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { fmt } from '../../utils/time'
+import { Badge } from '../ui/Badge'
 
 // ── Mock data ──────────────────────────────────────────────────────────────────
 
@@ -7,271 +8,361 @@ interface MockEntry {
   name: string
   level: number
   isYou?: boolean
-  startedAt?: number
+  huntStartedAt?: number
+  huntEndsAt?: number
+  acceptDeadline?: number
 }
 
 interface MockSpawn {
   id: string
   name: string
-  location: string
+  emptiedAt?: number
   queue: MockEntry[]
-  acceptDeadline?: number
 }
 
-const INITIAL_SPAWNS: MockSpawn[] = [
-  {
-    id: 's1',
-    name: 'Dragon Lair',
-    location: 'Mount Sternum',
-    queue: [
-      { name: 'Drakenheim', level: 120, startedAt: Date.now() - 41 * 60 * 1000 },
-      { name: 'Seraphion', level: 87, isYou: true },
-      { name: 'Mirella', level: 95 },
-    ],
-  },
-  {
-    id: 's2',
-    name: 'Cyclops Camp',
-    location: 'North Plains',
-    queue: [],
-  },
-  {
-    id: 's3',
-    name: 'Demon Oak',
-    location: 'Edron Plains',
-    queue: [
-      { name: 'Thalindra', level: 445 },
-      { name: 'Orindel Jr', level: 210 },
-    ],
-    acceptDeadline: Date.now() + 4 * 60 * 1000 + 33 * 1000,
-  },
-  {
-    id: 's4',
-    name: 'Orc Fortress',
-    location: 'Ulderek Rock',
-    queue: [
-      { name: 'Orindel', level: 88 },
-      { name: 'Thal Maker', level: 72 },
-      { name: 'Mirella Jr', level: 61 },
-    ],
-  },
-]
+const GRACE_PERIOD_MS = 5 * 60 * 1000
 
-// ── Sub-components ─────────────────────────────────────────────────────────────
-
-function ElapsedTimer({ startedAt }: { startedAt: number }) {
-  const [elapsed, setElapsed] = useState(Math.floor((Date.now() - startedAt) / 1000))
-  useEffect(() => {
-    const id = setInterval(() => setElapsed(Math.floor((Date.now() - startedAt) / 1000)), 1000)
-    return () => clearInterval(id)
-  }, [startedAt])
-  return (
-    <span
-      className="font-mono text-xs tabular-nums"
-      style={{ color: elapsed > 3600 ? 'var(--red)' : 'var(--green)' }}
-    >
-      {fmt(elapsed)}
-    </span>
-  )
+function makeSpawns() {
+  const now = Date.now()
+  return [
+    // 1. Respawn vazio — Livre
+    {
+      id: 's1',
+      name: 'Cyclops Camp',
+      queue: [] as MockEntry[],
+    },
+    // 2. Respawn ocupado — não estou lá
+    {
+      id: 's2',
+      name: 'Dragon Lair',
+      queue: [
+        { name: 'Drakenheim', level: 312, huntStartedAt: now - 41 * 60 * 1000, huntEndsAt: now + (2 * 3600 - 41 * 60) * 1000 },
+        { name: 'Mirella', level: 95 },
+        { name: 'Orindel Jr', level: 210 },
+      ] as MockEntry[],
+    },
+    // 3. Respawn ocupado — eu na fila aguardando
+    {
+      id: 's3',
+      name: 'Ancient Temple',
+      queue: [
+        { name: 'Thalindra', level: 445, huntStartedAt: now - 20 * 60 * 1000, huntEndsAt: now + (2 * 3600 - 20 * 60) * 1000 },
+        { name: 'Seraphion', level: 87, isYou: true },
+        { name: 'Orindel', level: 210 },
+      ] as MockEntry[],
+    },
+    // 4. Aguardando meu aceite
+    {
+      id: 's4',
+      name: 'Demon Oak',
+      queue: [
+        { name: 'Seraphion', level: 87, isYou: true, acceptDeadline: now + 4 * 60 * 1000 + 33 * 1000 },
+        { name: 'Thal Maker', level: 72 },
+      ] as MockEntry[],
+    },
+    // 5. Respawn encerrando — grace period
+    {
+      id: 's5',
+      name: 'Orc Fortress',
+      emptiedAt: now - 2 * 60 * 1000,
+      queue: [] as MockEntry[],
+    },
+  ] satisfies MockSpawn[]
 }
 
-function AcceptCountdown({ deadline }: { deadline: number }) {
-  const [secs, setSecs] = useState(Math.max(0, Math.floor((deadline - Date.now()) / 1000)))
+
+// ── Timers ─────────────────────────────────────────────────────────────────────
+
+function useTick(targetMs: number) {
+  const [val, setVal] = useState(() => Math.max(0, Math.floor((targetMs - Date.now()) / 1000)))
   useEffect(() => {
-    const id = setInterval(
-      () => setSecs(Math.max(0, Math.floor((deadline - Date.now()) / 1000))),
-      1000,
-    )
+    const id = setInterval(() => setVal(Math.max(0, Math.floor((targetMs - Date.now()) / 1000))), 1000)
     return () => clearInterval(id)
-  }, [deadline])
+  }, [targetMs])
+  return val
+}
+
+function useElapsed(startMs: number) {
+  const [val, setVal] = useState(() => Math.floor((Date.now() - startMs) / 1000))
+  useEffect(() => {
+    const id = setInterval(() => setVal(Math.floor((Date.now() - startMs) / 1000)), 1000)
+    return () => clearInterval(id)
+  }, [startMs])
+  return val
+}
+
+function GraceCountdown({ emptiedAt }: { emptiedAt: number }) {
+  const secs = useTick(emptiedAt + GRACE_PERIOD_MS)
+  const m = Math.floor(secs / 60)
+  const s = secs % 60
+  return <Badge variant="muted">Encerrando {m}:{String(s).padStart(2, '0')}</Badge>
+}
+
+function HuntEndTimer({ endsAt }: { endsAt: number }) {
+  const secs = useTick(endsAt)
   return (
-    <span
-      className="font-mono font-bold tabular-nums"
-      style={{ color: secs < 60 ? 'var(--red)' : 'var(--gold)' }}
-    >
+    <span className={`font-mono text-xs ${secs <= 300 ? 'text-amber' : 'text-text-muted'}`}>
       {fmt(secs)}
     </span>
   )
 }
 
-function StatusDot({ spawn }: { spawn: MockSpawn }) {
-  const hasActive = spawn.queue[0]?.startedAt !== undefined
-  const hasPending = !!spawn.acceptDeadline
-  const isEmpty = spawn.queue.length === 0
-
-  if (hasPending) return <span className="w-2.5 h-2.5 rounded-full bg-gold animate-pulse flex-shrink-0" />
-  if (isEmpty) return <span className="w-2.5 h-2.5 rounded-full bg-green flex-shrink-0" />
-  if (hasActive) return <span className="w-2.5 h-2.5 rounded-full bg-amber flex-shrink-0" />
-  return <span className="w-2.5 h-2.5 rounded-full bg-amber flex-shrink-0" />
+function ElapsedTimer({ startedAt }: { startedAt: number }) {
+  const elapsed = useElapsed(startedAt)
+  return <span className="font-mono text-sm text-text-muted">+{fmt(elapsed)}</span>
 }
 
-function SpawnCardMock({ spawn, defaultOpen }: { spawn: MockSpawn; defaultOpen?: boolean }) {
-  const [open, setOpen] = useState(defaultOpen ?? false)
-  const isMyTurn = spawn.acceptDeadline !== undefined
-  const myEntry = spawn.queue.find((e) => e.isYou)
-  const myPos = spawn.queue.findIndex((e) => e.isYou)
+function AcceptCountdown({ deadline }: { deadline: number }) {
+  const secs = useTick(deadline)
+  return (
+    <span className={`font-mono text-base font-bold ${secs <= 60 ? 'text-red' : 'text-amber'}`}>
+      {fmt(secs)}
+    </span>
+  )
+}
 
-  const statusLabel = () => {
-    if (spawn.queue.length === 0) return { text: 'Livre', color: 'var(--green)' }
-    if (spawn.acceptDeadline) return { text: 'Aguard. aceite', color: 'var(--gold)' }
-    return { text: `${spawn.queue.length} na fila`, color: 'var(--amber)' }
-  }
-  const { text, color } = statusLabel()
+// ── Accept chip (banner) ───────────────────────────────────────────────────────
+
+function MockAcceptChip({ spawnName, deadline }: { spawnName: string; deadline: number }) {
+  const secs = useTick(deadline)
+  return (
+    <div
+      className="flex-shrink-0 rounded-xl px-4 py-3 space-y-2 min-w-[200px]"
+      style={{
+        background: 'var(--gold-glow)',
+        border: '1px solid var(--gold)',
+        animation: 'glow 2s ease-in-out infinite',
+      }}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-sm font-semibold text-gold truncate">{spawnName}</span>
+        <span
+          className={`font-mono font-bold text-sm flex-shrink-0 ${secs <= 60 ? 'text-red' : 'text-gold'}`}
+        >
+          {fmt(secs)}
+        </span>
+      </div>
+      <div className="flex gap-2">
+        <button
+          className="flex-1 py-1.5 rounded-lg text-xs font-semibold text-bg0 transition-opacity hover:opacity-90"
+          style={{ background: 'var(--gold)' }}
+        >
+          ⚔ Aceitar
+        </button>
+        <button
+          className="py-1.5 px-3 rounded-lg text-xs transition-opacity hover:opacity-80"
+          style={{
+            background: 'var(--red-bg)',
+            border: '0.5px solid var(--red)',
+            color: 'var(--red)',
+          }}
+        >
+          Pular
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ── Banner ─────────────────────────────────────────────────────────────────────
+
+function MockBanner({ spawns }: { spawns: MockSpawn[] }) {
+  const allMyEntries = spawns.flatMap((s) =>
+    s.queue
+      .filter((e) => e.isYou)
+      .map((e) => ({ ...e, spawnId: s.id, spawnName: s.name, position: s.queue.findIndex((q) => q.isYou) + 1 })),
+  )
+
+  const pendingAccepts = allMyEntries.filter((e) => e.acceptDeadline)
+  const activeHunts = allMyEntries.filter((e) => e.huntStartedAt && !e.acceptDeadline)
+  const waiting = allMyEntries.filter((e) => !e.huntStartedAt && !e.acceptDeadline)
+
+  if (allMyEntries.length === 0) return null
+
+  return (
+    <div className="mb-4 space-y-3" role="status">
+      {pendingAccepts.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--gold-dim)' }}>
+            SUA VEZ DE ACEITAR
+          </p>
+          <div className="flex gap-3 overflow-x-auto pb-1">
+            {pendingAccepts.map((e) => (
+              <MockAcceptChip key={e.spawnId} spawnName={e.spawnName} deadline={e.acceptDeadline!} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeHunts.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {activeHunts.map((e) => (
+            <span
+              key={e.spawnId}
+              className="flex-shrink-0 rounded-lg px-3 py-1.5 text-xs whitespace-nowrap"
+              style={{ background: 'var(--green-bg)', border: '0.5px solid var(--green)', color: 'var(--green)' }}
+            >
+              ⚔ <span className="font-medium">Seraphion</span> caçando em{' '}
+              <span className="font-medium">{e.spawnName}</span>
+              {e.huntEndsAt && (
+                <span className="text-text-muted ml-1">
+                  · <HuntEndTimer endsAt={e.huntEndsAt} />
+                </span>
+              )}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {waiting.length > 0 && (
+        <div>
+          <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--text-dim)' }}>
+            AGUARDANDO NA FILA
+          </p>
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {waiting.map((e) => (
+              <span
+                key={e.spawnId}
+                className="flex-shrink-0 rounded-lg px-3 py-1.5 text-xs whitespace-nowrap"
+                style={{ background: 'var(--bg-2)', border: '0.5px solid var(--border)', color: 'var(--text-muted)' }}
+              >
+                <span className="text-text font-medium">{e.spawnName}</span> — #{e.position} na fila
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Spawn card mock ────────────────────────────────────────────────────────────
+
+function SpawnCardMock({ spawn, defaultOpen }: { spawn: MockSpawn; defaultOpen?: boolean }) {
+  const [expanded, setExpanded] = useState(defaultOpen ?? false)
+
+  const myEntry = spawn.queue.find((e) => e.isYou)
+  const myStatus = myEntry?.acceptDeadline
+    ? 'pending_accept'
+    : myEntry?.huntStartedAt
+    ? 'active'
+    : myEntry
+    ? 'waiting'
+    : null
+
+  const isMyTurnToAccept = myStatus === 'pending_accept'
+  const isHunting = myStatus === 'active'
+
+  const spawnStatus = (() => {
+    if (spawn.queue.length === 0) return 'free'
+    if (spawn.queue[0].acceptDeadline) return 'pending'
+    if (spawn.queue[0].huntStartedAt) return 'occupied'
+    return 'free'
+  })()
+
+  const statusDot = { free: 'bg-green', occupied: 'bg-amber', pending: 'bg-gold animate-pulse' }[spawnStatus]
+  const statusLabel = { free: 'Livre', occupied: 'Ocupado', pending: 'Aguard. aceite' }[spawnStatus]
+  const statusBadge = { free: 'green', occupied: 'amber', pending: 'gold' } as const
+
+  const firstIsActive = !!spawn.queue[0]?.huntStartedAt || !!spawn.queue[0]?.acceptDeadline
 
   return (
     <div
-      className="rounded-xl overflow-hidden transition-all duration-200"
-      style={{
-        background: 'var(--bg-2)',
-        border: `1px solid ${isMyTurn ? 'var(--gold)' : open ? 'var(--border-hover)' : 'var(--border)'}`,
-        boxShadow: isMyTurn ? '0 0 16px var(--gold-glow)' : undefined,
-        animation: isMyTurn ? 'glow 2s ease-in-out infinite' : undefined,
-      }}
+      className={`bg-bg2 border rounded-xl transition-all duration-200 ${
+        isMyTurnToAccept
+          ? 'border-gold animate-glow'
+          : isHunting
+          ? 'border-green'
+          : 'border-border hover:border-border-hover'
+      }`}
     >
-      {/* Header row */}
       <button
-        className="w-full flex items-center gap-3 px-4 py-3.5 text-left"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
+        className="w-full flex items-center gap-3 px-4 py-4 min-h-[64px] text-left"
+        onClick={() => setExpanded((o) => !o)}
+        aria-expanded={expanded}
       >
-        <StatusDot spawn={spawn} />
+        <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${statusDot}`} />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-text truncate">{spawn.name}</p>
-          <p className="text-xs text-text-muted">
-            {spawn.location}
-          </p>
+          <p className="font-semibold text-text truncate">{spawn.name}</p>
+          {spawn.emptiedAt && <GraceCountdown emptiedAt={spawn.emptiedAt} />}
         </div>
-
-        <span className="text-xs font-medium flex-shrink-0" style={{ color }}>
-          {text}
-        </span>
-
-        {myEntry && (
-          <span
-            className="text-xs px-2 py-0.5 rounded font-medium flex-shrink-0"
-            style={{
-              background: 'var(--gold-glow)',
-              border: '0.5px solid var(--gold-dim)',
-              color: 'var(--gold)',
-            }}
-          >
-            {myPos === 0 ? 'você' : `${myPos + 1}º`}
-          </span>
+        {isHunting && myEntry?.huntEndsAt && <HuntEndTimer endsAt={myEntry.huntEndsAt} />}
+        <Badge variant={statusBadge[spawnStatus]}>{statusLabel}</Badge>
+        {spawn.queue.length > 0 && (
+          <span className="text-xs text-text-dim">{spawn.queue.length} na fila</span>
         )}
-
         <svg
-          className="w-4 h-4 text-text-muted transition-transform flex-shrink-0"
-          style={{ transform: open ? 'rotate(180deg)' : 'none' }}
-          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+          className={`w-4 h-4 text-text-muted transition-transform ${expanded ? 'rotate-180' : ''}`}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
         >
           <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
 
-      {/* Expanded body */}
-      {open && (
-        <div
-          className="px-4 pb-4 space-y-3 animate-fadeIn"
-          style={{ borderTop: '0.5px solid var(--border)' }}
-        >
-          {/* Accept timer banner */}
-          {spawn.acceptDeadline && (
-            <div
-              className="rounded-lg p-3 mt-3 text-center"
-              style={{ background: 'var(--gold-glow)', border: '1px solid var(--gold-dim)' }}
-            >
-              <p className="text-xs text-text-muted mb-1">⚡ Sua vez! Aceite em:</p>
-              <AcceptCountdown deadline={spawn.acceptDeadline} />
+      {expanded && (
+        <div className="px-4 pb-4 border-t border-border pt-3 space-y-3 animate-fadeIn">
+          {/* Accept prompt */}
+          {isMyTurnToAccept && myEntry?.acceptDeadline && (
+            <div className="bg-[var(--gold-glow)] border border-[var(--gold-dim)] rounded-lg p-3 text-center">
+              <p className="text-xs text-text-muted mb-1">Sua vez! Tempo para aceitar:</p>
+              <AcceptCountdown deadline={myEntry.acceptDeadline} />
               <button
-                className="mt-2 w-full py-1.5 rounded-lg text-xs font-semibold text-bg0 transition-opacity hover:opacity-90"
+                className="mt-2 w-full py-2 rounded-lg text-xs font-semibold text-bg0 transition-opacity hover:opacity-90"
                 style={{ background: 'var(--gold)' }}
               >
-                ⚔ Aceitar respawn
+                Aceitar Respawn
               </button>
+            </div>
+          )}
+
+          {/* Hunting status */}
+          {isHunting && myEntry?.huntEndsAt && (
+            <div
+              className="rounded-lg p-3 text-center"
+              style={{ background: 'var(--green-bg)', border: '1px solid var(--green)' }}
+            >
+              <p className="text-xs mb-1" style={{ color: 'var(--green)' }}>
+                Você está caçando aqui!
+              </p>
+              <p className="text-xs text-text-muted">
+                Tempo restante: <HuntEndTimer endsAt={myEntry.huntEndsAt} />
+              </p>
             </div>
           )}
 
           {/* Queue list */}
           {spawn.queue.length > 0 && (
-            <div className="space-y-1 pt-2">
-              <p className="text-xs text-text-dim font-semibold tracking-widest mb-2">FILA ATUAL</p>
+            <div className="space-y-1">
               {spawn.queue.map((entry, i) => {
-                const isActive = !!entry.startedAt && !spawn.acceptDeadline
-                const firstOccupied =
-                  !!spawn.queue[0]?.startedAt || !!spawn.acceptDeadline
-                const isNext = i === 1 && firstOccupied
+                const entryStatus = entry.acceptDeadline ? 'pending_accept' : entry.huntStartedAt ? 'active' : 'waiting'
+                const isNext = i === 1 && firstIsActive
                 return (
                   <div
                     key={entry.name}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm"
-                    style={{
-                      background: isActive
-                        ? 'var(--green-bg)'
-                        : entry.isYou
-                        ? 'var(--gold-glow)'
-                        : i === 0
-                        ? 'var(--bg-3)'
-                        : 'transparent',
-                      border: `0.5px solid ${
-                        isActive
-                          ? 'var(--green)'
-                          : entry.isYou
-                          ? 'var(--gold-dim)'
-                          : 'var(--border)'
-                      }`,
-                    }}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                      entry.isYou
+                        ? 'bg-[var(--gold-glow)] border border-[var(--gold-dim)]'
+                        : 'hover:bg-bg3'
+                    }`}
                   >
-                    <span
-                      className="w-5 text-center text-xs font-mono flex-shrink-0"
-                      style={{ color: isActive ? 'var(--green)' : 'var(--text-dim)' }}
-                    >
-                      {i === 0 ? '⚔' : `${i + 1}º`}
-                    </span>
-                    <span
-                      className="flex-1 font-medium truncate text-sm"
-                      style={{
-                        color: isActive
-                          ? 'var(--green)'
-                          : entry.isYou
-                          ? 'var(--gold)'
-                          : 'var(--text)',
-                      }}
-                    >
+                    <span className="w-5 text-center text-text-dim font-mono text-xs">{i + 1}</span>
+                    <span className={`flex-1 font-medium truncate ${entry.isYou ? 'text-gold' : 'text-text'}`}>
                       {entry.name}
-                      {entry.isYou && (
-                        <span className="text-xs ml-1" style={{ color: 'var(--gold-dim)' }}>
-                          (você)
-                        </span>
-                      )}
                     </span>
-                    <span className="text-xs flex-shrink-0" style={{ color: 'var(--text-muted)' }}>
-                      Lv.{entry.level}
-                    </span>
-                    {isNext && (
-                      <span
-                        className="text-xs px-1.5 py-0.5 rounded font-semibold flex-shrink-0"
-                        style={{
-                          background: 'var(--amber-bg, rgba(245,158,11,0.12))',
-                          border: '0.5px solid var(--amber)',
-                          color: 'var(--amber)',
-                        }}
-                      >
-                        próximo
-                      </span>
+                    <span className="text-text-muted text-xs">Lv.{entry.level}</span>
+                    {isNext && <Badge variant="amber">próximo</Badge>}
+                    {entryStatus === 'active' && entry.huntStartedAt && (
+                      <ElapsedTimer startedAt={entry.huntStartedAt} />
                     )}
-                    {isActive && (
-                      <span
-                        className="text-xs px-1.5 py-0.5 rounded font-semibold flex-shrink-0"
-                        style={{
-                          background: 'var(--green-bg)',
-                          border: '0.5px solid var(--green)',
-                          color: 'var(--green)',
-                        }}
-                      >
-                        caçando
-                      </span>
+                    {entryStatus === 'active' && entry.huntEndsAt && (
+                      <HuntEndTimer endsAt={entry.huntEndsAt} />
                     )}
-                    {isActive && <ElapsedTimer startedAt={entry.startedAt!} />}
+                    {entryStatus === 'pending_accept' && (
+                      <Badge variant="gold">Aguardando aceite</Badge>
+                    )}
                   </div>
                 )
               })}
@@ -279,46 +370,33 @@ function SpawnCardMock({ spawn, defaultOpen }: { spawn: MockSpawn; defaultOpen?:
           )}
 
           {spawn.queue.length === 0 && (
-            <p className="text-center text-sm pt-2" style={{ color: 'var(--green)' }}>
+            <p className="text-center text-sm py-2" style={{ color: 'var(--green)' }}>
               Respawn livre — comece a caçar!
             </p>
           )}
 
           {/* Action buttons */}
-          <div className="flex gap-2 pt-1">
-            {!myEntry && spawn.queue.length === 0 && (
+          <div className="flex gap-2 flex-wrap">
+            {!myEntry && (
               <button
                 className="flex-1 py-2 rounded-lg text-xs font-semibold transition-opacity hover:opacity-90"
-                style={{
-                  background: 'var(--gold)',
-                  color: 'var(--bg-0)',
-                }}
+                style={
+                  spawn.queue.length === 0
+                    ? { background: 'var(--gold)', color: 'var(--bg-0)' }
+                    : { border: '1px solid var(--gold)', color: 'var(--gold)' }
+                }
               >
-                ⚔ Caçar agora
+                {spawn.queue.length === 0 ? 'Caçar agora' : 'Entrar na Fila'}
               </button>
             )}
-            {!myEntry && spawn.queue.length > 0 && !spawn.acceptDeadline && (
-              <button
-                className="flex-1 py-2 rounded-lg text-xs font-semibold transition-opacity hover:opacity-90"
-                style={{
-                  background: 'transparent',
-                  border: '1px solid var(--gold)',
-                  color: 'var(--gold)',
-                }}
-              >
-                + Entrar na fila
+            {isHunting && (
+              <button className="flex-1 py-2 rounded-lg text-xs font-semibold border border-border text-text-muted hover:bg-bg3 transition-colors">
+                Finalizar Caça
               </button>
             )}
-            {myEntry && myPos > 0 && (
-              <button
-                className="py-2 px-3 rounded-lg text-xs transition-opacity hover:opacity-80"
-                style={{
-                  background: 'var(--red-bg)',
-                  border: '0.5px solid var(--red)',
-                  color: 'var(--red)',
-                }}
-              >
-                Sair da fila
+            {myStatus === 'waiting' && (
+              <button className="flex-1 py-2 rounded-lg text-xs text-text-dim hover:bg-bg3 transition-colors">
+                Sair da Fila
               </button>
             )}
           </div>
@@ -331,12 +409,7 @@ function SpawnCardMock({ spawn, defaultOpen }: { spawn: MockSpawn; defaultOpen?:
 // ── Main demo section ──────────────────────────────────────────────────────────
 
 export function DemoSection() {
-  const [spawns] = useState<MockSpawn[]>(INITIAL_SPAWNS)
-
-  // My queues banner data
-  const mySpawn = spawns[0]
-  const myPos = mySpawn.queue.findIndex((e) => e.isYou)
-  const estWaitSecs = myPos * 3600
+  const [spawns] = useState<MockSpawn[]>(() => makeSpawns())
 
   return (
     <section className="py-16 sm:py-20 px-4" style={{ background: 'var(--bg-1)' }}>
@@ -349,7 +422,7 @@ export function DemoSection() {
             Veja como funciona na prática.
           </h2>
           <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-            Clique nos cards abaixo para expandir. Dados simulados — em produção tudo é em tempo real.
+            Clique nos cards para expandir. Dados simulados — em produção tudo é em tempo real.
           </p>
         </div>
 
@@ -380,52 +453,23 @@ export function DemoSection() {
           </div>
 
           <div className="p-4 space-y-4">
-            {/* My queues banner */}
-            <div
-              className="rounded-xl px-4 py-3"
-              role="status"
-              style={{
-                background: 'var(--blue-bg)',
-                border: '1px solid var(--blue)',
-              }}
-            >
-              <p className="text-xs font-semibold mb-2" style={{ color: 'var(--blue)' }}>
-                SUAS FILAS EM ANTICA
-              </p>
-              <div className="flex gap-2 overflow-x-auto pb-1">
-                <div
-                  className="flex-shrink-0 rounded-lg px-3 py-2 text-xs"
-                  style={{
-                    background: 'var(--bg-2)',
-                    border: '0.5px solid var(--border)',
-                  }}
-                >
-                  <span className="font-medium" style={{ color: 'var(--text)' }}>Dragon Lair</span>
-                  <span style={{ color: 'var(--text-muted)' }}>
-                    {' '}— {myPos + 1}º na fila · espera ~{fmt(estWaitSecs)}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <MockBanner spawns={spawns} />
 
-            {/* World label + spawn count */}
+            {/* World label */}
             <div className="flex items-center gap-3">
               <span className="text-xs" style={{ color: 'var(--text-dim)' }}>
                 {spawns.length} spawns · Antica
               </span>
-              <div
-                className="h-px flex-1"
-                style={{ background: 'var(--border)' }}
-              />
+              <div className="h-px flex-1" style={{ background: 'var(--border)' }} />
             </div>
 
             {/* Spawn cards */}
             <div className="space-y-2">
-              {spawns.map((spawn, i) => (
+              {spawns.map((spawn) => (
                 <SpawnCardMock
                   key={spawn.id}
                   spawn={spawn}
-                  defaultOpen={i === 0}
+                  defaultOpen
                 />
               ))}
             </div>
