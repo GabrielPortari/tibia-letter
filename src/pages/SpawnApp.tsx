@@ -38,7 +38,7 @@ export default function SpawnApp() {
     enabled: !!worldId,
   })
 
-  const { data: queueMap } = useQuery<Record<string, QueueEntry[]>>({
+  useQuery<Record<string, QueueEntry[]>>({
     queryKey: ['queue', worldId],
     queryFn: async () => {
       const list = await api.get<QueueEntry[]>(`/queue/${worldId}`)

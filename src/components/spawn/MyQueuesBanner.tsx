@@ -8,8 +8,8 @@ import type { Spawn } from '../../types'
 
 interface MyQueuesBannerProps {
   spawns: Spawn[]
-  onAccept: (spawnId: string) => Promise<void>
-  onLeave: (spawnId: string) => Promise<void>
+  onAccept: (spawnId: string) => Promise<unknown>
+  onLeave: (spawnId: string) => Promise<unknown>
 }
 
 function AcceptChip({
@@ -24,8 +24,8 @@ function AcceptChip({
   spawnName: string
   deadline: string
   showSkip: boolean
-  onAccept: (id: string) => Promise<void>
-  onLeave: (id: string) => Promise<void>
+  onAccept: (id: string) => Promise<unknown>
+  onLeave: (id: string) => Promise<unknown>
 }) {
   const secs = useCountdown(new Date(deadline).getTime(), () => {})
 

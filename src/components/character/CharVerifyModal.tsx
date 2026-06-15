@@ -71,7 +71,7 @@ export function CharVerifyModal({ isOpen, onClose, onVerified, defaultName }: Ch
   })
 
   const { mutate: verifyChar, isPending: verifying } = useMutation({
-    mutationFn: () => api.post<User>('/characters/verify', { name: charName }),
+    mutationFn: () => api.post<unknown>('/characters/verify', { name: charName }),
     onSuccess: () => {
       addToast('success', `${charName} verificado com sucesso!`)
       if (onVerified) onVerified()

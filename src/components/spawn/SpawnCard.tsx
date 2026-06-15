@@ -15,10 +15,10 @@ const GRACE_PERIOD_MS = 5 * 60 * 1000
 interface SpawnCardProps {
   spawn: Spawn
   worldId: string
-  onJoin: (spawnId: string) => Promise<void>
-  onAccept: (spawnId: string) => Promise<void>
-  onFinish: (spawnId: string) => Promise<void>
-  onLeave: (spawnId: string) => Promise<void>
+  onJoin: (spawnId: string) => Promise<unknown>
+  onAccept: (spawnId: string) => Promise<unknown>
+  onFinish: (spawnId: string) => Promise<unknown>
+  onLeave: (spawnId: string) => Promise<unknown>
 }
 
 function GraceCountdown({ emptiedAt }: { emptiedAt: string }) {
@@ -77,7 +77,7 @@ export function SpawnCard({
   // Who is currently hunting (first entry with active status)
   const activeEntry = queue.find((e) => getEntryStatus(e) === 'active')
 
-  async function wrap(key: string, fn: () => Promise<void>) {
+  async function wrap(key: string, fn: () => Promise<unknown>) {
     setLoading(key)
     try { await fn() } finally { setLoading(null) }
   }
