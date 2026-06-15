@@ -254,17 +254,18 @@ export default function Landing() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {/* Free */}
-          <div className="bg-bg2 border border-border rounded-2xl p-7">
+          <div className="bg-bg2 border border-border rounded-2xl p-7 flex flex-col">
             <p className="text-xs text-text-muted mb-1">Free</p>
             <p className="font-display text-4xl font-bold text-text mb-0.5">
               R$ 0
             </p>
             <p className="text-xs text-text-muted mb-6">para sempre</p>
             <hr className="border-border mb-5" />
-            <ul className="flex flex-col gap-2 mb-7">
+            <ul className="flex flex-col gap-2 flex-1">
               {[
-                "Entre na fila de 1 respawn por vez",
-                "1 personagem verificado",
+                "1 fila simultânea",
+                "2 personagens verificados",
+                "2h de hunt por vez",
                 "Acesso a todos os worlds",
                 "Tudo em tempo real",
               ].map((f) => (
@@ -283,7 +284,7 @@ export default function Landing() {
             </ul>
             <Button
               variant="secondary"
-              className="w-full"
+              className="w-full mt-7"
               onClick={handleLogin}
             >
               Começar grátis
@@ -292,7 +293,7 @@ export default function Landing() {
 
           {/* Premium */}
           <div
-            className="bg-bg2 rounded-2xl p-7"
+            className="bg-bg2 rounded-2xl p-7 flex flex-col"
             style={{
               border: "1.5px solid var(--gold)",
               boxShadow: "0 0 28px var(--gold-glow)",
@@ -316,10 +317,11 @@ export default function Landing() {
             </p>
             <p className="text-xs text-text-muted mb-6">por mês</p>
             <hr className="border-border mb-5" />
-            <ul className="flex flex-col gap-2 mb-7">
+            <ul className="flex flex-col gap-2 flex-1">
               {[
-                "Até 3 filas ao mesmo tempo",
+                "3 filas simultâneas",
                 "Personagens ilimitados",
+                "2h de hunt por vez",
                 "Acesso a todos os worlds",
                 "Suporte prioritário",
               ].map((f) => (
@@ -328,7 +330,7 @@ export default function Landing() {
                 </li>
               ))}
             </ul>
-            <Button className="w-full" onClick={handleLogin}>
+            <Button className="w-full mt-7" onClick={handleLogin}>
               Assinar Premium
             </Button>
           </div>
