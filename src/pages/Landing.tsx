@@ -77,20 +77,20 @@ export default function Landing() {
           className="font-display font-bold leading-tight mb-5 max-w-3xl"
           style={{ fontSize: "clamp(28px, 6vw, 64px)" }}
         >
-          Organização e fairness
+          Chega de discussão por spawn.
           <br />
           <span
             className="text-gold"
             style={{ textShadow: "0 0 40px var(--gold-glow)" }}
           >
-            para toda a comunidade.
+            A fila resolve por você.
           </span>
         </h1>
 
         <p className="text-text-muted text-base sm:text-lg max-w-lg leading-relaxed mb-9">
-          Tibia Letter substitui o sistema de cartas com uma fila digital
-          transparente, em tempo real. Primeiro a chegar, primeiro a caçar —
-          para todos.
+          Tibia Letter organiza os respawns do seu world em filas digitais,
+          transparentes e em tempo real. Quem chega primeiro, caça primeiro —
+          sem discussão, sem carta, sem favoritismo.
         </p>
 
         <div className="flex gap-3 flex-wrap justify-center">
@@ -118,9 +118,9 @@ export default function Landing() {
         {/* Stats row */}
         <div className="flex gap-8 sm:gap-12 mt-14 pt-9 border-t border-border flex-wrap justify-center">
           {[
-            ["Globais", "spawns compartilhados"],
+            ["Tempo real", "atualização instantânea"],
             ["Por world", "filas independentes"],
-            ["Anti-fake", "verificação de personagem"],
+            ["Anti-fake", "char verificado no tibia.com"],
             ["100% justo", "ordem de chegada"],
           ].map(([n, l]) => (
             <div key={n} className="text-center">
@@ -138,7 +138,7 @@ export default function Landing() {
             COMO FUNCIONA
           </p>
           <h2 className="font-display text-2xl sm:text-3xl font-semibold">
-            Simples, transparente, justo.
+            Em 4 passos, você já está na fila.
           </h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -147,25 +147,25 @@ export default function Landing() {
               ic: "🔐",
               n: "01",
               t: "Entre com Discord",
-              d: "Login via Discord OAuth. Rápido, sem formulário.",
+              d: "Login em segundos via Discord OAuth. Sem formulário, sem cadastro.",
             },
             {
               ic: "🎮",
               n: "02",
-              t: "Vincule seu char",
-              d: "Cole um código no Comment do personagem em tibia.com para verificar.",
+              t: "Prove que é seu char",
+              d: "Cole um código único no Comment do seu personagem em tibia.com. Simples e seguro.",
             },
             {
               ic: "🌍",
               n: "03",
-              t: "Escolha o world",
-              d: "Selecione seu servidor. Spawns são globais, filas são por world.",
+              t: "Escolha seu world",
+              d: "Cada world tem suas próprias filas. Só você e os players do seu servidor.",
             },
             {
               ic: "⚔️",
               n: "04",
-              t: "Entre na fila",
-              d: "Nível validado automaticamente. Timer, notificações e fluxo automático.",
+              t: "Caça com prioridade",
+              d: "Seu level é validado na hora. Quando chegar sua vez, você recebe o aviso.",
             },
           ].map((s) => (
             <div
@@ -191,35 +191,35 @@ export default function Landing() {
               FUNCIONALIDADES
             </p>
             <h2 className="font-display text-2xl sm:text-3xl font-semibold">
-              Feito para toda a comunidade.
+              Tudo que faltava no Tibia.
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               {
                 ic: "🔒",
-                t: "Anti-fake garantido",
-                d: "Cada personagem é verificado direto no tibia.com. Ninguém entra na fila com char falso.",
+                t: "Zero fake, zero discussão",
+                d: "Personagem verificado direto no tibia.com. Se não é seu char, não entra na fila. Simples assim.",
               },
               {
                 ic: "⏱",
-                t: "Tudo automático",
-                d: "O timer corre sozinho. Quando a hunt acaba, o próximo já recebe o aviso — sem depender de ninguém.",
+                t: "Automático do início ao fim",
+                d: "Quando sua hunt termina, o próximo já recebe o aviso. Ninguém precisa ficar babando o spawn.",
               },
               {
                 ic: "📅",
-                t: "Mais filas, mais hunts",
-                d: "Com Premium, entre em até 3 filas ao mesmo tempo. Aproveite cada respawn disponível no seu world.",
+                t: "3 filas ao mesmo tempo",
+                d: "Com Premium, entre em até 3 respawns simultâneos. Maximize cada minuto de jogo.",
               },
               {
                 ic: "🎯",
-                t: "Fila só pra quem pode",
-                d: "O level do seu personagem é validado na hora. Sem surpresa — só entra quem está no level mínimo do spawn.",
+                t: "Level mínimo respeitado",
+                d: "O sistema valida seu level antes de entrar. Sem jogador low tentando pegar spawn de high.",
               },
               {
                 ic: "👑",
-                t: "Painel admin",
-                d: "Controle total para moderadores: spawns, jogadores, warnings, bans e histórico completo.",
+                t: "Moderação completa",
+                d: "Admins têm painel com controle total: jogadores, warnings, bans e histórico de remoções.",
               },
             ].map((f) => (
               <div
@@ -249,90 +249,116 @@ export default function Landing() {
             PLANOS
           </p>
           <h2 className="font-display text-2xl sm:text-3xl font-semibold">
-            Grátis para começar.
+            Grátis para começar. Premium para dominar.
           </h2>
+          <p className="text-sm text-text-muted mt-3 max-w-md mx-auto">
+            Comece sem pagar nada. Quando quiser mais respawns e chars, o upgrade é simples.
+          </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-stretch">
           {/* Free */}
           <div className="bg-bg2 border border-border rounded-2xl p-7 flex flex-col">
-            <p className="text-xs text-text-muted mb-1">Free</p>
+            <p className="text-xs text-text-muted tracking-widest font-semibold mb-1">FREE</p>
             <p className="font-display text-4xl font-bold text-text mb-0.5">
               R$ 0
             </p>
-            <p className="text-xs text-text-muted mb-6">para sempre</p>
+            <p className="text-xs text-text-muted mb-6">para sempre, sem cartão</p>
             <hr className="border-border mb-5" />
-            <ul className="flex flex-col gap-2 flex-1">
+            <ul className="flex flex-col gap-3 flex-1">
               {[
                 "1 fila simultânea",
                 "2 personagens verificados",
                 "2h de hunt por vez",
                 "Acesso a todos os worlds",
-                "Tudo em tempo real",
+                "Filas em tempo real",
               ].map((f) => (
-                <li key={f} className="flex gap-2 text-xs text-text-muted">
-                  <span className="text-green">✓</span> {f}
+                <li key={f} className="flex gap-2.5 text-xs text-text-muted items-start">
+                  <span className="text-green mt-px">✓</span> {f}
                 </li>
               ))}
               {[
-                "Até 3 filas ao mesmo tempo",
+                "3 filas simultâneas",
                 "Personagens ilimitados",
               ].map((f) => (
-                <li key={f} className="flex gap-2 text-xs text-text-dim">
-                  <span>✕</span> {f}
+                <li key={f} className="flex gap-2.5 text-xs text-text-dim items-start">
+                  <span className="mt-px opacity-40">✕</span> {f}
                 </li>
               ))}
             </ul>
-            <Button
-              variant="secondary"
-              className="w-full mt-7"
-              onClick={handleLogin}
-            >
+            <Button variant="secondary" className="w-full mt-7" onClick={handleLogin}>
               Começar grátis
             </Button>
           </div>
 
           {/* Premium */}
           <div
-            className="bg-bg2 rounded-2xl p-7 flex flex-col"
+            className="rounded-2xl p-7 flex flex-col relative overflow-hidden"
             style={{
+              background: "linear-gradient(145deg, var(--bg-2) 0%, color-mix(in srgb, var(--gold) 6%, var(--bg-2)) 100%)",
               border: "1.5px solid var(--gold)",
-              boxShadow: "0 0 28px var(--gold-glow)",
+              boxShadow: "0 0 40px var(--gold-glow), inset 0 1px 0 rgba(212,175,55,0.15)",
             }}
           >
+            {/* Glow strip top */}
+            <div
+              className="absolute top-0 left-0 right-0 h-px"
+              style={{ background: "linear-gradient(90deg, transparent, var(--gold), transparent)" }}
+            />
+
             <div className="flex items-center justify-between mb-1">
-              <p className="text-xs text-gold">Premium</p>
+              <p className="text-xs text-gold tracking-widest font-semibold">PREMIUM</p>
               <span
-                className="text-xs font-medium px-2 py-0.5 rounded"
+                className="text-xs font-semibold px-2.5 py-1 rounded-full"
                 style={{
                   background: "var(--gold-glow)",
-                  border: "0.5px solid var(--gold-dim)",
+                  border: "1px solid var(--gold-dim)",
                   color: "var(--gold)",
                 }}
               >
-                Recomendado
+                Mais popular
               </span>
             </div>
-            <p className="font-display text-4xl font-bold text-gold mb-0.5">
+            <p className="font-display text-4xl font-bold text-gold mb-0.5 mt-1">
               R$ 19
             </p>
-            <p className="text-xs text-text-muted mb-6">por mês</p>
-            <hr className="border-border mb-5" />
-            <ul className="flex flex-col gap-2 flex-1">
+            <p className="text-xs text-text-muted mb-1">por mês</p>
+            <p className="text-xs text-gold/60 mb-6">Cancele quando quiser</p>
+            <hr className="mb-5" style={{ borderColor: "var(--gold-dim)" }} />
+
+            <p className="text-xs text-text-muted mb-3 italic">
+              Tudo do Free, mais:
+            </p>
+            <ul className="flex flex-col gap-3 flex-1">
               {[
-                "3 filas simultâneas",
-                "Personagens ilimitados",
-                "2h de hunt por vez",
-                "Acesso a todos os worlds",
-                "Suporte prioritário",
-              ].map((f) => (
-                <li key={f} className="flex gap-2 text-xs text-text">
-                  <span className="text-gold">✓</span> {f}
+                ["3 filas simultâneas", "triple sua eficiência de hunt"],
+                ["Personagens ilimitados", "gerencie toda sua conta"],
+                ["2h de hunt por vez", "mesmo que o Free"],
+                ["Acesso a todos os worlds", ""],
+                ["Suporte prioritário", ""],
+              ].map(([f, sub]) => (
+                <li key={f} className="flex gap-2.5 items-start">
+                  <span className="text-gold mt-px text-sm">✓</span>
+                  <span>
+                    <span className="text-xs text-text font-medium">{f}</span>
+                    {sub && <span className="text-xs text-text-muted block">{sub}</span>}
+                  </span>
                 </li>
               ))}
             </ul>
-            <Button className="w-full mt-7" onClick={handleLogin}>
-              Assinar Premium
+
+            <Button className="w-full mt-7" onClick={handleLogin}
+              style={{
+                background: "linear-gradient(135deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 70%, #fff) 100%)",
+                color: "#1a1200",
+                fontWeight: 700,
+                boxShadow: "0 0 20px var(--gold-glow)",
+              }}
+            >
+              Assinar Premium — R$ 19/mês
             </Button>
+            <p className="text-xs text-center text-text-dim mt-2">
+              Sem contrato. Cancele a qualquer momento.
+            </p>
           </div>
         </div>
       </section>
