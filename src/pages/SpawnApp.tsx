@@ -120,14 +120,20 @@ export default function SpawnApp() {
   const finishMutation = useMutation({
     mutationFn: (spawnId: string) =>
       api.post<{ message: string }>(`/queue/${worldId}/${spawnId}/finish`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['queue', worldId] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['queue', worldId] })
+      qc.invalidateQueries({ queryKey: ['spawns', worldId] })
+    },
     onError: (e: Error) => addToast('error', e.message),
   })
 
   const leaveMutation = useMutation({
     mutationFn: (spawnId: string) =>
       api.delete<{ message: string }>(`/queue/${worldId}/${spawnId}`),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['queue', worldId] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['queue', worldId] })
+      qc.invalidateQueries({ queryKey: ['spawns', worldId] })
+    },
     onError: (e: Error) => addToast('error', e.message),
   })
 
