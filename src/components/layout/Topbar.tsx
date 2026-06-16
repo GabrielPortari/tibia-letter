@@ -42,7 +42,7 @@ export function Topbar() {
   }
 
   return (
-    <header className="sticky top-0 z-40 bg-bg1/95 backdrop-blur border-b border-border">
+    <header className="sticky top-0 z-[100] bg-bg1/95 backdrop-blur border-b border-border">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
         <Link to="/" className="font-display text-gold text-lg font-semibold tracking-wide">
           Tibia Letter
