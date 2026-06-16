@@ -71,7 +71,7 @@ export function Topbar() {
             </button>
 
             {open && (
-              <div className="absolute right-0 top-full mt-2 w-52 bg-bg2 border border-border rounded-xl shadow-xl overflow-hidden z-50">
+              <div className="absolute right-0 top-full mt-2 w-52 bg-bg2 border border-border rounded-xl shadow-xl overflow-hidden z-[9999]">
                 {/* User info */}
                 <div className="px-4 py-3 border-b border-border">
                   <p className="text-sm font-semibold text-text truncate">{user.discordName}</p>
