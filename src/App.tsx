@@ -16,6 +16,8 @@ const Admin = lazy(() => import('./pages/Admin'))
 const AuthCallback = lazy(() => import('./pages/AuthCallback'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const Forbidden = lazy(() => import('./pages/Forbidden'))
+const Premium = lazy(() => import('./pages/Premium'))
+const PremiumSuccess = lazy(() => import('./pages/PremiumSuccess'))
 
 function AppInner() {
   useAuth()
@@ -45,6 +47,11 @@ function AppInner() {
 
           <Route element={<AdminRoute />}>
             <Route path="/app/admin" element={<Admin />} />
+          </Route>
+
+          <Route element={<PrivateRoute />}>
+            <Route path="/premium" element={<Premium />} />
+            <Route path="/premium/sucesso" element={<PremiumSuccess />} />
           </Route>
 
           {/* Legacy redirects */}

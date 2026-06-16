@@ -43,7 +43,16 @@ export function Topbar() {
                   {' '}Lv.{char.level}
                 </Link>
               )}
-              {user.premium && <Badge variant="gold">Premium</Badge>}
+              {user.premium ? (
+                <Badge variant="gold">Premium</Badge>
+              ) : (
+                <Link
+                  to="/premium"
+                  className="text-xs text-gold border border-gold/40 hover:border-gold rounded px-2 py-1 transition-colors"
+                >
+                  Assinar Premium
+                </Link>
+              )}
               {user.isAdmin && (
                 <Link
                   to="/app/admin"
@@ -90,6 +99,15 @@ export function Topbar() {
           >
             Personagens
           </Link>
+          {!user.premium && (
+            <Link
+              to="/premium"
+              className="text-sm text-gold"
+              onClick={() => setMenuOpen(false)}
+            >
+              Assinar Premium
+            </Link>
+          )}
           {user.isAdmin && (
             <Link
               to="/app/admin"

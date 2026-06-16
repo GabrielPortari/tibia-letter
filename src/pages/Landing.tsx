@@ -249,6 +249,44 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── Segurança ── */}
+      <section className="py-16 px-4 max-w-3xl mx-auto w-full">
+        <div className="rounded-2xl p-7 sm:p-9" style={{ background: 'var(--bg-2)', border: '1px solid var(--border)' }}>
+          <div className="flex items-center gap-3 mb-6">
+            <span className="text-2xl">🔐</span>
+            <h2 className="font-display text-xl sm:text-2xl font-semibold">Sua conta do Tibia está 100% segura</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              {
+                title: 'Nunca pedimos sua senha',
+                desc: 'O Tibia Letter não solicita, armazena ou tem acesso à sua senha do Tibia ou da conta Tibia.com.',
+              },
+              {
+                title: 'Verificação pelo Comment',
+                desc: 'A confirmação do personagem é feita via um código temporário que você cola no Comment público do char — nenhuma credencial é necessária.',
+              },
+              {
+                title: 'Login apenas via Discord',
+                desc: 'Usamos o OAuth do Discord para autenticação. Nunca criamos formulários de login próprios.',
+              },
+              {
+                title: 'Código aberto e auditável',
+                desc: 'O projeto é open source. Qualquer pessoa pode verificar que não há coleta indevida de dados.',
+              },
+            ].map((item) => (
+              <div key={item.title} className="flex gap-3 p-4 rounded-xl" style={{ background: 'var(--bg-3)', border: '1px solid var(--border)' }}>
+                <span className="text-green text-lg flex-shrink-0 mt-0.5">✓</span>
+                <div>
+                  <p className="text-sm font-semibold text-text mb-1">{item.title}</p>
+                  <p className="text-xs text-text-muted leading-relaxed">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── Demo ── */}
       <DemoSection />
 
@@ -347,10 +385,13 @@ export default function Landing() {
                 Mais popular
               </span>
             </div>
-            <p className="font-display text-4xl font-bold text-gold mb-0.5 mt-1">
-              R$ 19
-            </p>
-            <p className="text-xs text-text-muted mb-1">por mês</p>
+            <div className="flex items-baseline gap-2 mb-0.5 mt-1">
+              <p className="font-display text-4xl font-bold text-gold">
+                R$ 19<span className="text-2xl">,90</span>
+              </p>
+              <span className="text-sm text-text-dim line-through">R$ 29,90</span>
+            </div>
+            <p className="text-xs text-text-muted mb-1">por mês · oferta de lançamento</p>
             <p className="text-xs text-gold/60 mb-6">Cancele quando quiser</p>
             <hr className="mb-5" style={{ borderColor: "var(--gold-dim)" }} />
 
@@ -380,20 +421,19 @@ export default function Landing() {
             </ul>
 
             <Button
-              className="w-full mt-7"
-              onClick={handleLogin}
+              className="w-full mt-7 opacity-60 cursor-not-allowed"
+              disabled
               style={{
                 background:
                   "linear-gradient(135deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 70%, #fff) 100%)",
                 color: "#1a1200",
                 fontWeight: 700,
-                boxShadow: "0 0 20px var(--gold-glow)",
               }}
             >
-              Assinar Premium — R$ 19/mês
+              Em breve
             </Button>
             <p className="text-xs text-center text-text-dim mt-2">
-              Sem contrato. Cancele a qualquer momento.
+              Pagamentos chegando em breve · Sem contrato
             </p>
           </div>
         </div>
