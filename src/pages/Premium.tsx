@@ -99,14 +99,16 @@ export default function Premium() {
             </Button>
           </div>
         ) : (
-          <Button
-            className="w-full opacity-60 cursor-not-allowed"
-            size="lg"
-            disabled
-          >
-            Em breve
-          </Button>
-          <p className="text-center text-xs text-text-dim mt-1">Pagamentos chegando em breve</p>
+          <div>
+            <Button
+              className="w-full opacity-60 cursor-not-allowed"
+              size="lg"
+              disabled
+            >
+              Em breve
+            </Button>
+            <p className="text-center text-xs text-text-dim mt-1">Pagamentos chegando em breve</p>
+          </div>
         )}
 
         <p className="text-center text-xs text-text-dim mt-4">
