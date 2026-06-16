@@ -8,7 +8,6 @@ interface PaymentRecord {
   plan: string;
   durationDays: number;
   amountPaid: number | null;
-  status: string;
   createdAt: string;
 }
 
@@ -17,11 +16,6 @@ const PLAN_LABEL: Record<string, string> = {
   quarterly: "3 meses",
 };
 
-const STATUS_LABEL: Record<string, string> = {
-  approved: "Aprovado",
-  pending: "Pendente",
-  rejected: "Recusado",
-};
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("pt-BR", {
@@ -69,16 +63,15 @@ export default function PaymentHistory() {
           </div>
         ) : (
           <div className="bg-bg2 border border-border rounded-2xl overflow-hidden">
-            <div className="grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_auto_auto] text-xs text-text-muted font-medium uppercase tracking-wide px-5 py-3 border-b border-border bg-bg1">
+            <div className="grid grid-cols-[1fr_auto] text-xs text-text-muted font-medium uppercase tracking-wide px-5 py-3 border-b border-border bg-bg1">
               <span>Plano</span>
-              <span className="hidden sm:block pr-8">Data</span>
-              <span>Status</span>
+              <span>Data</span>
             </div>
             <ul className="divide-y divide-border">
               {data.map((record) => (
                 <li
                   key={record.id}
-                  className="grid grid-cols-[1fr_auto] sm:grid-cols-[1fr_auto_auto] items-center px-5 py-4"
+                  className="grid grid-cols-[1fr_auto] items-center px-5 py-4"
                 >
                   <div>
                     <p className="text-sm font-semibold text-text">
@@ -87,23 +80,9 @@ export default function PaymentHistory() {
                     <p className="text-xs text-text-muted mt-0.5">
                       {record.durationDays} dias · {record.amountPaid != null ? `R$ ${record.amountPaid.toFixed(2).replace(".", ",")}` : "—"}
                     </p>
-                    <p className="text-xs text-text-dim mt-0.5 sm:hidden tabular-nums">
-                      {formatDate(record.createdAt)}
-                    </p>
                   </div>
-                  <span className="hidden sm:block text-xs text-text-muted pr-8 tabular-nums">
+                  <span className="text-xs text-text-muted tabular-nums">
                     {formatDate(record.createdAt)}
-                  </span>
-                  <span
-                    className={`text-xs font-semibold px-2.5 py-1 rounded-full self-start sm:self-auto ${
-                      record.status === "approved"
-                        ? "text-green bg-[var(--green-bg)]"
-                        : record.status === "rejected"
-                        ? "text-[var(--red)] bg-[var(--red-bg)]"
-                        : "text-text-muted bg-bg3"
-                    }`}
-                  >
-                    {STATUS_LABEL[record.status] ?? record.status}
                   </span>
                 </li>
               ))}
