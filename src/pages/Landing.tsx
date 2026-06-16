@@ -427,7 +427,7 @@ export default function Landing() {
             <Button
               className="w-full mt-7"
               onClick={() =>
-                user ? navigate("/premium") : setShowLoginPrompt(true)
+                user ? navigate("/premium", { state: { plan: "monthly" } }) : setShowLoginPrompt(true)
               }
               style={{
                 background:
@@ -529,7 +529,7 @@ export default function Landing() {
               <Button
                 className="w-full mt-7"
                 onClick={() =>
-                  user ? navigate("/premium") : setShowLoginPrompt(true)
+                  user ? navigate("/premium", { state: { plan: "quarterly" } }) : setShowLoginPrompt(true)
                 }
                 style={{
                   background:

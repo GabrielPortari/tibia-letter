@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { api } from "../lib/api";
 import { useAuthStore } from "../stores/authStore";
@@ -44,6 +45,7 @@ const BENEFITS = [
 export default function Premium() {
   const { user } = useAuthStore();
   const { addToast } = useToasts();
+  const location = useLocation();
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
 
   const { data: status, isLoading } = useQuery<PremiumStatus>({
@@ -60,6 +62,14 @@ export default function Premium() {
     },
     onError: (e: Error) => addToast("error", e.message),
   });
+
+  useEffect(() => {
+    const plan = (location.state as { plan?: string } | null)?.plan;
+    if (plan === "monthly" || plan === "quarterly") {
+      subscribeMutation.mutate(plan);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString("pt-BR", {

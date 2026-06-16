@@ -9,6 +9,14 @@ import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
 import letterIcon from '../../assets/letter.png'
 
+function premiumLabel(until: string | null): string {
+  if (!until) return 'Premium'
+  const days = Math.ceil((new Date(until).getTime() - Date.now()) / 86_400_000)
+  if (days <= 0) return 'Premium expirado'
+  if (days <= 30) return `${days} dia${days === 1 ? '' : 's'} restante${days === 1 ? '' : 's'}`
+  return `até ${new Date(until).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })}`
+}
+
 export function Topbar() {
   const { user, setUser, activeChar } = useAuthStore()
   const navigate = useNavigate()
@@ -46,14 +54,6 @@ export function Topbar() {
     setUser(null)
     queryClient.clear()
     navigate('/')
-  }
-
-  function premiumLabel(until: string | null): string {
-    if (!until) return 'Premium'
-    const days = Math.ceil((new Date(until).getTime() - Date.now()) / 86_400_000)
-    if (days <= 0) return 'Premium expirado'
-    if (days <= 30) return `${days} dia${days === 1 ? '' : 's'} restante${days === 1 ? '' : 's'}`
-    return `até ${new Date(until).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })}`
   }
 
   function go(path: string) {
