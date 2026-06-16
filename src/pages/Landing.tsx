@@ -35,34 +35,6 @@ export default function Landing() {
 
   return (
     <div className="flex-1 flex flex-col">
-      {/* ── Nav ── */}
-      <nav className="sticky top-0 z-40 bg-bg0/95 backdrop-blur border-b border-border flex items-center justify-between px-5 sm:px-10 h-14">
-        <span className="font-display text-gold text-base font-bold tracking-widest flex items-center gap-2">
-          <img src={letterIcon} alt="" className="w-6 h-6 object-contain" />
-          Tibia Letter
-        </span>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => scrollTo("pr")}
-            className="hidden sm:inline-flex px-3 py-1.5 text-sm text-text-muted hover:text-gold border border-border hover:border-gold rounded-lg transition-colors"
-          >
-            Planos
-          </button>
-          {user ? (
-            <Button
-              size="sm"
-              onClick={() => navigate(char ? "/app/queue" : "/app/characters")}
-            >
-              {char ? `Ir para as filas →` : "Configurar personagem →"}
-            </Button>
-          ) : (
-            <Button size="sm" onClick={handleLogin}>
-              Entrar com Discord
-            </Button>
-          )}
-        </div>
-      </nav>
-
       {/* ── Hero ── */}
       <section
         className="flex flex-col items-center justify-center text-center px-4 py-16 sm:py-24"
