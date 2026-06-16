@@ -7,6 +7,7 @@ interface PaymentRecord {
   id: string;
   plan: string;
   durationDays: number;
+  amount: number | null;
   status: string;
   createdAt: string;
 }
@@ -16,9 +17,10 @@ const PLAN_LABEL: Record<string, string> = {
   quarterly: "3 meses",
 };
 
-const PLAN_PRICE: Record<string, string> = {
-  monthly: "R$ 19,90",
-  quarterly: "R$ 44,90",
+const STATUS_LABEL: Record<string, string> = {
+  approved: "Aprovado",
+  pending: "Pendente",
+  rejected: "Recusado",
 };
 
 export default function PaymentHistory() {
@@ -82,7 +84,7 @@ export default function PaymentHistory() {
                       Premium {PLAN_LABEL[record.plan] ?? record.plan}
                     </p>
                     <p className="text-xs text-text-muted mt-0.5">
-                      {record.durationDays} dias · {PLAN_PRICE[record.plan] ?? "—"}
+                      {record.durationDays} dias · {record.amount != null ? `R$ ${record.amount.toFixed(2).replace(".", ",")}` : "—"}
                     </p>
                   </div>
                   <span className="text-xs text-text-muted pr-8 tabular-nums">
@@ -92,10 +94,12 @@ export default function PaymentHistory() {
                     className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
                       record.status === "approved"
                         ? "text-green bg-[var(--green-bg)]"
+                        : record.status === "rejected"
+                        ? "text-red-400 bg-red-900/20"
                         : "text-text-muted bg-bg3"
                     }`}
                   >
-                    {record.status === "approved" ? "Aprovado" : record.status}
+                    {STATUS_LABEL[record.status] ?? record.status}
                   </span>
                 </li>
               ))}

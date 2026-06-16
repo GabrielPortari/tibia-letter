@@ -11,6 +11,14 @@ function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 }
 
+const PREMIUM_BENEFITS: [string, string][] = [
+  ["3 filas simultâneas", "triple sua eficiência de hunt"],
+  ["Personagens ilimitados", "gerencie toda sua conta"],
+  ["2h de hunt por vez", "mesmo que o Free"],
+  ["Acesso a todos os worlds", ""],
+  ["Suporte prioritário", ""],
+];
+
 export default function Landing() {
   const { user, isLoading, activeChar } = useAuthStore();
   const navigate = useNavigate();
@@ -398,13 +406,7 @@ export default function Landing() {
               Tudo do Free, mais:
             </p>
             <ul className="flex flex-col gap-3 flex-1">
-              {[
-                ["3 filas simultâneas", "triple sua eficiência de hunt"],
-                ["Personagens ilimitados", "gerencie toda sua conta"],
-                ["2h de hunt por vez", "mesmo que o Free"],
-                ["Acesso a todos os worlds", ""],
-                ["Suporte prioritário", ""],
-              ].map(([f, sub]) => (
+              {PREMIUM_BENEFITS.map(([f, sub]) => (
                 <li key={f} className="flex gap-2.5 items-start">
                   <span className="text-gold mt-px text-sm">✓</span>
                   <span>
@@ -504,13 +506,7 @@ export default function Landing() {
                 Tudo do Free, mais:
               </p>
               <ul className="flex flex-col gap-3 flex-1">
-                {[
-                  ["3 filas simultâneas", "triple sua eficiência de hunt"],
-                  ["Personagens ilimitados", "gerencie toda sua conta"],
-                  ["2h de hunt por vez", "mesmo que o Free"],
-                  ["Acesso a todos os worlds", ""],
-                  ["Suporte prioritário", ""],
-                ].map(([f, sub]) => (
+                {PREMIUM_BENEFITS.map(([f, sub]) => (
                   <li key={f} className="flex gap-2.5 items-start">
                     <span className="text-gold mt-px text-sm">✓</span>
                     <span>

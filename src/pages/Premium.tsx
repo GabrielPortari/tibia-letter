@@ -73,10 +73,6 @@ export default function Premium() {
     return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
   };
 
-  function handleSubscribe(plan: PlanKey) {
-    subscribeMutation.mutate(plan);
-  }
-
   return (
     <PageWrapper>
       <div className="max-w-2xl mx-auto py-8 px-4">
@@ -190,7 +186,7 @@ export default function Premium() {
                         subscribeMutation.variables === plan.key
                       }
                       disabled={subscribeMutation.isPending}
-                      onClick={() => handleSubscribe(plan.key)}
+                      onClick={() => subscribeMutation.mutate(plan.key)}
                     >
                       {status?.active
                         ? `Renovar — ${plan.price}`
