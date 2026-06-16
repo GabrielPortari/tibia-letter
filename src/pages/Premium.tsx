@@ -30,13 +30,6 @@ export default function Premium() {
     enabled: !!user,
   })
 
-  const subscribeMutation = useMutation({
-    mutationFn: () => api.post<{ initPoint: string }>('/payments/subscribe'),
-    onSuccess: (data) => {
-      window.location.href = data.initPoint
-    },
-    onError: (e: Error) => addToast('error', e.message),
-  })
 
   const cancelMutation = useMutation({
     mutationFn: () => api.delete<void>('/payments/cancel'),
