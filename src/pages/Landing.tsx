@@ -417,7 +417,7 @@ export default function Landing() {
             <p className="text-xs text-text-muted mb-1">
               por mês · oferta de lançamento
             </p>
-            <p className="text-xs text-gold/60 mb-6">Cancele quando quiser</p>
+            <p className="text-xs text-gold/60 mb-6">30 dias · sem renovação automática</p>
             <hr className="mb-5" style={{ borderColor: "var(--gold-dim)" }} />
 
             <p className="text-xs text-text-muted mb-3 italic">
@@ -446,8 +446,8 @@ export default function Landing() {
             </ul>
 
             <Button
-              className="w-full mt-7 opacity-60 cursor-not-allowed"
-              disabled
+              className="w-full mt-7"
+              onClick={() => navigate("/premium")}
               style={{
                 background:
                   "linear-gradient(135deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 70%, #fff) 100%)",
@@ -455,10 +455,10 @@ export default function Landing() {
                 fontWeight: 700,
               }}
             >
-              Em breve
+              Assinar Premium
             </Button>
             <p className="text-xs text-center text-text-dim mt-2">
-              Pagamentos chegando em breve · Sem contrato
+              Pagamento seguro via Mercado Pago · Sem contrato
             </p>
           </div>
         </div>
