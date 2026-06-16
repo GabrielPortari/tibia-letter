@@ -34,7 +34,6 @@ export default function Premium() {
   const subscribeMutation = useMutation({
     mutationFn: () => api.post<{ preferenceId: string }>("/payments/subscribe"),
     onSuccess: (data) => {
-      console.log("[subscribe] resposta:", data);
       setPreferenceId(data.preferenceId);
     },
     onError: (e: Error) => addToast("error", e.message),
@@ -46,6 +45,11 @@ export default function Premium() {
       month: "2-digit",
       year: "numeric",
     });
+
+  const daysRemaining = (iso: string) => {
+    const diff = new Date(iso).getTime() - Date.now();
+    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  };
 
   return (
     <PageWrapper>
@@ -105,7 +109,7 @@ export default function Premium() {
               ✓ Premium ativo
               {status.until && (
                 <span className="text-text-muted ml-2 text-xs">
-                  — expira em {formatDate(status.until)}
+                  — {daysRemaining(status.until)} dias restantes · expira em {formatDate(status.until)}
                 </span>
               )}
             </div>
