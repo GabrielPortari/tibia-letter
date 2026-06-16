@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuthStore } from "../stores/authStore";
@@ -10,10 +11,20 @@ function scrollTo(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 }
 
+const PREMIUM_BENEFITS: [string, string][] = [
+  ["3 filas simultâneas", "você pode esperar em até 3 respawns ao mesmo tempo"],
+  ["Personagens cadastrados ilimitados", "gerencie toda sua conta"],
+  [
+    "Suporte prioritário",
+    "resposta mais rápida em caso de dúvidas ou problemas",
+  ],
+];
+
 export default function Landing() {
   const { user, isLoading, activeChar } = useAuthStore();
   const navigate = useNavigate();
   const char = activeChar();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   async function handleLogin() {
     await supabase.auth.signInWithOAuth({
@@ -35,34 +46,6 @@ export default function Landing() {
 
   return (
     <div className="flex-1 flex flex-col">
-      {/* ── Nav ── */}
-      <nav className="sticky top-0 z-40 bg-bg0/95 backdrop-blur border-b border-border flex items-center justify-between px-5 sm:px-10 h-14">
-        <span className="font-display text-gold text-base font-bold tracking-widest flex items-center gap-2">
-          <img src={letterIcon} alt="" className="w-6 h-6 object-contain" />
-          Tibia Letter
-        </span>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => scrollTo("pr")}
-            className="hidden sm:inline-flex px-3 py-1.5 text-sm text-text-muted hover:text-gold border border-border hover:border-gold rounded-lg transition-colors"
-          >
-            Planos
-          </button>
-          {user ? (
-            <Button
-              size="sm"
-              onClick={() => navigate(char ? "/app/queue" : "/app/characters")}
-            >
-              {char ? `Ir para as filas →` : "Configurar personagem →"}
-            </Button>
-          ) : (
-            <Button size="sm" onClick={handleLogin}>
-              Entrar com Discord
-            </Button>
-          )}
-        </div>
-      </nav>
-
       {/* ── Hero ── */}
       <section
         className="flex flex-col items-center justify-center text-center px-4 py-16 sm:py-24"
@@ -312,7 +295,7 @@ export default function Landing() {
       <DemoSection />
 
       {/* ── Planos ── */}
-      <section id="pr" className="py-16 sm:py-20 px-4 max-w-3xl mx-auto w-full">
+      <section id="pr" className="py-16 sm:py-20 px-4 max-w-5xl mx-auto w-full">
         <div className="text-center mb-11">
           <p className="text-xs text-[var(--gold-dim)] tracking-widest font-semibold mb-3">
             PLANOS
@@ -325,7 +308,7 @@ export default function Landing() {
             upgrade é simples.
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-stretch">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 items-stretch">
           {/* Free */}
           <div className="bg-bg2 border border-border rounded-2xl p-7 flex flex-col">
             <p className="text-xs text-text-muted tracking-widest font-semibold mb-1">
@@ -335,7 +318,7 @@ export default function Landing() {
               R$ 0
             </p>
             <p className="text-xs text-text-muted mb-6">
-              para sempre, sem cartão
+              plano gratuito, assine o premium para ter mais benefícios
             </p>
             <hr className="border-border mb-5" />
             <ul className="flex flex-col gap-3 flex-1">
@@ -417,20 +400,16 @@ export default function Landing() {
             <p className="text-xs text-text-muted mb-1">
               por mês · oferta de lançamento
             </p>
-            <p className="text-xs text-gold/60 mb-6">30 dias · sem renovação automática</p>
+            <p className="text-xs text-gold/60 mb-6">
+              30 dias · sem renovação automática
+            </p>
             <hr className="mb-5" style={{ borderColor: "var(--gold-dim)" }} />
 
             <p className="text-xs text-text-muted mb-3 italic">
-              Tudo do Free, mais:
+              Com o plano premium, você recebe:
             </p>
             <ul className="flex flex-col gap-3 flex-1">
-              {[
-                ["3 filas simultâneas", "triple sua eficiência de hunt"],
-                ["Personagens ilimitados", "gerencie toda sua conta"],
-                ["2h de hunt por vez", "mesmo que o Free"],
-                ["Acesso a todos os worlds", ""],
-                ["Suporte prioritário", ""],
-              ].map(([f, sub]) => (
+              {PREMIUM_BENEFITS.map(([f, sub]) => (
                 <li key={f} className="flex gap-2.5 items-start">
                   <span className="text-gold mt-px text-sm">✓</span>
                   <span>
@@ -447,7 +426,9 @@ export default function Landing() {
 
             <Button
               className="w-full mt-7"
-              onClick={() => navigate("/premium")}
+              onClick={() =>
+                user ? navigate("/premium", { state: { plan: "monthly" } }) : setShowLoginPrompt(true)
+              }
               style={{
                 background:
                   "linear-gradient(135deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 70%, #fff) 100%)",
@@ -461,7 +442,134 @@ export default function Landing() {
               Pagamento seguro via Mercado Pago · Sem contrato
             </p>
           </div>
+
+          {/* Trimestral */}
+          <div
+            className="rounded-2xl flex flex-col relative overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(145deg, var(--bg-2) 0%, color-mix(in srgb, var(--gold) 10%, var(--bg-2)) 100%)",
+              border: "2px solid var(--gold)",
+              boxShadow:
+                "0 0 56px var(--gold-glow), inset 0 1px 0 rgba(212,175,55,0.2)",
+            }}
+          >
+            {/* Melhor oferta banner */}
+            <div
+              className="py-2 text-center text-xs font-bold tracking-widest"
+              style={{
+                background:
+                  "linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim))",
+                color: "#1a1200",
+              }}
+            >
+              MELHOR OFERTA
+            </div>
+
+            {/* Glow strip */}
+            <div
+              className="absolute top-[32px] left-0 right-0 h-px"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, var(--gold), transparent)",
+              }}
+            />
+
+            <div className="p-7 flex flex-col flex-1">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs text-gold tracking-widest font-semibold">
+                  PREMIUM
+                </p>
+                <span
+                  className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                  style={{
+                    background: "var(--gold-glow)",
+                    border: "1px solid var(--gold-dim)",
+                    color: "var(--gold)",
+                  }}
+                >
+                  3 meses
+                </span>
+              </div>
+              <div className="flex items-baseline gap-2 mb-0.5 mt-1">
+                <p className="font-display text-4xl font-bold text-gold">
+                  R$ 44<span className="text-2xl">,90</span>
+                </p>
+                <span className="text-sm text-text-dim line-through">
+                  R$ 79,90
+                </span>
+              </div>
+              <p className="text-xs text-text-muted mb-1">
+                pagamento único · economia de R$ 35
+              </p>
+              <p className="text-xs text-gold/60 mb-6">
+                90 dias · sem renovação automática
+              </p>
+              <hr className="mb-5" style={{ borderColor: "var(--gold-dim)" }} />
+
+              <p className="text-xs text-text-muted mb-3 italic">
+                Com o plano premium, você recebe:
+              </p>
+              <ul className="flex flex-col gap-3 flex-1">
+                {PREMIUM_BENEFITS.map(([f, sub]) => (
+                  <li key={f} className="flex gap-2.5 items-start">
+                    <span className="text-gold mt-px text-sm">✓</span>
+                    <span>
+                      <span className="text-xs text-text font-medium">{f}</span>
+                      {sub && (
+                        <span className="text-xs text-text-muted block">
+                          {sub}
+                        </span>
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <Button
+                className="w-full mt-7"
+                onClick={() =>
+                  user ? navigate("/premium", { state: { plan: "quarterly" } }) : setShowLoginPrompt(true)
+                }
+                style={{
+                  background:
+                    "linear-gradient(135deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 70%, #fff) 100%)",
+                  color: "#1a1200",
+                  fontWeight: 700,
+                }}
+              >
+                Assinar 3 meses
+              </Button>
+              <p className="text-xs text-center text-text-dim mt-2">
+                Pagamento seguro via Mercado Pago · Sem contrato
+              </p>
+            </div>
+          </div>
         </div>
+
+        {showLoginPrompt && (
+          <div className="mt-6 rounded-2xl border border-gold/40 bg-[var(--gold-glow)] px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold text-gold">
+                Entre com Discord para continuar
+              </p>
+              <p className="text-xs text-text-muted mt-0.5">
+                Você precisa estar logado para assinar o Premium.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              <button
+                onClick={() => setShowLoginPrompt(false)}
+                className="text-xs text-text-muted hover:text-text transition-colors"
+              >
+                Cancelar
+              </button>
+              <Button size="sm" onClick={handleLogin}>
+                Entrar com Discord
+              </Button>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* ── Footer ── */}

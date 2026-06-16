@@ -1,11 +1,21 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../../lib/api'
+import { supabase } from '../../lib/supabase'
 import { useAuthStore } from '../../stores/authStore'
 import { queryClient } from '../../lib/queryClient'
 import { Avatar } from '../ui/Avatar'
 import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
+import letterIcon from '../../assets/letter.png'
+
+function premiumLabel(until: string | null): string {
+  if (!until) return 'Premium'
+  const days = Math.ceil((new Date(until).getTime() - Date.now()) / 86_400_000)
+  if (days <= 0) return 'Premium expirado'
+  if (days <= 30) return `${days} dia${days === 1 ? '' : 's'} restante${days === 1 ? '' : 's'}`
+  return `até ${new Date(until).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })}`
+}
 
 export function Topbar() {
   const { user, setUser, activeChar } = useAuthStore()
@@ -23,6 +33,16 @@ export function Topbar() {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  async function handleLogin() {
+    await supabase.auth.signInWithOAuth({
+      provider: 'discord',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        scopes: 'identify',
+      },
+    })
+  }
 
   async function handleLogout() {
     setOpen(false)
@@ -44,7 +64,8 @@ export function Topbar() {
   return (
     <header className="sticky top-0 z-[100] bg-bg1/95 backdrop-blur border-b border-border">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
-        <Link to="/" className="font-display text-gold text-lg font-semibold tracking-wide">
+        <Link to="/" className="font-display text-gold text-lg font-semibold tracking-wide flex items-center gap-2">
+          <img src={letterIcon} alt="" className="w-6 h-6 object-contain" />
           Tibia Letter
         </Link>
 
@@ -75,6 +96,11 @@ export function Topbar() {
                 {/* User info */}
                 <div className="px-4 py-3 border-b border-border">
                   <p className="text-sm font-semibold text-text truncate">{user.discordName}</p>
+                  {user.premium && (
+                    <p className="text-xs text-gold mt-0.5">
+                      ★ {premiumLabel(user.premiumUntil)}
+                    </p>
+                  )}
                   {char ? (
                     <p className="text-xs text-text-muted mt-0.5">
                       {char.name} · Lv.{char.level}
@@ -105,6 +131,17 @@ export function Topbar() {
                       <path d="M4 6h16M4 12h16M4 18h10" strokeLinecap="round" />
                     </svg>
                     Fila
+                  </button>
+
+                  <button
+                    onClick={() => go('/app/payments')}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-text-muted hover:text-text hover:bg-bg3 transition-colors text-left"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
+                      <rect x="2" y="5" width="20" height="14" rx="2" strokeLinecap="round" />
+                      <path d="M2 10h20" strokeLinecap="round" />
+                    </svg>
+                    Histórico de pagamentos
                   </button>
 
                   {!user.premium && (
@@ -150,7 +187,7 @@ export function Topbar() {
             )}
           </div>
         ) : (
-          <Button size="sm" onClick={() => navigate('/')}>
+          <Button size="sm" onClick={handleLogin}>
             Entrar com Discord
           </Button>
         )}

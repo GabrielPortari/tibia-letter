@@ -18,6 +18,7 @@ const NotFound = lazy(() => import('./pages/NotFound'))
 const Forbidden = lazy(() => import('./pages/Forbidden'))
 const Premium = lazy(() => import('./pages/Premium'))
 const PremiumSuccess = lazy(() => import('./pages/PremiumSuccess'))
+const PaymentHistory = lazy(() => import('./pages/PaymentHistory'))
 
 function AppInner() {
   useAuth()
@@ -52,6 +53,7 @@ function AppInner() {
           <Route element={<PrivateRoute />}>
             <Route path="/premium" element={<Premium />} />
             <Route path="/premium/sucesso" element={<PremiumSuccess />} />
+            <Route path="/app/payments" element={<PaymentHistory />} />
           </Route>
 
           {/* Legacy redirects */}

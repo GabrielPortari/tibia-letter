@@ -100,12 +100,9 @@ export function SpawnCard({
         >
           <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${statusDot}`} />
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-text truncate">{spawn.name}</p>
+            <p className="font-semibold text-text leading-snug">{spawn.name}</p>
             {spawn.emptiedAt && <GraceCountdown emptiedAt={spawn.emptiedAt} />}
           </div>
-          {isHunting && myEntry?.huntEndsAt && (
-            <HuntEndTimer endsAt={myEntry.huntEndsAt} />
-          )}
           <Badge variant={statusBadge[status]}>{statusLabel}</Badge>
           {queue.length > 0 && (
             <span className="text-xs text-text-dim">{queue.length} na fila</span>
