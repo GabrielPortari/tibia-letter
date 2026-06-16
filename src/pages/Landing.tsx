@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuthStore } from "../stores/authStore";
@@ -14,6 +15,7 @@ export default function Landing() {
   const { user, isLoading, activeChar } = useAuthStore();
   const navigate = useNavigate();
   const char = activeChar();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   async function handleLogin() {
     await supabase.auth.signInWithOAuth({
@@ -419,7 +421,7 @@ export default function Landing() {
 
             <Button
               className="w-full mt-7"
-              onClick={() => navigate("/premium")}
+              onClick={() => user ? navigate("/premium") : setShowLoginPrompt(true)}
               style={{
                 background:
                   "linear-gradient(135deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 70%, #fff) 100%)",
@@ -525,7 +527,7 @@ export default function Landing() {
 
               <Button
                 className="w-full mt-7"
-                onClick={() => navigate("/premium")}
+                onClick={() => user ? navigate("/premium") : setShowLoginPrompt(true)}
                 style={{
                   background:
                     "linear-gradient(135deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 70%, #fff) 100%)",
@@ -541,6 +543,28 @@ export default function Landing() {
             </div>
           </div>
         </div>
+
+        {showLoginPrompt && (
+          <div className="mt-6 rounded-2xl border border-gold/40 bg-[var(--gold-glow)] px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold text-gold">Entre com Discord para continuar</p>
+              <p className="text-xs text-text-muted mt-0.5">
+                Você precisa estar logado para assinar o Premium.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              <button
+                onClick={() => setShowLoginPrompt(false)}
+                className="text-xs text-text-muted hover:text-text transition-colors"
+              >
+                Cancelar
+              </button>
+              <Button size="sm" onClick={handleLogin}>
+                Entrar com Discord
+              </Button>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* ── Footer ── */}
