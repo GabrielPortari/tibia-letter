@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { api } from "../lib/api";
@@ -46,6 +46,7 @@ export default function Premium() {
   const { user } = useAuthStore();
   const { addToast } = useToasts();
   const location = useLocation();
+  const preSelected = (location.state as { plan?: string } | null)?.plan as PlanKey | undefined;
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
 
   const { data: status, isLoading } = useQuery<PremiumStatus>({
@@ -62,14 +63,6 @@ export default function Premium() {
     },
     onError: (e: Error) => addToast("error", e.message),
   });
-
-  useEffect(() => {
-    const plan = (location.state as { plan?: string } | null)?.plan;
-    if (plan === "monthly" || plan === "quarterly") {
-      subscribeMutation.mutate(plan);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString("pt-BR", {
@@ -135,6 +128,8 @@ export default function Premium() {
                   className={`relative bg-bg2 border rounded-2xl overflow-hidden flex flex-col ${
                     plan.featured
                       ? "border-gold shadow-[0_0_24px_var(--gold-glow)]"
+                      : preSelected === plan.key
+                      ? "border-gold/50 ring-2 ring-gold/30"
                       : "border-border"
                   }`}
                 >
