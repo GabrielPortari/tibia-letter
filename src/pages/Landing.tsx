@@ -12,11 +12,12 @@ function scrollTo(id: string) {
 }
 
 const PREMIUM_BENEFITS: [string, string][] = [
-  ["3 filas simultâneas", "triple sua eficiência de hunt"],
-  ["Personagens ilimitados", "gerencie toda sua conta"],
-  ["2h de hunt por vez", "mesmo que o Free"],
-  ["Acesso a todos os worlds", ""],
-  ["Suporte prioritário", ""],
+  ["3 filas simultâneas", "você pode esperar em até 3 respawns ao mesmo tempo"],
+  ["Personagens cadastrados ilimitados", "gerencie toda sua conta"],
+  [
+    "Suporte prioritário",
+    "resposta mais rápida em caso de dúvidas ou problemas",
+  ],
 ];
 
 export default function Landing() {
@@ -317,7 +318,7 @@ export default function Landing() {
               R$ 0
             </p>
             <p className="text-xs text-text-muted mb-6">
-              para sempre, sem cartão
+              plano gratuito, assine o premium para ter mais benefícios
             </p>
             <hr className="border-border mb-5" />
             <ul className="flex flex-col gap-3 flex-1">
@@ -399,11 +400,13 @@ export default function Landing() {
             <p className="text-xs text-text-muted mb-1">
               por mês · oferta de lançamento
             </p>
-            <p className="text-xs text-gold/60 mb-6">30 dias · sem renovação automática</p>
+            <p className="text-xs text-gold/60 mb-6">
+              30 dias · sem renovação automática
+            </p>
             <hr className="mb-5" style={{ borderColor: "var(--gold-dim)" }} />
 
             <p className="text-xs text-text-muted mb-3 italic">
-              Tudo do Free, mais:
+              Com o plano premium, você recebe:
             </p>
             <ul className="flex flex-col gap-3 flex-1">
               {PREMIUM_BENEFITS.map(([f, sub]) => (
@@ -423,7 +426,9 @@ export default function Landing() {
 
             <Button
               className="w-full mt-7"
-              onClick={() => user ? navigate("/premium") : setShowLoginPrompt(true)}
+              onClick={() =>
+                user ? navigate("/premium") : setShowLoginPrompt(true)
+              }
               style={{
                 background:
                   "linear-gradient(135deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 70%, #fff) 100%)",
@@ -503,7 +508,7 @@ export default function Landing() {
               <hr className="mb-5" style={{ borderColor: "var(--gold-dim)" }} />
 
               <p className="text-xs text-text-muted mb-3 italic">
-                Tudo do Free, mais:
+                Com o plano premium, você recebe:
               </p>
               <ul className="flex flex-col gap-3 flex-1">
                 {PREMIUM_BENEFITS.map(([f, sub]) => (
@@ -523,7 +528,9 @@ export default function Landing() {
 
               <Button
                 className="w-full mt-7"
-                onClick={() => user ? navigate("/premium") : setShowLoginPrompt(true)}
+                onClick={() =>
+                  user ? navigate("/premium") : setShowLoginPrompt(true)
+                }
                 style={{
                   background:
                     "linear-gradient(135deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 70%, #fff) 100%)",
@@ -543,7 +550,9 @@ export default function Landing() {
         {showLoginPrompt && (
           <div className="mt-6 rounded-2xl border border-gold/40 bg-[var(--gold-glow)] px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold text-gold">Entre com Discord para continuar</p>
+              <p className="text-sm font-semibold text-gold">
+                Entre com Discord para continuar
+              </p>
               <p className="text-xs text-text-muted mt-0.5">
                 Você precisa estar logado para assinar o Premium.
               </p>

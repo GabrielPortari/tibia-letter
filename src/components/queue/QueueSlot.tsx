@@ -1,7 +1,7 @@
 import type { QueueEntry } from '../../types'
 import { getEntryStatus } from '../../types'
 import { Badge } from '../ui/Badge'
-import { HuntTimer, HuntEndTimer } from './InlineTimer'
+import { HuntTimer } from './InlineTimer'
 
 interface QueueSlotProps {
   entry: QueueEntry
@@ -28,9 +28,6 @@ export function QueueSlot({ entry, position, isMe, isNext }: QueueSlotProps) {
       {isNext && <Badge variant="amber">próximo</Badge>}
       {status === 'active' && entry.huntStartedAt && (
         <HuntTimer startedAt={entry.huntStartedAt} />
-      )}
-      {status === 'active' && entry.huntEndsAt && (
-        <HuntEndTimer endsAt={entry.huntEndsAt} />
       )}
       {status === 'pending_accept' && (
         <Badge variant="gold">Aguardando aceite</Badge>

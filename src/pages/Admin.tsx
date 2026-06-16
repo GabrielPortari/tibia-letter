@@ -90,6 +90,7 @@ function SpawnManager() {
         <Input
           label="Nome"
           value={name}
+          maxLength={30}
           onChange={(e) => setName(e.target.value)}
         />
         <Input
