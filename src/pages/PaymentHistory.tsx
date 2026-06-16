@@ -22,7 +22,7 @@ const PLAN_PRICE: Record<string, string> = {
 };
 
 export default function PaymentHistory() {
-  const { data, isLoading } = useQuery<PaymentRecord[]>({
+  const { data, isLoading, isError } = useQuery<PaymentRecord[]>({
     queryKey: ["payment-history"],
     queryFn: () => api.get<PaymentRecord[]>("/payments/history"),
   });
@@ -49,6 +49,13 @@ export default function PaymentHistory() {
         {isLoading ? (
           <div className="flex justify-center py-12">
             <Spinner />
+          </div>
+        ) : isError ? (
+          <div className="bg-bg2 border border-border rounded-2xl px-6 py-12 text-center">
+            <p className="text-text-muted text-sm">Erro ao carregar pagamentos.</p>
+            <p className="text-text-dim text-xs mt-1">
+              Tente novamente em alguns instantes.
+            </p>
           </div>
         ) : !data?.length ? (
           <div className="bg-bg2 border border-border rounded-2xl px-6 py-12 text-center">

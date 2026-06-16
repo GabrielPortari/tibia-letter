@@ -45,7 +45,6 @@ export default function Premium() {
   const { user } = useAuthStore();
   const { addToast } = useToasts();
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState<PlanKey | null>(null);
 
   const { data: status, isLoading } = useQuery<PremiumStatus>({
     queryKey: ["premium-status"],
@@ -75,7 +74,6 @@ export default function Premium() {
   };
 
   function handleSubscribe(plan: PlanKey) {
-    setSelectedPlan(plan);
     subscribeMutation.mutate(plan);
   }
 
@@ -94,7 +92,15 @@ export default function Premium() {
             <Spinner />
           </div>
         ) : preferenceId ? (
-          <MercadoPagoWallet preferenceId={preferenceId} />
+          <div className="space-y-4">
+            <MercadoPagoWallet preferenceId={preferenceId} />
+            <button
+              onClick={() => setPreferenceId(null)}
+              className="w-full text-sm text-text-muted hover:text-text transition-colors py-2"
+            >
+              ← Voltar aos planos
+            </button>
+          </div>
         ) : (
           <>
             {status?.active && (
@@ -181,7 +187,7 @@ export default function Premium() {
                       variant={plan.featured ? "primary" : "secondary"}
                       isLoading={
                         subscribeMutation.isPending &&
-                        selectedPlan === plan.key
+                        subscribeMutation.variables === plan.key
                       }
                       disabled={subscribeMutation.isPending}
                       onClick={() => handleSubscribe(plan.key)}
