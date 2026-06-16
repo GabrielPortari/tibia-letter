@@ -7,7 +7,7 @@ interface PaymentRecord {
   id: string;
   plan: string;
   durationDays: number;
-  amount: number | null;
+  amountPaid: number | null;
   status: string;
   createdAt: string;
 }
@@ -84,7 +84,7 @@ export default function PaymentHistory() {
                       Premium {PLAN_LABEL[record.plan] ?? record.plan}
                     </p>
                     <p className="text-xs text-text-muted mt-0.5">
-                      {record.durationDays} dias · {record.amount != null ? `R$ ${record.amount.toFixed(2).replace(".", ",")}` : "—"}
+                      {record.durationDays} dias · {record.amountPaid != null ? `R$ ${record.amountPaid.toFixed(2).replace(".", ",")}` : "—"}
                     </p>
                   </div>
                   <span className="text-xs text-text-muted pr-8 tabular-nums">
