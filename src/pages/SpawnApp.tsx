@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../lib/api'
@@ -31,12 +31,20 @@ export default function SpawnApp() {
   const [newSpawnName, setNewSpawnName] = useState('')
   const [search, setSearch] = useState('')
 
-  const { data: spawns, isLoading } = useQuery<Spawn[]>({
+  const { data: spawns, isLoading, isError: spawnsError, error: spawnsErrorObj } = useQuery<Spawn[]>({
     queryKey: ['spawns', worldId],
     queryFn: () => api.get<Spawn[]>(`/spawns?worldId=${worldId}`),
     staleTime: 30_000,
+    retry: false,
     enabled: !!worldId,
   })
+
+  useEffect(() => {
+    if (spawnsError) {
+      addToast('error', (spawnsErrorObj as Error)?.message ?? 'Mundo inválido.')
+      navigate('/app/queue')
+    }
+  }, [spawnsError]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useQuery<Record<string, QueueEntry[]>>({
     queryKey: ['queue', worldId],
@@ -51,7 +59,8 @@ export default function SpawnApp() {
       return map
     },
     refetchInterval: 10_000,
-    enabled: !!worldId,
+    retry: false,
+    enabled: !!worldId && !spawnsError,
   })
 
   const myEntries = char ? getMyEntries(char.name) : []
