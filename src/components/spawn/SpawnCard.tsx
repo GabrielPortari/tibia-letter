@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Spawn, QueueEntry } from '../../types'
 import { getEntryStatus } from '../../types'
 import { useAuthStore } from '../../stores/authStore'
@@ -20,13 +21,14 @@ interface SpawnCardProps {
 }
 
 function GraceCountdown({ emptiedAt }: { emptiedAt: string }) {
+  const { t } = useTranslation()
   const expiresAt = new Date(emptiedAt).getTime() + GRACE_PERIOD_MS
   const seconds = useCountdown(expiresAt, () => {})
   const m = Math.floor(seconds / 60)
   const s = seconds % 60
   return (
     <Badge variant="muted">
-      Encerrando {m}:{String(s).padStart(2, '0')}
+      {t('spawn.grace_ending')} {m}:{String(s).padStart(2, '0')}
     </Badge>
   )
 }
@@ -39,13 +41,8 @@ function getSpawnStatus(queue: QueueEntry[]) {
   return 'free'
 }
 
-export function SpawnCard({
-  spawn,
-  onJoin,
-  onAccept,
-  onFinish,
-  onLeave,
-}: SpawnCardProps) {
+export function SpawnCard({ spawn, onJoin, onAccept, onFinish, onLeave }: SpawnCardProps) {
+  const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
   const [loading, setLoading] = useState<string | null>(null)
   const { activeChar } = useAuthStore()
@@ -63,11 +60,10 @@ export function SpawnCard({
 
   const isMyTurnToAccept = myStatus === 'pending_accept'
   const isHunting = myStatus === 'active'
-
   const canJoin = !!char
 
   const statusDot = { free: 'bg-green', occupied: 'bg-amber', pending: 'bg-gold animate-pulse' }[status]
-  const statusLabel = { free: 'Livre', occupied: 'Ocupado', pending: 'Aguard. aceite' }[status]
+  const statusLabel = { free: t('spawn.status_free'), occupied: t('spawn.status_occupied'), pending: t('spawn.status_pending') }[status]
   const statusBadge = { free: 'green', occupied: 'amber', pending: 'gold' } as const
 
   async function wrap(key: string, fn: () => Promise<unknown>) {
@@ -98,7 +94,7 @@ export function SpawnCard({
           </div>
           <Badge variant={statusBadge[status]}>{statusLabel}</Badge>
           {queue.length > 0 && (
-            <span className="text-xs text-text-dim">{queue.length} na fila</span>
+            <span className="text-xs text-text-dim">{t('spawn.in_queue', { count: queue.length })}</span>
           )}
           <svg
             className={`w-4 h-4 text-text-muted transition-transform ${expanded ? 'rotate-180' : ''}`}
@@ -110,10 +106,9 @@ export function SpawnCard({
 
         {expanded && (
           <div className="px-4 pb-4 border-t border-border pt-3 space-y-3 animate-fadeIn">
-            {/* Accept prompt */}
             {isMyTurnToAccept && myEntry?.acceptDeadline && (
               <div className="bg-[var(--gold-glow)] border border-[var(--gold-dim)] rounded-lg p-3 text-center">
-                <p className="text-xs text-text-muted mb-1">Sua vez! Tempo para aceitar:</p>
+                <p className="text-xs text-text-muted mb-1">{t('spawn.your_turn_title')}</p>
                 <AcceptTimer deadline={myEntry.acceptDeadline} onExpire={() => {}} />
                 <Button
                   size="sm"
@@ -121,27 +116,25 @@ export function SpawnCard({
                   isLoading={loading === 'accept'}
                   onClick={() => wrap('accept', () => onAccept(spawn.id))}
                 >
-                  Aceitar Respawn
+                  {t('spawn.accept_spawn')}
                 </Button>
               </div>
             )}
 
-            {/* Hunting status */}
             {isHunting && myEntry?.huntEndsAt && (
               <div
                 className="rounded-lg p-3 text-center"
                 style={{ background: 'var(--green-bg)', border: '1px solid var(--green)' }}
               >
                 <p className="text-xs mb-1" style={{ color: 'var(--green)' }}>
-                  Você está caçando aqui!
+                  {t('spawn.you_hunting')}
                 </p>
                 <p className="text-xs text-text-muted">
-                  Tempo restante: <HuntEndTimer endsAt={myEntry.huntEndsAt} />
+                  {t('spawn.time_remaining')} <HuntEndTimer endsAt={myEntry.huntEndsAt} />
                 </p>
               </div>
             )}
 
-            {/* Queue list */}
             {queue.length > 0 && (
               <div className="space-y-1">
                 {queue.map((e, i) => (
@@ -161,11 +154,10 @@ export function SpawnCard({
 
             {queue.length === 0 && (
               <p className="text-center text-sm py-2" style={{ color: 'var(--green)' }}>
-                Respawn livre — comece a caçar!
+                {t('spawn.spawn_free')}
               </p>
             )}
 
-            {/* Action buttons */}
             <div className="flex gap-2 flex-wrap">
               {!myEntry && (
                 <Button
@@ -174,9 +166,9 @@ export function SpawnCard({
                   disabled={!canJoin}
                   onClick={() => wrap('join', () => onJoin(spawn.id))}
                   className="flex-1"
-                  title={!canJoin ? 'Selecione um personagem para entrar na fila' : undefined}
+                  title={!canJoin ? t('spawn.select_char_title') : undefined}
                 >
-                  {queue.length === 0 ? 'Caçar agora' : 'Entrar na Fila'}
+                  {queue.length === 0 ? t('spawn.hunt_now') : t('spawn.join_queue')}
                 </Button>
               )}
               {isHunting && (
@@ -187,7 +179,7 @@ export function SpawnCard({
                   onClick={() => wrap('finish', () => onFinish(spawn.id))}
                   className="flex-1"
                 >
-                  Finalizar Caça
+                  {t('spawn.finish_hunt')}
                 </Button>
               )}
               {myStatus === 'waiting' && (
@@ -198,7 +190,7 @@ export function SpawnCard({
                   onClick={() => wrap('leave', () => onLeave(spawn.id))}
                   className="flex-1"
                 >
-                  Sair da Fila
+                  {t('spawn.leave_queue')}
                 </Button>
               )}
             </div>
