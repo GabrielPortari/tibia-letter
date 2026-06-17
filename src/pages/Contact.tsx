@@ -4,6 +4,8 @@ import { useLangNavigate } from '../hooks/useLangNavigate'
 
 const GITHUB_ISSUES = 'https://github.com/GabrielPortari/tibia-letter/issues/new'
 const EMAIL = 'dev.gabrielportari@gmail.com'
+const CREATOR_NAME = 'Gabriel'
+const CREATOR_CHAR = 'Avria Elou'
 
 export default function Contact() {
   const { t } = useTranslation()
@@ -58,6 +60,25 @@ export default function Contact() {
               </svg>
               {t('contact.email_btn')}
             </Button>
+          </div>
+        </div>
+
+        {/* Creator info — required for CipSoft fansite compliance */}
+        <div className="mt-8 bg-bg2 border border-border rounded-2xl p-6">
+          <p className="text-xs text-[var(--gold-dim)] tracking-widest font-semibold mb-4 uppercase">{t('contact.creator_title')}</p>
+          <div className="flex flex-col gap-2.5">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-text-muted">{t('contact.creator_name_label')}</span>
+              <span className="text-text font-medium">{CREATOR_NAME}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-text-muted">{t('contact.creator_char_label')}</span>
+              <span className="text-text font-medium">{CREATOR_CHAR}</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-text-muted">{t('contact.creator_email_label')}</span>
+              <a href={`mailto:${EMAIL}`} className="text-gold hover:underline font-medium">{EMAIL}</a>
+            </div>
           </div>
         </div>
       </div>
