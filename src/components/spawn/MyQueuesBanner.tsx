@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../../stores/authStore'
 import { useQueueStore } from '../../stores/queueStore'
 import { useCountdown } from '../../hooks/useCountdown'
@@ -32,6 +33,7 @@ function AcceptChip({
   onAccept: (id: string) => Promise<void>
   onLeave: (id: string) => Promise<void>
 }) {
+  const { t } = useTranslation()
   const secs = useCountdown(new Date(deadline).getTime(), () => {})
   const isThisLoading = loadingSpawnId === spawnId
 
@@ -64,20 +66,16 @@ function AcceptChip({
         >
           {isThisLoading ? (
             <span className="inline-block w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
-          ) : '⚔ Aceitar'}
+          ) : t('banner.accept')}
         </button>
         {showSkip && (
           <button
             onClick={() => onLeave(spawnId)}
             disabled={busy}
             className="py-1.5 px-3 rounded-lg text-xs transition-opacity hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{
-              background: 'var(--red-bg)',
-              border: '0.5px solid var(--red)',
-              color: 'var(--red)',
-            }}
+            style={{ background: 'var(--red-bg)', border: '0.5px solid var(--red)', color: 'var(--red)' }}
           >
-            Pular
+            {t('banner.skip')}
           </button>
         )}
       </div>
@@ -86,6 +84,7 @@ function AcceptChip({
 }
 
 export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProps) {
+  const { t } = useTranslation()
   const [loadingSpawnId, setLoadingSpawnId] = useState<string | null>(null)
   const { activeChar } = useAuthStore()
   const { getMyEntries } = useQueueStore()
@@ -127,15 +126,15 @@ export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProp
           {hasConflict ? (
             <>
               <p className="text-xs font-semibold tracking-widest mb-1" style={{ color: 'var(--gold-dim)' }}>
-                ESCOLHA UM RESPAWN
+                {t('banner.choose_spawn')}
               </p>
               <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
-                Dois respawns vagos ao mesmo tempo. Aceite um — o outro será repassado automaticamente.
+                {t('banner.choose_spawn_desc')}
               </p>
             </>
           ) : (
             <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--gold-dim)' }}>
-              SUA VEZ DE ACEITAR
+              {t('banner.your_turn')}
             </p>
           )}
 
@@ -163,14 +162,10 @@ export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProp
             <span
               key={e.id}
               className="flex-shrink-0 rounded-lg px-3 py-1.5 text-xs whitespace-nowrap"
-              style={{
-                background: 'var(--green-bg)',
-                border: '0.5px solid var(--green)',
-                color: 'var(--green)',
-              }}
+              style={{ background: 'var(--green-bg)', border: '0.5px solid var(--green)', color: 'var(--green)' }}
             >
               ⚔ <span className="font-medium">{e.characterName}</span>
-              {' '}caçando em <span className="font-medium">{spawnName(e.spawnId)}</span>
+              {' '}{t('banner.hunting_at')}{' '}<span className="font-medium">{spawnName(e.spawnId)}</span>
               {e.huntEndsAt && (
                 <span className="text-text-muted ml-1">· <HuntEndTimer endsAt={e.huntEndsAt} /></span>
               )}
@@ -182,7 +177,7 @@ export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProp
       {waiting.length > 0 && (
         <div>
           <p className="text-xs font-semibold tracking-widest mb-2" style={{ color: 'var(--text-dim)' }}>
-            AGUARDANDO NA FILA
+            {t('banner.waiting_queue')}
           </p>
           <div className="flex gap-2 overflow-x-auto sm:flex-wrap pb-1">
             {waiting.map((e) => (
@@ -192,7 +187,7 @@ export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProp
                 style={{ background: 'var(--bg-2)', border: '0.5px solid var(--border)', color: 'var(--text-muted)' }}
               >
                 <span className="text-text font-medium">{spawnName(e.spawnId)}</span>
-                {' '}— #{e.position} na fila
+                {' '}— {t('banner.position', { pos: e.position })}
                 {e.estimatedStart && (
                   <span className="text-text-dim ml-1">
                     · ~{fmt(secondsUntil(e.estimatedStart))}

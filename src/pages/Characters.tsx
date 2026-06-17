@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/authStore'
 import { useQueueStore } from '../stores/queueStore'
 import { api } from '../lib/api'
@@ -12,6 +12,7 @@ import { Badge } from '../components/ui/Badge'
 import { Modal } from '../components/ui/Modal'
 import { CharVerifyModal } from '../components/character/CharVerifyModal'
 import { getEntryStatus } from '../types'
+import { useLangNavigate } from '../hooks/useLangNavigate'
 import type { User, Character } from '../types'
 
 const BASE = ((import.meta.env.VITE_API_URL as string) || '') + '/api/v1'
@@ -34,7 +35,8 @@ export default function Characters() {
   const { user, setUser } = useAuthStore()
   const { getMyEntries } = useQueueStore()
   const { addToast } = useToasts()
-  const navigate = useNavigate()
+  const { t } = useTranslation()
+  const langNavigate = useLangNavigate()
   const [modalOpen, setModalOpen] = useState(false)
   const [reInitChar, setReInitChar] = useState<Character | null>(null)
   const [confirmSwitch, setConfirmSwitch] = useState<Character | null>(null)
@@ -44,7 +46,7 @@ export default function Characters() {
     onSuccess: async () => {
       const me = await fetchMe()
       if (me) setUser(me)
-      addToast('success', 'Personagem ativado.')
+      addToast('success', t('characters.activated_toast'))
     },
     onError: (e: Error) => addToast('error', e.message),
   })
@@ -54,7 +56,7 @@ export default function Characters() {
     onSuccess: async () => {
       const me = await fetchMe()
       if (me) setUser(me)
-      addToast('success', 'Personagem removido.')
+      addToast('success', t('characters.removed_toast'))
     },
     onError: (e: Error) => addToast('error', e.message),
   })
@@ -64,7 +66,7 @@ export default function Characters() {
     onSuccess: async (_, name) => {
       const me = await fetchMe()
       if (me) setUser(me)
-      addToast('success', `${name} verificado com sucesso!`)
+      addToast('success', t('characters.verified_toast', { name }))
     },
     onError: (e: Error) => addToast('error', e.message),
   })
@@ -97,7 +99,7 @@ export default function Characters() {
   }
 
   function confirmDelete(char: Character) {
-    if (!window.confirm(`Remover ${char.name}? Esta ação não pode ser desfeita.`)) return
+    if (!window.confirm(t('characters.confirm_remove', { name: char.name }))) return
     deleteMutation.mutate(char.id)
   }
 
@@ -105,21 +107,21 @@ export default function Characters() {
     <PageWrapper>
       <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
         <div>
-          <h1 className="font-display text-2xl text-gold font-semibold">Personagens</h1>
+          <h1 className="font-display text-2xl text-gold font-semibold">{t('characters.title')}</h1>
           <p className="text-text-muted text-sm mt-1">
             {activeChar
-              ? `Jogando como ${activeChar.name} · Lv. ${activeChar.level} · ${activeChar.world}`
-              : 'Nenhum personagem ativo — vincule e ative um para usar as filas.'}
+              ? t('characters.playing_as', { name: activeChar.name, level: activeChar.level, world: activeChar.world })
+              : t('characters.no_active')}
           </p>
         </div>
         <div className="flex gap-2">
           {activeChar && (
-            <Button variant="secondary" onClick={() => navigate('/app/queue')}>
-              Entrar na fila →
+            <Button variant="secondary" onClick={() => langNavigate('/app/queue')}>
+              {t('characters.go_queue')}
             </Button>
           )}
           <Button onClick={() => { setReInitChar(null); setModalOpen(true) }}>
-            + Vincular Personagem
+            {t('characters.link_char')}
           </Button>
         </div>
       </div>
@@ -129,15 +131,15 @@ export default function Characters() {
           className="mb-4 rounded-xl px-4 py-3 text-sm"
           style={{ background: 'var(--amber-bg)', border: '1px solid var(--amber)', color: 'var(--amber)' }}
         >
-          Você precisa de um personagem verificado e ativo para entrar em filas.
+          {t('characters.need_verified')}
         </div>
       )}
 
       {characters.length === 0 ? (
         <div className="text-center py-16 text-text-muted">
           <p className="text-4xl mb-3">🎮</p>
-          <p className="font-semibold mb-1">Nenhum personagem vinculado</p>
-          <p className="text-sm">Clique em "Vincular Personagem" para começar.</p>
+          <p className="font-semibold mb-1">{t('characters.empty_title')}</p>
+          <p className="text-sm">{t('characters.empty_desc')}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -161,25 +163,18 @@ export default function Characters() {
       <Modal
         isOpen={!!confirmSwitch}
         onClose={() => setConfirmSwitch(null)}
-        title="Trocar de personagem?"
+        title={t('characters.switch_modal_title')}
       >
         <div className="space-y-4">
           <p className="text-sm text-text-muted">
-            Você está aguardando em{' '}
-            <span className="text-text font-medium">
-              {getMyEntries(activeChar?.name ?? '').filter((e) => getEntryStatus(e) === 'waiting').length}
-            </span>{' '}
-            fila(s). Ao trocar para{' '}
-            <span className="text-text font-medium">{confirmSwitch?.name}</span>, você será
-            removido de todas elas automaticamente.
+            {t('characters.switch_modal_desc', {
+              count: getMyEntries(activeChar?.name ?? '').filter((e) => getEntryStatus(e) === 'waiting').length,
+              name: confirmSwitch?.name,
+            })}
           </p>
           <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              className="flex-1"
-              onClick={() => setConfirmSwitch(null)}
-            >
-              Cancelar
+            <Button variant="secondary" className="flex-1" onClick={() => setConfirmSwitch(null)}>
+              {t('common.cancel')}
             </Button>
             <Button
               className="flex-1"
@@ -189,7 +184,7 @@ export default function Characters() {
                 setConfirmSwitch(null)
               }}
             >
-              Trocar mesmo assim
+              {t('characters.switch_confirm')}
             </Button>
           </div>
         </div>
@@ -221,6 +216,7 @@ interface CharCardProps {
 }
 
 function CharCard({ char, state, isActivating, isDeleting, isVerifying, onActivate, onDelete, onVerify, onReInit }: CharCardProps) {
+  const { t } = useTranslation()
   const anyPending = isActivating || isDeleting || isVerifying
 
   const dotColor =
@@ -240,10 +236,10 @@ function CharCard({ char, state, isActivating, isDeleting, isVerifying, onActiva
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-semibold text-text">{char.name}</span>
-            {state === 'active' && <Badge variant="gold">Ativo</Badge>}
-            {state === 'verified' && <Badge variant="green">Verificado</Badge>}
-            {state === 'pending' && <Badge variant="amber">Aguard. verificação</Badge>}
-            {state === 'expired' && <Badge variant="red">Expirado</Badge>}
+            {state === 'active' && <Badge variant="gold">{t('characters.badge_active')}</Badge>}
+            {state === 'verified' && <Badge variant="green">{t('characters.badge_verified')}</Badge>}
+            {state === 'pending' && <Badge variant="amber">{t('characters.badge_pending')}</Badge>}
+            {state === 'expired' && <Badge variant="red">{t('characters.badge_expired')}</Badge>}
           </div>
 
           {(state === 'active' || state === 'verified') && (
@@ -255,9 +251,7 @@ function CharCard({ char, state, isActivating, isDeleting, isVerifying, onActiva
           )}
 
           {state === 'expired' && (
-            <p className="text-xs text-text-muted mt-1">
-              Código expirado. Gere um novo para continuar a verificação.
-            </p>
+            <p className="text-xs text-text-muted mt-1">{t('characters.code_expired_msg')}</p>
           )}
         </div>
       </div>
@@ -265,22 +259,22 @@ function CharCard({ char, state, isActivating, isDeleting, isVerifying, onActiva
       <div className="flex gap-2 flex-wrap flex-shrink-0">
         {state === 'pending' && (
           <Button size="sm" isLoading={isVerifying} disabled={anyPending} onClick={onVerify}>
-            Verificar agora
+            {t('characters.btn_verify')}
           </Button>
         )}
         {state === 'expired' && (
           <Button size="sm" variant="secondary" disabled={anyPending} onClick={onReInit}>
-            Gerar novo código
+            {t('characters.btn_new_code')}
           </Button>
         )}
         {state === 'verified' && (
           <Button size="sm" isLoading={isActivating} disabled={anyPending} onClick={onActivate}>
-            Ativar
+            {t('characters.btn_activate')}
           </Button>
         )}
         {state !== 'active' && (
           <Button size="sm" variant="danger" isLoading={isDeleting} disabled={anyPending} onClick={onDelete}>
-            Remover
+            {t('characters.btn_remove')}
           </Button>
         )}
       </div>
@@ -289,6 +283,7 @@ function CharCard({ char, state, isActivating, isDeleting, isVerifying, onActiva
 }
 
 function PendingCodeBlock({ code, expiresAt }: { code: string; expiresAt: string | null }) {
+  const { t } = useTranslation()
   const [timeLeft, setTimeLeft] = useState(() => expiresAt ? secondsUntil(expiresAt) : 0)
 
   useEffect(() => {
@@ -304,15 +299,17 @@ function PendingCodeBlock({ code, expiresAt }: { code: string; expiresAt: string
   return (
     <div className="mt-2 bg-bg3 border border-border rounded-lg px-3 py-2 space-y-1">
       <p className="text-xs text-text-muted">
-        Cole no campo <em>Comment</em> em <span className="text-text">tibia.com</span>:
+        {t('characters.pending_code_label')}
       </p>
       <div className="flex items-center gap-2">
         <p className="font-mono text-sm font-bold text-gold tracking-widest">{code}</p>
-        <button onClick={copy} className="text-xs text-text-dim hover:text-text underline">copiar</button>
+        <button onClick={copy} className="text-xs text-text-dim hover:text-text underline">
+          {t('characters.copy')}
+        </button>
       </div>
       {expiresAt && (
         <p className={`text-xs ${timeLeft <= 0 ? 'text-red' : 'text-text-dim'}`}>
-          {timeLeft > 0 ? `Expira em ${fmt(timeLeft)}` : 'Expirado'}
+          {timeLeft > 0 ? t('characters.expires_in', { time: fmt(timeLeft) }) : t('characters.expired')}
         </p>
       )}
     </div>

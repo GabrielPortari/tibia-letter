@@ -1,28 +1,30 @@
-import { useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabase";
-import { useAuthStore } from "../stores/authStore";
-import { Button } from "../components/ui/Button";
-import { Spinner } from "../components/ui/Spinner";
-import { DemoSection } from "../components/landing/DemoSection";
-import letterIcon from "../assets/letter.png";
+import { useTranslation } from 'react-i18next'
+import { supabase } from '../lib/supabase'
+import { useAuthStore } from '../stores/authStore'
+import { Button } from '../components/ui/Button'
+import { Spinner } from '../components/ui/Spinner'
+import { DemoSection } from '../components/landing/DemoSection'
+import { useLangNavigate } from '../hooks/useLangNavigate'
+import letterIcon from '../assets/letter.png'
 
 function scrollTo(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
 
 export default function Landing() {
-  const { user, isLoading, activeChar } = useAuthStore();
-  const navigate = useNavigate();
-  const char = activeChar();
+  const { user, isLoading, activeChar } = useAuthStore()
+  const { t } = useTranslation()
+  const langNavigate = useLangNavigate()
+  const char = activeChar()
 
   async function handleLogin() {
     await supabase.auth.signInWithOAuth({
-      provider: "discord",
+      provider: 'discord',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
-        scopes: "identify",
+        scopes: 'identify',
       },
-    });
+    })
   }
 
   if (isLoading) {
@@ -30,7 +32,7 @@ export default function Landing() {
       <div className="flex-1 flex items-center justify-center">
         <Spinner size="lg" />
       </div>
-    );
+    )
   }
 
   return (
@@ -40,7 +42,7 @@ export default function Landing() {
         className="flex flex-col items-center justify-center text-center px-4 py-16 sm:py-24"
         style={{
           backgroundImage:
-            "radial-gradient(ellipse 60% 40% at 50% 0%, var(--gold-glow) 0%, transparent 70%)",
+            'radial-gradient(ellipse 60% 40% at 50% 0%, var(--gold-glow) 0%, transparent 70%)',
         }}
       >
         <img
@@ -49,27 +51,25 @@ export default function Landing() {
           className="w-16 h-16 object-contain mb-4"
         />
         <div className="inline-flex items-center px-3 py-1 border border-[var(--gold-dim)] rounded-full text-xs text-gold tracking-widest mb-6">
-          SISTEMA DE FILAS PARA TIBIA
+          {t('landing.badge')}
         </div>
 
         <h1
           className="font-display font-bold leading-tight mb-5 max-w-3xl"
-          style={{ fontSize: "clamp(28px, 6vw, 64px)" }}
+          style={{ fontSize: 'clamp(28px, 6vw, 64px)' }}
         >
-          Chega de discussão por spawn.
+          {t('landing.hero_title')}
           <br />
           <span
             className="text-gold"
-            style={{ textShadow: "0 0 40px var(--gold-glow)" }}
+            style={{ textShadow: '0 0 40px var(--gold-glow)' }}
           >
-            A fila resolve por você.
+            {t('landing.hero_highlight')}
           </span>
         </h1>
 
         <p className="text-text-muted text-base sm:text-lg max-w-lg leading-relaxed mb-9">
-          Tibia Letter organiza os respawns do seu world em filas digitais,
-          transparentes e em tempo real. Quem chega primeiro, caça primeiro —
-          sem discussão, sem carta, sem favoritismo.
+          {t('landing.hero_desc')}
         </p>
 
         <div className="flex gap-3 flex-wrap justify-center">
@@ -77,31 +77,29 @@ export default function Landing() {
             <>
               <Button
                 size="lg"
-                onClick={() =>
-                  navigate(char ? "/app/queue" : "/app/characters")
-                }
+                onClick={() => langNavigate(char ? '/app/queue' : '/app/characters')}
               >
-                {char ? `⚔ Ir para as filas` : "⚔ Configurar personagem"}
+                {char ? t('landing.cta_go_queue') : t('landing.cta_setup_char')}
               </Button>
               <Button
                 size="lg"
                 variant="secondary"
-                onClick={() => navigate("/app/characters")}
+                onClick={() => langNavigate('/app/characters')}
               >
-                Meus personagens →
+                {t('landing.cta_my_chars')}
               </Button>
             </>
           ) : (
             <>
               <Button size="lg" onClick={handleLogin}>
-                ⚔ Entrar com Discord — é grátis
+                {t('common.login_free')}
               </Button>
               <Button
                 size="lg"
                 variant="secondary"
-                onClick={() => scrollTo("hw")}
+                onClick={() => scrollTo('hw')}
               >
-                Como funciona →
+                {t('landing.cta_how')}
               </Button>
             </>
           )}
@@ -110,10 +108,10 @@ export default function Landing() {
         {/* Stats row */}
         <div className="flex gap-8 sm:gap-12 mt-14 pt-9 border-t border-border flex-wrap justify-center">
           {[
-            ["Tempo real", "atualização instantânea"],
-            ["Por world", "filas independentes"],
-            ["Anti-fake", "char verificado no tibia.com"],
-            ["100% justo", "ordem de chegada"],
+            [t('landing.stat_realtime'), t('landing.stat_realtime_sub')],
+            [t('landing.stat_per_world'), t('landing.stat_per_world_sub')],
+            [t('landing.stat_anti_fake'), t('landing.stat_anti_fake_sub')],
+            [t('landing.stat_fair'), t('landing.stat_fair_sub')],
           ].map(([n, l]) => (
             <div key={n} className="text-center">
               <p className="font-display text-lg font-bold text-gold">{n}</p>
@@ -127,38 +125,18 @@ export default function Landing() {
       <section id="hw" className="py-16 sm:py-20 px-4 max-w-4xl mx-auto w-full">
         <div className="text-center mb-12">
           <p className="text-xs text-[var(--gold-dim)] tracking-widest font-semibold mb-3">
-            COMO FUNCIONA
+            {t('landing.how_badge')}
           </p>
           <h2 className="font-display text-2xl sm:text-3xl font-semibold">
-            Em 4 passos, você já está na fila.
+            {t('landing.how_title')}
           </h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            {
-              ic: "🔐",
-              n: "01",
-              t: "Entre com Discord",
-              d: "Login em segundos via Discord OAuth. Sem formulário, sem cadastro.",
-            },
-            {
-              ic: "🎮",
-              n: "02",
-              t: "Prove que é seu char",
-              d: "Cole um código único no Comment do seu personagem em tibia.com. Simples e seguro.",
-            },
-            {
-              ic: "🌍",
-              n: "03",
-              t: "Escolha seu world",
-              d: "Cada world tem suas próprias filas. Só você e os players do seu servidor.",
-            },
-            {
-              ic: "⚔️",
-              n: "04",
-              t: "Caça com prioridade",
-              d: "Seu level é validado na hora. Quando chegar sua vez, você recebe o aviso.",
-            },
+            { ic: '🔐', n: '01', t: t('landing.step1_title'), d: t('landing.step1_desc') },
+            { ic: '🎮', n: '02', t: t('landing.step2_title'), d: t('landing.step2_desc') },
+            { ic: '🌍', n: '03', t: t('landing.step3_title'), d: t('landing.step3_desc') },
+            { ic: '⚔️', n: '04', t: t('landing.step4_title'), d: t('landing.step4_desc') },
           ].map((s) => (
             <div
               key={s.n}
@@ -176,33 +154,21 @@ export default function Landing() {
       </section>
 
       {/* ── Funcionalidades ── */}
-      <section className="py-16 px-4" style={{ background: "var(--bg-1)" }}>
+      <section className="py-16 px-4" style={{ background: 'var(--bg-1)' }}>
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-10">
             <p className="text-xs text-[var(--gold-dim)] tracking-widest font-semibold mb-3">
-              FUNCIONALIDADES
+              {t('landing.feat_badge')}
             </p>
             <h2 className="font-display text-2xl sm:text-3xl font-semibold">
-              Tudo que faltava no Tibia.
+              {t('landing.feat_title')}
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              {
-                ic: "🔒",
-                t: "Zero fake, zero discussão",
-                d: "Personagem verificado direto no tibia.com. Se não é seu char, não entra na fila. Simples assim.",
-              },
-              {
-                ic: "⏱",
-                t: "Automático do início ao fim",
-                d: "Quando sua hunt termina, o próximo já recebe o aviso. Ninguém precisa ficar babando o spawn.",
-              },
-              {
-                ic: "📅",
-                t: "3 filas ao mesmo tempo",
-                d: "Com Premium, entre em até 3 respawns simultâneos. Maximize cada minuto de jogo.",
-              },
+              { ic: '🔒', t: t('landing.feat1_title'), d: t('landing.feat1_desc') },
+              { ic: '⏱', t: t('landing.feat2_title'), d: t('landing.feat2_desc') },
+              { ic: '📅', t: t('landing.feat3_title'), d: t('landing.feat3_desc') },
             ].map((f) => (
               <div
                 key={f.t}
@@ -211,9 +177,7 @@ export default function Landing() {
                 <div className="text-2xl flex-shrink-0 mt-0.5">{f.ic}</div>
                 <div>
                   <p className="text-sm font-semibold text-text mb-1">{f.t}</p>
-                  <p className="text-xs text-text-muted leading-relaxed">
-                    {f.d}
-                  </p>
+                  <p className="text-xs text-text-muted leading-relaxed">{f.d}</p>
                 </div>
               </div>
             ))}
@@ -225,54 +189,30 @@ export default function Landing() {
       <section className="py-16 px-4 max-w-3xl mx-auto w-full">
         <div
           className="rounded-2xl p-7 sm:p-9"
-          style={{
-            background: "var(--bg-2)",
-            border: "1px solid var(--border)",
-          }}
+          style={{ background: 'var(--bg-2)', border: '1px solid var(--border)' }}
         >
           <div className="flex items-center gap-3 mb-6">
             <span className="text-2xl">🔐</span>
             <h2 className="font-display text-xl sm:text-2xl font-semibold">
-              Sua conta do Tibia está 100% segura
+              {t('landing.sec_title')}
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
-              {
-                title: "Nunca pedimos sua senha",
-                desc: "O Tibia Letter não solicita, armazena ou tem acesso à sua senha do Tibia ou da conta Tibia.com.",
-              },
-              {
-                title: "Verificação pelo Comment",
-                desc: "A confirmação do personagem é feita via um código temporário que você cola no Comment público do char — nenhuma credencial é necessária.",
-              },
-              {
-                title: "Login apenas via Discord",
-                desc: "Usamos o OAuth do Discord para autenticação. Nunca criamos formulários de login próprios.",
-              },
-              {
-                title: "Código aberto e auditável",
-                desc: "O projeto é open source. Qualquer pessoa pode verificar que não há coleta indevida de dados.",
-              },
+              { title: t('landing.sec1_title'), desc: t('landing.sec1_desc') },
+              { title: t('landing.sec2_title'), desc: t('landing.sec2_desc') },
+              { title: t('landing.sec3_title'), desc: t('landing.sec3_desc') },
+              { title: t('landing.sec4_title'), desc: t('landing.sec4_desc') },
             ].map((item) => (
               <div
                 key={item.title}
                 className="flex gap-3 p-4 rounded-xl"
-                style={{
-                  background: "var(--bg-3)",
-                  border: "1px solid var(--border)",
-                }}
+                style={{ background: 'var(--bg-3)', border: '1px solid var(--border)' }}
               >
-                <span className="text-green text-lg flex-shrink-0 mt-0.5">
-                  ✓
-                </span>
+                <span className="text-green text-lg flex-shrink-0 mt-0.5">✓</span>
                 <div>
-                  <p className="text-sm font-semibold text-text mb-1">
-                    {item.title}
-                  </p>
-                  <p className="text-xs text-text-muted leading-relaxed">
-                    {item.desc}
-                  </p>
+                  <p className="text-sm font-semibold text-text mb-1">{item.title}</p>
+                  <p className="text-xs text-text-muted leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -286,16 +226,10 @@ export default function Landing() {
       {/* ── Footer ── */}
       <footer className="border-t border-border px-5 sm:px-10 py-5 flex items-center justify-between flex-wrap gap-3">
         <span className="font-display text-sm text-[var(--gold-dim)] flex items-center gap-2">
-          <img
-            src={letterIcon}
-            alt=""
-            className="w-4 h-4 object-contain opacity-70"
-          />
+          <img src={letterIcon} alt="" className="w-4 h-4 object-contain opacity-70" />
           Tibia Letter
         </span>
-        <span className="text-xs text-text-dim">
-          Não afiliado à CipSoft. Projeto independente.
-        </span>
+        <span className="text-xs text-text-dim">{t('landing.footer_tagline')}</span>
         <a
           href="https://github.com/gabrielportari"
           target="_blank"
@@ -309,5 +243,5 @@ export default function Landing() {
         </a>
       </footer>
     </div>
-  );
+  )
 }

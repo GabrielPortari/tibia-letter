@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import { useAuthStore } from '../stores/authStore'
 import { useQueueStore } from '../stores/queueStore'
 import { useToasts } from '../hooks/useToasts'
+import { useLangNavigate } from '../hooks/useLangNavigate'
 import { PageWrapper } from '../components/layout/PageWrapper'
 import { SpawnCard } from '../components/spawn/SpawnCard'
 import { MyQueuesBanner } from '../components/spawn/MyQueuesBanner'
@@ -23,7 +25,8 @@ export default function SpawnApp() {
   const { user, activeChar } = useAuthStore()
   const { setWorldEntries, getMyEntries } = useQueueStore()
   const { addToast } = useToasts()
-  const navigate = useNavigate()
+  const { t } = useTranslation()
+  const langNavigate = useLangNavigate()
   const qc = useQueryClient()
   const char = activeChar()
 
@@ -41,8 +44,8 @@ export default function SpawnApp() {
 
   useEffect(() => {
     if (spawnsError) {
-      addToast('error', (spawnsErrorObj as Error)?.message ?? 'Mundo inválido.')
-      navigate('/app/queue')
+      addToast('error', (spawnsErrorObj as Error)?.message ?? t('spawnApp.invalid_world_toast'))
+      langNavigate('/app/queue')
     }
   }, [spawnsError]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -77,26 +80,24 @@ export default function SpawnApp() {
   )
 
   function validateJoin(spawnId: string): string | null {
-    if (!user) return 'Não autenticado'
-    if (!char) return 'Sem personagem ativo'
-    if (useAuthStore.getState().isBanned()) return 'Conta banida'
-    if (wrongWorld) return `Seu personagem ativo é de ${char.world}, não deste mundo.`
+    if (!user) return t('spawnApp.not_auth')
+    if (!char) return t('spawnApp.no_active_char')
+    if (useAuthStore.getState().isBanned()) return t('spawnApp.banned')
+    if (wrongWorld) return t('spawnApp.wrong_world_err', { world: char.world })
 
     const spawn = spawns?.find((s) => s.id === spawnId)
-    if (!spawn) return 'Spawn não encontrado'
+    if (!spawn) return t('spawnApp.spawn_not_found')
 
     const isHunting = myEntries.some((e) => getEntryStatus(e) === 'active')
-    if (isHunting) return 'Você já está caçando. Finalize a hunt antes de entrar em outra fila.'
+    if (isHunting) return t('spawnApp.already_hunting')
 
     const alreadyInThisSpawn = myEntries.some((e) => e.spawnId === spawnId)
-    if (alreadyInThisSpawn) return 'Você já está na fila deste spawn.'
+    if (alreadyInThisSpawn) return t('spawnApp.already_in_queue')
 
     const limit = user.premium ? QUEUE_LIMIT.premium : QUEUE_LIMIT.free
     const waitingQueues = myEntries.filter((e) => getEntryStatus(e) !== 'active').length
     if (waitingQueues >= limit) {
-      return user.premium
-        ? 'Limite de 3 filas simultâneas atingido.'
-        : 'Plano Free permite apenas 1 fila por vez. Assine Premium para até 3 filas e personagens ilimitados.'
+      return user.premium ? t('spawnApp.premium_limit') : t('spawnApp.free_limit')
     }
 
     return null
@@ -106,7 +107,6 @@ export default function SpawnApp() {
     mutationFn: () =>
       api.post<CreateSpawnResponse>('/spawns', { name: newSpawnName.trim(), worldId }),
     onSuccess: (data) => {
-      // Update store immediately so SpawnCard shows player as hunting without waiting for refetch
       const current = useQueueStore.getState().entries
       useQueueStore.getState().setWorldEntries({
         ...current,
@@ -116,7 +116,7 @@ export default function SpawnApp() {
       qc.invalidateQueries({ queryKey: ['queue', worldId] })
       setShowCreateModal(false)
       setNewSpawnName('')
-      addToast('success', 'Hunt iniciada!')
+      addToast('success', t('spawnApp.hunt_started_toast'))
     },
     onError: (e: Error) => addToast('error', e.message),
   })
@@ -169,10 +169,10 @@ export default function SpawnApp() {
       <PageWrapper>
         <div className="flex items-center gap-3 mb-4 flex-wrap">
           <button
-            onClick={() => navigate('/app/queue')}
+            onClick={() => langNavigate('/app/queue')}
             className="text-text-muted hover:text-text transition-colors text-sm"
           >
-            ← Mundos
+            {t('spawnApp.back')}
           </button>
           <h1 className="font-display text-xl sm:text-2xl text-gold font-semibold flex-1">
             {worldId}
@@ -182,9 +182,9 @@ export default function SpawnApp() {
               size="sm"
               onClick={() => setShowCreateModal(true)}
               disabled={isActivelyHunting}
-              title={isActivelyHunting ? 'Finalize sua hunt atual primeiro' : undefined}
+              title={isActivelyHunting ? t('spawnApp.finish_hunt_first') : undefined}
             >
-              + Iniciar Hunt
+              {t('spawnApp.start_hunt')}
             </Button>
           )}
         </div>
@@ -194,13 +194,13 @@ export default function SpawnApp() {
             className="mb-4 rounded-lg px-4 py-3 text-sm"
             style={{ background: 'var(--amber-bg)', border: '1px solid var(--amber)', color: 'var(--amber)' }}
           >
-            Seu personagem ativo é de <strong>{char!.world}</strong>. Você pode visualizar as filas, mas não pode participar neste mundo.
+            {t('spawnApp.wrong_world', { world: char!.world })}
           </div>
         )}
 
         <div className="mb-5">
           <Input
-            placeholder="Buscar spawn..."
+            placeholder={t('spawnApp.search_placeholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -228,12 +228,12 @@ export default function SpawnApp() {
             ))}
             {!isLoading && spawns?.length === 0 && (
               <p className="col-span-full text-center py-16 text-text-muted">
-                Nenhum spawn ativo neste mundo. Seja o primeiro a iniciar uma hunt!
+                {t('spawnApp.no_spawns')}
               </p>
             )}
             {!isLoading && spawns && spawns.length > 0 && filteredSpawns.length === 0 && (
               <p className="col-span-full text-center py-16 text-text-muted">
-                Nenhum spawn encontrado para "{search.trim()}".
+                {t('spawnApp.no_results', { query: search.trim() })}
               </p>
             )}
           </div>
@@ -242,24 +242,20 @@ export default function SpawnApp() {
         <Modal
           isOpen={showCreateModal}
           onClose={() => { setShowCreateModal(false); setNewSpawnName('') }}
-          title="Iniciar Hunt"
+          title={t('spawnApp.modal_title')}
         >
           <div className="space-y-4">
             <Input
-              label="Nome do Spawn"
-              placeholder="ex: Asura Palace"
+              label={t('spawnApp.spawn_name_label')}
+              placeholder={t('spawnApp.spawn_name_placeholder')}
               value={newSpawnName}
               onChange={(e) => setNewSpawnName(e.target.value)}
             />
             {nameAlreadyExists && newSpawnName.trim() && (
-              <p className="text-xs text-amber">
-                Já existe um spawn com este nome neste mundo.
-              </p>
+              <p className="text-xs text-amber">{t('spawnApp.name_exists')}</p>
             )}
             {!nameAlreadyExists && (
-              <p className="text-xs text-text-muted">
-                Você entrará automaticamente como ativo neste spawn.
-              </p>
+              <p className="text-xs text-text-muted">{t('spawnApp.auto_active')}</p>
             )}
             <Button
               className="w-full"
@@ -267,7 +263,7 @@ export default function SpawnApp() {
               disabled={!newSpawnName.trim() || nameAlreadyExists}
               onClick={() => createSpawnMutation.mutate()}
             >
-              Iniciar Hunt
+              {t('spawnApp.start_btn')}
             </Button>
           </div>
         </Modal>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { QueueEntry } from '../../types'
 import { getEntryStatus } from '../../types'
 import { Badge } from '../ui/Badge'
@@ -12,6 +13,7 @@ interface QueueSlotProps {
 }
 
 export function QueueSlot({ entry, position, isMe, isNext }: QueueSlotProps) {
+  const { t } = useTranslation()
   const status = getEntryStatus(entry)
   const [copied, setCopied] = useState(false)
 
@@ -33,20 +35,20 @@ export function QueueSlot({ entry, position, isMe, isNext }: QueueSlotProps) {
       </span>
       <button
         onClick={copyName}
-        title="Copiar nome"
-        aria-label="Copiar nome"
+        title={t('slot.copy_name')}
+        aria-label={t('slot.copy_name')}
         className="opacity-0 group-hover:opacity-100 transition-opacity text-text-dim hover:text-text text-xs px-1"
       >
         {copied ? '✓' : '⎘'}
       </button>
       <span className="text-text-muted text-xs">Lv.{entry.characterLevel}</span>
       {entry.premium && <span className="text-xs text-[var(--gold-dim)]">★</span>}
-      {isNext && <Badge variant="amber">próximo</Badge>}
+      {isNext && <Badge variant="amber">{t('slot.next')}</Badge>}
       {status === 'active' && entry.huntStartedAt && (
         <HuntTimer startedAt={entry.huntStartedAt} />
       )}
       {status === 'pending_accept' && (
-        <Badge variant="gold">Aguardando aceite</Badge>
+        <Badge variant="gold">{t('slot.awaiting_accept')}</Badge>
       )}
     </div>
   )
