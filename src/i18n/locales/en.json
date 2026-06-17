@@ -14,10 +14,8 @@
     "admin": "Admin",
     "no_active_char": "No active character",
     "playing_as": "Playing as {{name}} · Lv. {{level}} · {{world}}",
-    "premium_expired": "Premium expired",
-    "premium_days_one": "{{count}} day remaining",
-    "premium_days_other": "{{count}} days remaining",
-    "premium_until": "until {{date}}"
+    "supporter": "Supporter",
+    "be_supporter": "Become a supporter"
   },
   "landing": {
     "badge": "SPAWN QUEUE SYSTEM FOR TIBIA",
@@ -52,8 +50,8 @@
     "feat1_desc": "Character verified directly on tibia.com. If it's not your char, it doesn't get in the queue. Simple as that.",
     "feat2_title": "Automatic from start to finish",
     "feat2_desc": "When your hunt ends, the next player is notified automatically. No one needs to babysit the spawn.",
-    "feat3_title": "3 queues at the same time",
-    "feat3_desc": "With Premium, join up to 3 simultaneous respawns. Maximize every minute of gameplay.",
+    "feat3_title": "2 queues at the same time",
+    "feat3_desc": "Join up to 2 queues at the same time. Maximize every minute of gameplay.",
     "sec_title": "Your Tibia account is 100% safe",
     "sec1_title": "We never ask for your password",
     "sec1_desc": "Tibia Letter does not request, store, or have access to your Tibia or Tibia.com account password.",
@@ -63,7 +61,12 @@
     "sec3_desc": "We use Discord OAuth for authentication. We never create our own login forms.",
     "sec4_title": "Open source and auditable",
     "sec4_desc": "The project is open source. Anyone can verify that no improper data collection occurs.",
-    "footer_tagline": "Not affiliated with CipSoft. Independent project."
+    "footer_tagline": "Not affiliated with CipSoft. Independent project.",
+    "supporter_badge": "Supporter Pack",
+    "supporter_sub": "One-time payment · permanent",
+    "supporter_desc": "Enjoying Tibia Letter? Support the project and have your name highlighted in gold with the ★ badge in queues — visible to all players.",
+    "supporter_disclaimer": "The Supporter Pack is purely visual. There is no queue advantage for being a supporter — all players follow the same rules.",
+    "supporter_cta": "View Supporter Pack →"
   },
   "demo": {
     "badge": "INTERACTIVE DEMO",
@@ -153,8 +156,7 @@
     "spawn_not_found": "Spawn not found",
     "already_hunting": "You are already hunting. Finish your current hunt before joining another queue.",
     "already_in_queue": "You are already in this spawn's queue.",
-    "free_limit": "Free plan allows only 1 queue at a time. Subscribe to Premium for up to 3 queues and unlimited characters.",
-    "premium_limit": "Limit of 3 simultaneous queues reached."
+    "queue_limit": "Limit of 2 simultaneous queues reached."
   },
   "spawn": {
     "status_free": "Free",
@@ -229,6 +231,44 @@
     "creator_name_label": "Creator",
     "creator_char_label": "Tibia character",
     "creator_email_label": "Email"
+  },
+  "supporter": {
+    "title": "Supporter Pack",
+    "subtitle": "If you're enjoying Tibia Letter, consider supporting the project.",
+    "perk1": "Gold name with ★ Supporter badge in queues",
+    "perk2": "Highlight visible to all players in your world",
+    "perk3": "Direct support to the project's development",
+    "pack_label": "Supporter Pack · one-time payment",
+    "pack_permanent": "Permanent access · no renewal",
+    "already_active": "✓ You are already a Supporter — thank you for your support!",
+    "back": "← Back",
+    "btn_active": "Already a Supporter",
+    "price": "R$ 19,90 BRL",
+    "btn_buy": "Support — R$ 19,90 BRL",
+    "payment_note": "Secure payment via Mercado Pago · PIX and card",
+    "preview_caption": "This is how you will appear in queues",
+    "preview_in_queue": "in queue",
+    "preview_hunting": "Hunting"
+  },
+  "supporterSuccess": {
+    "failed_title": "Payment not completed",
+    "failed_desc": "The payment was cancelled or declined. Please try again.",
+    "pending_title": "Awaiting payment",
+    "pending_desc": "Your PIX was generated. Once the payment is confirmed, the Supporter Pack will be activated automatically.",
+    "success_title": "Supporter activated!",
+    "success_desc": "Thank you for supporting Tibia Letter. Your badge is now active!",
+    "go_queue": "Go to queues"
+  },
+  "paymentHistory": {
+    "title": "Payment history",
+    "subtitle": "All Supporter Packs purchased on your account.",
+    "error": "Failed to load payments.",
+    "error_retry": "Please try again in a moment.",
+    "empty": "No payments found.",
+    "empty_desc": "Your Supporter Pack will appear here after payment confirmation.",
+    "col_plan": "Plan",
+    "col_date": "Date",
+    "record_name": "Supporter Pack"
   },
   "copyright": {
     "notice": "Tibia is a game created by",

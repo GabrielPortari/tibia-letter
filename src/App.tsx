@@ -18,6 +18,9 @@ const AuthCallback = lazy(() => import('./pages/AuthCallback'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const Forbidden = lazy(() => import('./pages/Forbidden'))
 const Contact = lazy(() => import('./pages/Contact'))
+const Premium = lazy(() => import('./pages/Premium'))
+const PremiumSuccess = lazy(() => import('./pages/PremiumSuccess'))
+const PaymentHistory = lazy(() => import('./pages/PaymentHistory'))
 
 const Fallback = <div className="flex-1 flex items-center justify-center"><Spinner size="lg" /></div>
 
@@ -52,10 +55,11 @@ function AppInner() {
               <Route path="app/admin" element={<Admin />} />
             </Route>
 
-            {/* Disabled features */}
-            <Route path="premium" element={<Navigate to="../404" replace />} />
-            <Route path="premium/sucesso" element={<Navigate to="../../404" replace />} />
-            <Route path="app/payments" element={<Navigate to="../../404" replace />} />
+            <Route path="supporter" element={<Premium />} />
+            <Route path="supporter/sucesso" element={<PremiumSuccess />} />
+            <Route element={<PrivateRoute />}>
+              <Route path="app/payments" element={<PaymentHistory />} />
+            </Route>
 
             {/* Legacy redirects within lang context */}
             <Route path="login" element={<Navigate to=".." replace />} />
