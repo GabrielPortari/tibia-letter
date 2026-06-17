@@ -212,5 +212,16 @@
   },
   "authCallback": {
     "authenticating": "Autenticando con Discord…"
+  },
+  "contact": {
+    "title": "Contacto",
+    "subtitle": "¿Tienes una pregunta, encontraste un bug o quieres sugerir algo? Elige un canal abajo.",
+    "bug_title": "Reportar un bug",
+    "bug_desc": "¿Algo roto? Abre un issue en GitHub con el mayor detalle posible.",
+    "bug_btn": "Abrir issue en GitHub",
+    "email_title": "Hablar con el dev",
+    "email_desc": "Preguntas generales, sugerencias o cualquier otro tema — manda un correo.",
+    "email_btn": "Enviar correo",
+    "footer_link": "Contacto"
   }
 }
