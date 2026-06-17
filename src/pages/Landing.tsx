@@ -391,10 +391,10 @@ export default function Landing() {
             </div>
             <div className="flex items-baseline gap-2 mb-0.5 mt-1">
               <p className="font-display text-4xl font-bold text-gold">
-                R$ 19<span className="text-2xl">,90</span>
+                R$ 4<span className="text-2xl">,99</span>
               </p>
               <span className="text-sm text-text-dim line-through">
-                R$ 29,90
+                R$ 19,90
               </span>
             </div>
             <p className="text-xs text-text-muted mb-1">
@@ -493,14 +493,14 @@ export default function Landing() {
               </div>
               <div className="flex items-baseline gap-2 mb-0.5 mt-1">
                 <p className="font-display text-4xl font-bold text-gold">
-                  R$ 44<span className="text-2xl">,90</span>
+                  R$ 12<span className="text-2xl">,99</span>
                 </p>
                 <span className="text-sm text-text-dim line-through">
-                  R$ 79,90
+                  R$ 49,90
                 </span>
               </div>
               <p className="text-xs text-text-muted mb-1">
-                pagamento único · economia de R$ 35
+                pagamento único
               </p>
               <p className="text-xs text-gold/60 mb-6">
                 90 dias · sem renovação automática
