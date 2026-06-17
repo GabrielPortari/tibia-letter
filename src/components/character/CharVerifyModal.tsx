@@ -196,13 +196,16 @@ export function CharVerifyModal({ isOpen, onClose, onVerified, defaultName }: Ch
                 <strong className="text-text">{charName}</strong> e cole o código abaixo no campo{' '}
                 <em>Comment</em> do perfil. Depois clique em "Já coloquei o código".
               </p>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setShowGuide(true)}
                 title="Ver guia passo a passo"
-                className="flex-shrink-0 w-6 h-6 rounded-full bg-bg3 border border-border text-text-dim hover:text-text hover:border-gold transition-colors text-xs font-bold"
+                aria-label="Ver guia passo a passo"
+                className="flex-shrink-0 w-6 h-6 rounded-full bg-bg3 border border-border text-xs font-bold p-0"
               >
                 ?
-              </button>
+              </Button>
             </div>
             <div
               className="rounded-lg px-3 py-2.5 text-xs leading-relaxed flex gap-2"

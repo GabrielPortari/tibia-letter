@@ -29,8 +29,8 @@ function AcceptChip({
   showSkip: boolean
   busy: boolean
   loadingSpawnId: string | null
-  onAccept: (id: string) => void
-  onLeave: (id: string) => void
+  onAccept: (id: string) => Promise<void>
+  onLeave: (id: string) => Promise<void>
 }) {
   const secs = useCountdown(new Date(deadline).getTime(), () => {})
   const isThisLoading = loadingSpawnId === spawnId

@@ -201,13 +201,10 @@ export function SpawnCard({
                   Sair da Fila
                 </Button>
               )}
-
             </div>
           </div>
         )}
       </div>
-
-
     </>
   )
 }

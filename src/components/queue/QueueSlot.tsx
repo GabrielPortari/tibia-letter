@@ -16,7 +16,7 @@ export function QueueSlot({ entry, position, isMe, isNext }: QueueSlotProps) {
   const [copied, setCopied] = useState(false)
 
   function copyName() {
-    navigator.clipboard.writeText(entry.characterName)
+    navigator.clipboard.writeText(entry.characterName).catch(() => {})
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
   }
@@ -34,6 +34,7 @@ export function QueueSlot({ entry, position, isMe, isNext }: QueueSlotProps) {
       <button
         onClick={copyName}
         title="Copiar nome"
+        aria-label="Copiar nome"
         className="opacity-0 group-hover:opacity-100 transition-opacity text-text-dim hover:text-text text-xs px-1"
       >
         {copied ? '✓' : '⎘'}
