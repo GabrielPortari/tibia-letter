@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useParams, useNavigate, Outlet } from 'react-router-dom'
+import { useParams, useNavigate, useLocation, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { SUPPORTED_LANGS, detectLang, type SupportedLang } from '../i18n'
 
