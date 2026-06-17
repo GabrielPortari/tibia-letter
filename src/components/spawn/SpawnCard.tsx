@@ -8,13 +8,11 @@ import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
 import { QueueSlot } from '../queue/QueueSlot'
 import { AcceptTimer, HuntEndTimer } from '../queue/InlineTimer'
-import { ReportModal } from '../report/ReportModal'
 
 const GRACE_PERIOD_MS = 5 * 60 * 1000
 
 interface SpawnCardProps {
   spawn: Spawn
-  worldId: string
   onJoin: (spawnId: string) => Promise<unknown>
   onAccept: (spawnId: string) => Promise<unknown>
   onFinish: (spawnId: string) => Promise<unknown>
@@ -43,7 +41,6 @@ function getSpawnStatus(queue: QueueEntry[]) {
 
 export function SpawnCard({
   spawn,
-  worldId,
   onJoin,
   onAccept,
   onFinish,
@@ -51,8 +48,7 @@ export function SpawnCard({
 }: SpawnCardProps) {
   const [expanded, setExpanded] = useState(false)
   const [loading, setLoading] = useState<string | null>(null)
-  const [reportOpen, setReportOpen] = useState(false)
-  const { user, activeChar } = useAuthStore()
+  const { activeChar } = useAuthStore()
   const getSpawnQueue = useQueueStore((s) => s.getSpawnQueue)
   const char = activeChar()
 
@@ -73,9 +69,6 @@ export function SpawnCard({
   const statusDot = { free: 'bg-green', occupied: 'bg-amber', pending: 'bg-gold animate-pulse' }[status]
   const statusLabel = { free: 'Livre', occupied: 'Ocupado', pending: 'Aguard. aceite' }[status]
   const statusBadge = { free: 'green', occupied: 'amber', pending: 'gold' } as const
-
-  // Who is currently hunting (first entry with active status)
-  const activeEntry = queue.find((e) => getEntryStatus(e) === 'active')
 
   async function wrap(key: string, fn: () => Promise<unknown>) {
     setLoading(key)
@@ -208,32 +201,10 @@ export function SpawnCard({
                   Sair da Fila
                 </Button>
               )}
-              {/* Report active hunter */}
-              {activeEntry && activeEntry.characterName !== char?.name && user && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setReportOpen(true)}
-                  className="text-text-dim hover:text-red"
-                >
-                  Reportar
-                </Button>
-              )}
             </div>
           </div>
         )}
       </div>
-
-      {activeEntry && user && (
-        <ReportModal
-          isOpen={reportOpen}
-          onClose={() => setReportOpen(false)}
-          spawnId={spawn.id}
-          spawnName={spawn.name}
-          worldId={worldId}
-          targetName={activeEntry.characterName}
-        />
-      )}
     </>
   )
 }

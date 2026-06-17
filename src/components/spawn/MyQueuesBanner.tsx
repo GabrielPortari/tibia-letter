@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useAuthStore } from '../../stores/authStore'
 import { useQueueStore } from '../../stores/queueStore'
 import { useCountdown } from '../../hooks/useCountdown'
@@ -17,6 +18,8 @@ function AcceptChip({
   spawnName,
   deadline,
   showSkip,
+  busy,
+  loadingSpawnId,
   onAccept,
   onLeave,
 }: {
@@ -24,10 +27,13 @@ function AcceptChip({
   spawnName: string
   deadline: string
   showSkip: boolean
-  onAccept: (id: string) => Promise<unknown>
-  onLeave: (id: string) => Promise<unknown>
+  busy: boolean
+  loadingSpawnId: string | null
+  onAccept: (id: string) => Promise<void>
+  onLeave: (id: string) => Promise<void>
 }) {
   const secs = useCountdown(new Date(deadline).getTime(), () => {})
+  const isThisLoading = loadingSpawnId === spawnId
 
   return (
     <div
@@ -52,15 +58,19 @@ function AcceptChip({
       <div className="flex gap-2">
         <button
           onClick={() => onAccept(spawnId)}
-          className="flex-1 py-1.5 rounded-lg text-xs font-semibold text-bg0 transition-opacity hover:opacity-90"
+          disabled={busy}
+          className="flex-1 py-1.5 rounded-lg text-xs font-semibold text-bg0 transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ background: 'var(--gold)' }}
         >
-          ⚔ Aceitar
+          {isThisLoading ? (
+            <span className="inline-block w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          ) : '⚔ Aceitar'}
         </button>
         {showSkip && (
           <button
             onClick={() => onLeave(spawnId)}
-            className="py-1.5 px-3 rounded-lg text-xs transition-opacity hover:opacity-80"
+            disabled={busy}
+            className="py-1.5 px-3 rounded-lg text-xs transition-opacity hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
               background: 'var(--red-bg)',
               border: '0.5px solid var(--red)',
@@ -76,6 +86,7 @@ function AcceptChip({
 }
 
 export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProps) {
+  const [loadingSpawnId, setLoadingSpawnId] = useState<string | null>(null)
   const { activeChar } = useAuthStore()
   const { getMyEntries } = useQueueStore()
   const char = activeChar()
@@ -96,6 +107,16 @@ export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProp
 
   function spawnName(spawnId: string) {
     return spawns.find((s) => s.id === spawnId)?.name ?? spawnId
+  }
+
+  async function handleAccept(spawnId: string) {
+    setLoadingSpawnId(spawnId)
+    try { await onAccept(spawnId) } finally { setLoadingSpawnId(null) }
+  }
+
+  async function handleLeave(spawnId: string) {
+    setLoadingSpawnId(spawnId)
+    try { await onLeave(spawnId) } finally { setLoadingSpawnId(null) }
   }
 
   return (
@@ -126,8 +147,10 @@ export function MyQueuesBanner({ spawns, onAccept, onLeave }: MyQueuesBannerProp
                 spawnName={spawnName(e.spawnId)}
                 deadline={e.acceptDeadline!}
                 showSkip={!hasConflict}
-                onAccept={onAccept}
-                onLeave={onLeave}
+                busy={loadingSpawnId !== null}
+                loadingSpawnId={loadingSpawnId}
+                onAccept={handleAccept}
+                onLeave={handleLeave}
               />
             ))}
           </div>

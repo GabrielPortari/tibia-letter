@@ -10,6 +10,60 @@ import { secondsUntil, fmt } from '../../utils/time'
 import { Modal } from '../ui/Modal'
 import { Input } from '../ui/Input'
 import { Button } from '../ui/Button'
+import accountManagement from '../../assets/account-management.png'
+import characterEdit from '../../assets/character-edit.png'
+
+const GUIDE_STEPS = [
+  { img: accountManagement, label: 'Passo 1 — Account Management', desc: 'Acesse tibia.com → Account Management e clique em editar o personagem.' },
+  { img: characterEdit,     label: 'Passo 2 — Character Edit',      desc: 'Cole o código no campo Comment e salve.' },
+]
+
+function GuideModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const [guideStep, setGuideStep] = useState(0)
+  const current = GUIDE_STEPS[guideStep]
+
+  function handleClose() {
+    setGuideStep(0)
+    onClose()
+  }
+
+  return (
+    <Modal isOpen={isOpen} onClose={handleClose} title={current.label}>
+      <div className="space-y-4">
+        <img
+          src={current.img}
+          alt={current.label}
+          className="w-full rounded-lg border border-border object-contain max-h-72"
+        />
+        <p className="text-sm text-text-muted">{current.desc}</p>
+        <div className="flex items-center gap-2">
+          {guideStep > 0 && (
+            <Button variant="secondary" className="flex-1" onClick={() => setGuideStep(guideStep - 1)}>
+              ← Anterior
+            </Button>
+          )}
+          {guideStep < GUIDE_STEPS.length - 1 ? (
+            <Button className="flex-1" onClick={() => setGuideStep(guideStep + 1)}>
+              Próximo →
+            </Button>
+          ) : (
+            <Button className="flex-1" onClick={handleClose}>
+              Entendido
+            </Button>
+          )}
+        </div>
+        <div className="flex justify-center gap-1.5">
+          {GUIDE_STEPS.map((_, i) => (
+            <div
+              key={i}
+              className={`w-1.5 h-1.5 rounded-full transition-colors ${i === guideStep ? 'bg-gold' : 'bg-bg3'}`}
+            />
+          ))}
+        </div>
+      </div>
+    </Modal>
+  )
+}
 
 const schema = z.object({
   name: z
@@ -40,6 +94,7 @@ export function CharVerifyModal({ isOpen, onClose, onVerified, defaultName }: Ch
   const [code, setCode] = useState('')
   const [expiresAt, setExpiresAt] = useState('')
   const [warning, setWarning] = useState<string | undefined>()
+  const [showGuide, setShowGuide] = useState(false)
   const [timeLeft, setTimeLeft] = useState(0)
   const { addToast } = useToasts()
 
@@ -98,6 +153,7 @@ export function CharVerifyModal({ isOpen, onClose, onVerified, defaultName }: Ch
   const expired = timeLeft <= 0 && !!expiresAt
 
   return (
+    <>
     <Modal isOpen={isOpen} onClose={handleClose} title="Vincular Personagem">
       <div className="space-y-5">
         <div className="flex gap-2 mb-2">
@@ -134,11 +190,23 @@ export function CharVerifyModal({ isOpen, onClose, onVerified, defaultName }: Ch
               </div>
             )}
 
-            <p className="text-sm text-text-muted leading-relaxed">
-              Acesse <strong className="text-text">tibia.com</strong>, edite o personagem{' '}
-              <strong className="text-text">{charName}</strong> e cole o código abaixo no campo{' '}
-              <em>Comment</em> do perfil. Depois clique em "Já coloquei o código".
-            </p>
+            <div className="flex items-start justify-between gap-2">
+              <p className="text-sm text-text-muted leading-relaxed">
+                Acesse <strong className="text-text">tibia.com</strong>, edite o personagem{' '}
+                <strong className="text-text">{charName}</strong> e cole o código abaixo no campo{' '}
+                <em>Comment</em> do perfil. Depois clique em "Já coloquei o código".
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowGuide(true)}
+                title="Ver guia passo a passo"
+                aria-label="Ver guia passo a passo"
+                className="flex-shrink-0 w-6 h-6 rounded-full bg-bg3 border border-border text-xs font-bold p-0"
+              >
+                ?
+              </Button>
+            </div>
             <div
               className="rounded-lg px-3 py-2.5 text-xs leading-relaxed flex gap-2"
               style={{ background: 'var(--blue-bg)', border: '1px solid var(--blue)', color: 'var(--blue)' }}
@@ -183,5 +251,7 @@ export function CharVerifyModal({ isOpen, onClose, onVerified, defaultName }: Ch
         )}
       </div>
     </Modal>
+    <GuideModal isOpen={showGuide} onClose={() => setShowGuide(false)} />
+    </>
   )
 }

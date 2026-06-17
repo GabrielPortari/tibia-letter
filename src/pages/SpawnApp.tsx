@@ -200,7 +200,6 @@ export default function SpawnApp() {
               <SpawnCard
                 key={spawn.id}
                 spawn={spawn}
-                worldId={worldId!}
                 onJoin={(id) => joinMutation.mutateAsync(id)}
                 onAccept={(id) => acceptMutation.mutateAsync(id)}
                 onFinish={(id) => finishMutation.mutateAsync(id)}
