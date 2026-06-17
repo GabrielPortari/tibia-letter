@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { useAuthStore } from "../stores/authStore";
 import { PageWrapper } from "../components/layout/PageWrapper";
@@ -9,81 +9,118 @@ import { Spinner } from "../components/ui/Spinner";
 import { MercadoPagoWallet } from "../components/ui/MercadoPagoWallet";
 import { useToasts } from "../hooks/useToasts";
 
-interface PremiumStatus {
+interface SupporterStatus {
   active: boolean;
-  until: string | null;
 }
 
-type PlanKey = "monthly" | "quarterly";
-
-const PLANS = [
-  {
-    key: "monthly" as PlanKey,
-    label: "1 mês",
-    price: "R$ 4,99",
-    priceOriginal: "R$ 19,90",
-    priceNote: "Oferta de lançamento",
-    duration: "30 dias de acesso",
-    featured: false,
-  },
-  {
-    key: "quarterly" as PlanKey,
-    label: "3 meses",
-    price: "R$ 12,99",
-    priceOriginal: "R$ 49,90",
-    priceNote: "Melhor oferta",
-    duration: "90 dias de acesso",
-    featured: true,
-  },
+const MOCK_QUEUE = [
+  { name: "Drakenheim",  level: 882, supporter: false, active: true  },
+  { name: "Seraphion",   level: 487, supporter: true,  active: false },
+  { name: "Mirella",     level: 695, supporter: false, active: false },
+  { name: "Orindel Jr",  level: 510, supporter: false, active: false },
 ];
 
-const BENEFITS = [
-  "Entre em até 3 filas simultâneas",
-  "Cadastre quantos personagens quiser",
-];
+function SupporterQueuePreview() {
+  const { t } = useTranslation();
+  return (
+    <div
+      className="rounded-2xl overflow-hidden h-full flex flex-col"
+      style={{ border: "1px solid var(--border)", background: "var(--bg-0)" }}
+    >
+      <div
+        className="flex items-center justify-between px-4 py-2.5 flex-shrink-0"
+        style={{ borderBottom: "0.5px solid var(--border)", background: "var(--bg-1)" }}
+      >
+        <span className="text-xs font-semibold text-gold">⚔ Tibia Letter</span>
+        <span className="text-xs text-text-muted">Antica</span>
+      </div>
 
-export default function Premium() {
+      <div className="px-4 pt-3 pb-2 flex-shrink-0">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="w-2 h-2 rounded-full bg-amber flex-shrink-0" />
+          <span className="font-semibold text-sm text-text">Asura Palace</span>
+          <span
+            className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full"
+            style={{ background: "color-mix(in srgb, var(--amber) 15%, transparent)", color: "var(--amber)" }}
+          >
+            {t("spawn.status_occupied")}
+          </span>
+        </div>
+        <p className="text-xs text-text-dim pl-4">4 {t("supporter.preview_in_queue")}</p>
+      </div>
+
+      <div className="px-4 pb-3 space-y-1 flex-1">
+        {MOCK_QUEUE.map((entry, i) => (
+          <div
+            key={entry.name}
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm"
+            style={
+              entry.active
+                ? {
+                    background: "var(--green-bg)",
+                    border: "1px solid color-mix(in srgb, var(--green) 35%, transparent)",
+                  }
+                : { background: "var(--bg-2)" }
+            }
+          >
+            <span className="w-5 text-center font-mono text-xs text-text-dim">{i + 1}</span>
+            <span className={`flex-1 font-medium truncate ${entry.supporter ? "text-gold" : "text-text"}`}>
+              {entry.name}
+            </span>
+            <span className="text-text-muted text-xs">Lv.{entry.level}</span>
+            {entry.supporter && <span className="text-xs text-[var(--gold-dim)]">★</span>}
+            {entry.active && (
+              <span
+                className="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
+                style={{ color: "var(--green)", background: "var(--green-bg)", border: "0.5px solid var(--green)" }}
+              >
+                {t("supporter.preview_hunting")}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <p className="text-center text-xs text-text-dim pb-3 flex-shrink-0">
+        {t("supporter.preview_caption")}
+      </p>
+    </div>
+  );
+}
+
+export default function Supporter() {
   const { user } = useAuthStore();
   const { addToast } = useToasts();
-  const location = useLocation();
-  const preSelected = (location.state as { plan?: string } | null)?.plan as PlanKey | undefined;
+  const { t } = useTranslation();
   const [preferenceId, setPreferenceId] = useState<string | null>(null);
 
-  const { data: status, isLoading } = useQuery<PremiumStatus>({
+  const { data: status, isLoading } = useQuery<SupporterStatus>({
     queryKey: ["premium-status"],
-    queryFn: () => api.get<PremiumStatus>("/payments/status"),
+    queryFn: () => api.get<SupporterStatus>("/payments/status"),
     enabled: !!user,
   });
 
   const subscribeMutation = useMutation({
-    mutationFn: (plan: PlanKey) =>
-      api.post<{ preferenceId: string }>("/payments/subscribe", { plan }),
-    onSuccess: (data) => {
-      setPreferenceId(data.preferenceId);
-    },
+    mutationFn: () =>
+      api.post<{ preferenceId: string }>("/payments/subscribe", {}),
+    onSuccess: (data) => setPreferenceId(data.preferenceId),
     onError: (e: Error) => addToast("error", e.message),
   });
 
-  const formatDate = (iso: string) =>
-    new Date(iso).toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-
-  const daysRemaining = (iso: string) => {
-    const diff = new Date(iso).getTime() - Date.now();
-    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-  };
+  const perks = [
+    t("supporter.perk1"),
+    t("supporter.perk2"),
+    t("supporter.perk3"),
+  ];
 
   return (
     <PageWrapper>
       <div className="max-w-2xl mx-auto py-8 px-4">
         <h1 className="font-display text-2xl font-bold text-gold mb-1">
-          Premium
+          {t("supporter.title")}
         </h1>
         <p className="text-text-muted text-sm mb-8">
-          Desbloqueie o máximo da sua experiência no Tibia Letter.
+          {t("supporter.subtitle")}
         </p>
 
         {isLoading ? (
@@ -91,13 +128,13 @@ export default function Premium() {
             <Spinner />
           </div>
         ) : preferenceId ? (
-          <div className="space-y-4">
+          <div className="space-y-4 max-w-md">
             <MercadoPagoWallet preferenceId={preferenceId} />
             <button
               onClick={() => setPreferenceId(null)}
               className="w-full text-sm text-text-muted hover:text-text transition-colors py-2"
             >
-              ← Voltar aos planos
+              {t("supporter.back")}
             </button>
           </div>
         ) : (
@@ -105,106 +142,50 @@ export default function Premium() {
             {status?.active && (
               <div
                 className="rounded-xl px-4 py-3 text-sm mb-6"
-                style={{
-                  background: "var(--green-bg)",
-                  border: "1px solid var(--green)",
-                  color: "var(--green)",
-                }}
+                style={{ background: "var(--green-bg)", border: "1px solid var(--green)", color: "var(--green)" }}
               >
-                ✓ Premium ativo
-                {status.until && (
-                  <span className="text-text-muted ml-2 text-xs">
-                    — {daysRemaining(status.until)} dias restantes · expira em{" "}
-                    {formatDate(status.until)}
-                  </span>
-                )}
+                {t("supporter.already_active")}
               </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-              {PLANS.map((plan) => (
-                <div
-                  key={plan.key}
-                  className={`relative bg-bg2 border rounded-2xl overflow-hidden flex flex-col ${
-                    plan.featured
-                      ? "border-gold shadow-[0_0_24px_var(--gold-glow)]"
-                      : preSelected === plan.key
-                      ? "border-gold/50 ring-2 ring-gold/30"
-                      : "border-border"
-                  }`}
-                >
-                  {plan.featured && (
-                    <div className="bg-gold text-bg0 text-xs font-bold text-center py-1.5 tracking-wide">
-                      MELHOR OFERTA
-                    </div>
-                  )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+              <SupporterQueuePreview />
 
-                  <div
-                    className={`px-6 py-5 border-b ${
-                      plan.featured
-                        ? "bg-[var(--gold-glow)] border-[var(--gold-dim)]"
-                        : "border-border"
-                    }`}
-                  >
-                    <p className="text-xs text-text-muted mb-2 font-medium uppercase tracking-wide">
-                      {plan.label}
-                    </p>
-                    <div className="flex items-end gap-2">
-                      <span className="font-display text-3xl font-bold text-gold">
-                        {plan.price}
-                      </span>
-                      <span className="text-text-dim text-sm line-through mb-1">
-                        {plan.priceOriginal}
-                      </span>
-                    </div>
-                    <p
-                      className={`text-xs mt-1 font-medium ${
-                        plan.featured ? "text-gold" : "text-gold/70"
-                      }`}
-                    >
-                      {plan.priceNote}
-                    </p>
-                    <p className="text-text-dim text-xs mt-0.5">
-                      {plan.duration} · sem renovação automática
-                    </p>
-                  </div>
-
-                  <ul className="px-6 py-5 space-y-3 flex-1">
-                    {BENEFITS.map((b) => (
-                      <li
-                        key={b}
-                        className="flex items-center gap-3 text-sm text-text"
-                      >
-                        <span className="text-green">✓</span>
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="px-6 pb-6">
-                    <Button
-                      className="w-full"
-                      size="lg"
-                      variant={plan.featured ? "primary" : "secondary"}
-                      isLoading={
-                        subscribeMutation.isPending &&
-                        subscribeMutation.variables === plan.key
-                      }
-                      disabled={subscribeMutation.isPending}
-                      onClick={() => subscribeMutation.mutate(plan.key)}
-                    >
-                      {status?.active
-                        ? `Renovar — ${plan.price}`
-                        : `Ativar — ${plan.price}`}
-                    </Button>
-                  </div>
+              <div className="bg-bg2 border border-border rounded-2xl overflow-hidden">
+                <div className="px-6 py-5 border-b border-border">
+                  <p className="text-xs text-text-muted mb-2 font-medium uppercase tracking-wide">
+                    {t("supporter.pack_label")}
+                  </p>
+                  <span className="font-display text-3xl font-bold text-gold">{t("supporter.price")}</span>
+                  <p className="text-text-dim text-xs mt-1">{t("supporter.pack_permanent")}</p>
                 </div>
-              ))}
+
+                <ul className="px-6 py-5 space-y-3">
+                  {perks.map((p) => (
+                    <li key={p} className="flex items-start gap-3 text-sm text-text">
+                      <span className="text-gold mt-0.5">★</span>
+                      {p}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="px-6 pb-6">
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    variant="secondary"
+                    isLoading={subscribeMutation.isPending}
+                    disabled={subscribeMutation.isPending || !!status?.active}
+                    onClick={() => subscribeMutation.mutate()}
+                  >
+                    {status?.active ? t("supporter.btn_active") : t("supporter.btn_buy")}
+                  </Button>
+                </div>
+              </div>
             </div>
 
-            <p className="text-center text-xs text-text-dim">
-              Pagamento seguro via Mercado Pago · PIX e cartão · acesso liberado
-              a partir da confirmação do pagamento
+            <p className="text-center text-xs text-text-dim mt-6">
+              {t("supporter.payment_note")}
             </p>
           </>
         )}

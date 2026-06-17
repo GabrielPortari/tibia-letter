@@ -30,7 +30,7 @@ export function QueueSlot({ entry, position, isMe, isNext }: QueueSlotProps) {
       }`}
     >
       <span className="w-5 text-center text-text-dim font-mono text-xs">{position}</span>
-      <span className={`flex-1 font-medium truncate ${isMe ? 'text-gold' : 'text-text'}`}>
+      <span className={`flex-1 font-medium truncate ${isMe || entry.premium ? 'text-gold' : 'text-text'}`}>
         {entry.characterName}
       </span>
       <button

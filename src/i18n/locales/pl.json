@@ -14,10 +14,8 @@
     "admin": "Admin",
     "no_active_char": "Brak aktywnej postaci",
     "playing_as": "Gram jako {{name}} · Poz. {{level}} · {{world}}",
-    "premium_expired": "Premium wygasł",
-    "premium_days_one": "{{count}} dzień pozostał",
-    "premium_days_other": "{{count}} dni pozostało",
-    "premium_until": "do {{date}}"
+    "supporter": "Supporter",
+    "be_supporter": "Zostań supporterem"
   },
   "landing": {
     "badge": "SYSTEM KOLEJEK RESPAWNÓW DLA TIBIA",
@@ -52,8 +50,8 @@
     "feat1_desc": "Postać weryfikowana bezpośrednio na tibia.com. Jeśli to nie twoja postać, nie wchodzi do kolejki. Proste.",
     "feat2_title": "Automatyczne od początku do końca",
     "feat2_desc": "Gdy twoje polowanie się kończy, następny gracz automatycznie otrzymuje powiadomienie. Nikt nie musi pilnować spawnu.",
-    "feat3_title": "3 kolejki jednocześnie",
-    "feat3_desc": "Z Premium dołącz do maksymalnie 3 respawnów jednocześnie. Zmaksymalizuj każdą minutę gry.",
+    "feat3_title": "2 kolejki jednocześnie",
+    "feat3_desc": "Dołącz do maksymalnie 2 kolejek jednocześnie. Zmaksymalizuj każdą minutę gry.",
     "sec_title": "Twoje konto Tibia jest w 100% bezpieczne",
     "sec1_title": "Nigdy nie prosimy o hasło",
     "sec1_desc": "Tibia Letter nie żąda, nie przechowuje ani nie ma dostępu do twojego hasła Tibia lub konta Tibia.com.",
@@ -63,7 +61,12 @@
     "sec3_desc": "Używamy OAuth Discorda do uwierzytelniania. Nigdy nie tworzymy własnych formularzy logowania.",
     "sec4_title": "Otwarty kod i możliwość audytu",
     "sec4_desc": "Projekt jest open source. Każdy może sprawdzić, że nie ma nieodpowiedniego zbierania danych.",
-    "footer_tagline": "Niezwiązany z CipSoft. Niezależny projekt."
+    "footer_tagline": "Niezwiązany z CipSoft. Niezależny projekt.",
+    "supporter_badge": "Supporter Pack",
+    "supporter_sub": "Jednorazowa płatność · permanentny",
+    "supporter_desc": "Podobа ci się Tibia Letter? Wesprzyj projekt i miej swoje imię podświetlone na złoto z odznaczeniem ★ w kolejkach — widoczne dla wszystkich graczy.",
+    "supporter_disclaimer": "Supporter Pack jest czysto wizualny. Bycie supporterem nie daje żadnej przewagi w kolejkach — wszyscy gracze podlegają tym samym zasadom.",
+    "supporter_cta": "Zobacz Supporter Pack →"
   },
   "demo": {
     "badge": "INTERAKTYWNE DEMO",
@@ -97,6 +100,7 @@
     "no_active": "Brak aktywnej postaci — dodaj i aktywuj jedną, aby korzystać z kolejek.",
     "go_queue": "Wejdź do kolejki →",
     "link_char": "+ Dodaj postać",
+    "capacity_chars": "zweryfikowane postaci",
     "need_verified": "Potrzebujesz zweryfikowanej i aktywnej postaci, aby dołączyć do kolejek.",
     "empty_title": "Brak dodanych postaci",
     "empty_desc": "Kliknij \"Dodaj postać\", aby zacząć.",
@@ -153,8 +157,8 @@
     "spawn_not_found": "Nie znaleziono spawnu",
     "already_hunting": "Już polują. Zakończ bieżące polowanie przed dołączeniem do innej kolejki.",
     "already_in_queue": "Już jesteś w kolejce tego spawnu.",
-    "free_limit": "Plan darmowy pozwala na tylko 1 kolejkę na raz. Subskrybuj Premium, aby mieć do 3 kolejek i nieograniczone postacie.",
-    "premium_limit": "Osiągnięto limit 3 jednoczesnych kolejek."
+    "queue_limit": "Osiągnięto limit 2 jednoczesnych kolejek.",
+    "queue_counter": "{{count}}/2 kolejek"
   },
   "spawn": {
     "status_free": "Wolny",
@@ -229,6 +233,44 @@
     "creator_name_label": "Twórca",
     "creator_char_label": "Postać w Tibia",
     "creator_email_label": "E-mail"
+  },
+  "supporter": {
+    "title": "Supporter Pack",
+    "subtitle": "Jeśli podoba ci się Tibia Letter, rozważ wsparcie projektu.",
+    "perk1": "Złote imię z odznaczeniem ★ Supporter w kolejkach",
+    "perk2": "Wyróżnienie widoczne dla wszystkich graczy twojego świata",
+    "perk3": "Bezpośrednie wsparcie rozwoju projektu",
+    "pack_label": "Supporter Pack · jednorazowa płatność",
+    "pack_permanent": "Stały dostęp · bez odnowienia",
+    "already_active": "✓ Jesteś już Supporterem — dziękujemy za wsparcie!",
+    "back": "← Wróć",
+    "btn_active": "Już jesteś Supporterem",
+    "price": "R$ 19,90 BRL",
+    "btn_buy": "Wesprzyj — R$ 19,90 BRL",
+    "payment_note": "Bezpieczna płatność via Mercado Pago · PIX i karta",
+    "preview_caption": "Tak będziesz wyglądać w kolejkach",
+    "preview_in_queue": "w kolejce",
+    "preview_hunting": "Poluje"
+  },
+  "supporterSuccess": {
+    "failed_title": "Płatność nieukończona",
+    "failed_desc": "Płatność została anulowana lub odrzucona. Spróbuj ponownie.",
+    "pending_title": "Oczekiwanie na płatność",
+    "pending_desc": "Twój PIX został wygenerowany. Po potwierdzeniu płatności Supporter Pack zostanie aktywowany automatycznie.",
+    "success_title": "Supporter aktywowany!",
+    "success_desc": "Dziękujemy za wsparcie Tibia Letter. Twoja odznaka jest już aktywna!",
+    "go_queue": "Przejdź do kolejek"
+  },
+  "paymentHistory": {
+    "title": "Historia płatności",
+    "subtitle": "Wszystkie Supporter Packi zakupione na twoim koncie.",
+    "error": "Błąd podczas ładowania płatności.",
+    "error_retry": "Spróbuj ponownie za chwilę.",
+    "empty": "Nie znaleziono płatności.",
+    "empty_desc": "Twój Supporter Pack pojawi się tutaj po potwierdzeniu płatności.",
+    "col_plan": "Plan",
+    "col_date": "Data",
+    "record_name": "Supporter Pack"
   },
   "copyright": {
     "notice": "Tibia to gra stworzona przez",
