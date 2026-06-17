@@ -148,6 +148,7 @@
     "not_auth": "Nie uwierzytelniony",
     "no_active_char": "Brak aktywnej postaci",
     "banned": "Konto zablokowane",
+    "warnings": "Ostrzeżenia: {{count}}",
     "wrong_world_err": "Twoja aktywna postać jest ze świata {{world}}, nie z tego.",
     "spawn_not_found": "Nie znaleziono spawnu",
     "already_hunting": "Już polują. Zakończ bieżące polowanie przed dołączeniem do innej kolejki.",

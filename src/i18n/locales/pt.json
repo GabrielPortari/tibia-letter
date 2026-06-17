@@ -148,6 +148,7 @@
     "not_auth": "Não autenticado",
     "no_active_char": "Sem personagem ativo",
     "banned": "Conta banida",
+    "warnings": "Avisos: {{count}}",
     "wrong_world_err": "Seu personagem ativo é de {{world}}, não deste mundo.",
     "spawn_not_found": "Spawn não encontrado",
     "already_hunting": "Você já está caçando. Finalize a hunt antes de entrar em outra fila.",
