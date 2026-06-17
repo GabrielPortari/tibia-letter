@@ -17,7 +17,10 @@ export function LangProvider() {
       return
     }
     localStorage.setItem('i18n-lang', lang)
-    i18n.changeLanguage(lang)
+    i18n.changeLanguage(lang).then(() => {
+      document.title = i18n.t('page_title')
+      document.documentElement.lang = lang
+    })
   }, [lang, i18n, navigate])
 
   if (!lang || !SUPPORTED_LANGS.includes(lang as SupportedLang)) return null
