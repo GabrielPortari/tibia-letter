@@ -8,7 +8,6 @@ import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
 import { QueueSlot } from '../queue/QueueSlot'
 import { AcceptTimer, HuntEndTimer } from '../queue/InlineTimer'
-import { ReportModal } from '../report/ReportModal'
 
 const GRACE_PERIOD_MS = 5 * 60 * 1000
 
@@ -51,7 +50,6 @@ export function SpawnCard({
 }: SpawnCardProps) {
   const [expanded, setExpanded] = useState(false)
   const [loading, setLoading] = useState<string | null>(null)
-  const [reportOpen, setReportOpen] = useState(false)
   const { user, activeChar } = useAuthStore()
   const getSpawnQueue = useQueueStore((s) => s.getSpawnQueue)
   const char = activeChar()
@@ -208,32 +206,13 @@ export function SpawnCard({
                   Sair da Fila
                 </Button>
               )}
-              {/* Report active hunter */}
-              {activeEntry && activeEntry.characterName !== char?.name && user && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setReportOpen(true)}
-                  className="text-text-dim hover:text-red"
-                >
-                  Reportar
-                </Button>
-              )}
+
             </div>
           </div>
         )}
       </div>
 
-      {activeEntry && user && (
-        <ReportModal
-          isOpen={reportOpen}
-          onClose={() => setReportOpen(false)}
-          spawnId={spawn.id}
-          spawnName={spawn.name}
-          worldId={worldId}
-          targetName={activeEntry.characterName}
-        />
-      )}
+
     </>
   )
 }
