@@ -101,7 +101,7 @@
     "empty_title": "Nenhum personagem vinculado",
     "empty_desc": "Clique em \"Vincular Personagem\" para começar.",
     "switch_modal_title": "Trocar de personagem?",
-    "switch_modal_desc": "Você está aguardando em <1>{{count}}</1> fila(s). Ao trocar para <3>{{name}}</3>, você será removido de todas elas automaticamente.",
+    "switch_modal_desc": "Você está aguardando em {{count}} fila(s). Ao trocar para {{name}}, você será removido de todas elas automaticamente.",
     "switch_confirm": "Trocar mesmo assim",
     "badge_active": "Ativo",
     "badge_verified": "Verificado",
@@ -133,7 +133,7 @@
     "back": "← Mundos",
     "start_hunt": "+ Iniciar Hunt",
     "finish_hunt_first": "Finalize sua hunt atual primeiro",
-    "wrong_world": "Seu personagem ativo é de <1>{{world}}</1>. Você pode visualizar as filas, mas não pode participar neste mundo.",
+    "wrong_world": "Seu personagem ativo é de {{world}}. Você pode visualizar as filas, mas não pode participar neste mundo.",
     "search_placeholder": "Buscar spawn...",
     "no_spawns": "Nenhum spawn ativo neste mundo. Seja o primeiro a iniciar uma hunt!",
     "no_results": "Nenhum spawn encontrado para \"{{query}}\".",
@@ -148,6 +148,7 @@
     "not_auth": "Não autenticado",
     "no_active_char": "Sem personagem ativo",
     "banned": "Conta banida",
+    "warnings": "Avisos: {{count}}",
     "wrong_world_err": "Seu personagem ativo é de {{world}}, não deste mundo.",
     "spawn_not_found": "Spawn não encontrado",
     "already_hunting": "Você já está caçando. Finalize a hunt antes de entrar em outra fila.",
@@ -193,9 +194,9 @@
     "char_name_placeholder": "Ex: Tibia Knight",
     "name_invalid": "Nome inválido (apenas letras e espaços)",
     "generate_code": "Gerar Código",
-    "instructions": "Acesse <1>tibia.com</1>, edite o personagem <3>{{name}}</3> e cole o código abaixo no campo <5>Comment</5> do perfil. Depois clique em \"Já coloquei o código\".",
+    "instructions": "Acesse tibia.com, edite o personagem {{name}} e cole o código abaixo no campo Comment do perfil. Depois clique em \"Já coloquei o código\".",
     "guide_btn": "Ver guia passo a passo",
-    "info_delay": "O tibia.com pode levar <1>até 5 minutos</1> para refletir alterações no perfil. Se a verificação falhar logo após salvar, aguarde alguns minutos e tente novamente.",
+    "info_delay": "O tibia.com pode levar até 5 minutos para refletir alterações no perfil. Se a verificação falhar logo após salvar, aguarde alguns minutos e tente novamente.",
     "copy_code": "Copiar código",
     "code_copied_toast": "Código copiado!",
     "code_expired_inline": "Código expirado — ",
@@ -223,6 +224,14 @@
     "email_title": "Falar com o dev",
     "email_desc": "Dúvidas gerais, sugestões ou qualquer outro assunto — pode mandar um e-mail.",
     "email_btn": "Enviar e-mail",
-    "footer_link": "Contato"
+    "footer_link": "Contato",
+    "creator_title": "Sobre o criador",
+    "creator_name_label": "Criador",
+    "creator_char_label": "Personagem Tibia",
+    "creator_email_label": "E-mail"
+  },
+  "copyright": {
+    "notice": "Tibia é um jogo criado pela",
+    "notice2": "Todo o conteúdo oficial é propriedade da CipSoft GmbH."
   }
 }

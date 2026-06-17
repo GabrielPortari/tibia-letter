@@ -42,10 +42,10 @@ export function BannedGuard({ children }: { children: React.ReactNode }) {
       <div className="text-5xl">🔨</div>
       <h1 className="font-display text-2xl text-red font-semibold">{t('spawnApp.banned')}</h1>
       <p className="text-text-muted max-w-sm">
-        <span className="text-text font-mono font-bold">{fmt(secs)}</span>
+        {t('spawn.time_remaining')} <span className="text-text font-mono font-bold">{fmt(secs)}</span>
       </p>
       <p className="text-xs text-text-dim">
-        Warnings: {user?.warnings ?? 0}
+        {t('spawnApp.warnings', { count: user?.warnings ?? 0 })}
       </p>
     </div>
   )

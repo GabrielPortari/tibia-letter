@@ -101,7 +101,7 @@
     "empty_title": "No characters linked",
     "empty_desc": "Click \"Link Character\" to get started.",
     "switch_modal_title": "Switch character?",
-    "switch_modal_desc": "You are waiting in <1>{{count}}</1> queue(s). Switching to <3>{{name}}</3> will automatically remove you from all of them.",
+    "switch_modal_desc": "You are waiting in {{count}} queue(s). Switching to {{name}} will automatically remove you from all of them.",
     "switch_confirm": "Switch anyway",
     "badge_active": "Active",
     "badge_verified": "Verified",
@@ -133,7 +133,7 @@
     "back": "← Worlds",
     "start_hunt": "+ Start Hunt",
     "finish_hunt_first": "Finish your current hunt first",
-    "wrong_world": "Your active character is from <1>{{world}}</1>. You can view queues, but cannot participate in this world.",
+    "wrong_world": "Your active character is from {{world}}. You can view queues, but cannot participate in this world.",
     "search_placeholder": "Search spawn...",
     "no_spawns": "No active spawns in this world. Be the first to start a hunt!",
     "no_results": "No spawn found for \"{{query}}\".",
@@ -148,6 +148,7 @@
     "not_auth": "Not authenticated",
     "no_active_char": "No active character",
     "banned": "Account banned",
+    "warnings": "Warnings: {{count}}",
     "wrong_world_err": "Your active character is from {{world}}, not this world.",
     "spawn_not_found": "Spawn not found",
     "already_hunting": "You are already hunting. Finish your current hunt before joining another queue.",
@@ -193,9 +194,9 @@
     "char_name_placeholder": "E.g. Tibia Knight",
     "name_invalid": "Invalid name (letters and spaces only)",
     "generate_code": "Generate Code",
-    "instructions": "Go to <1>tibia.com</1>, edit character <3>{{name}}</3> and paste the code below in the <5>Comment</5> field. Then click \"I've added the code\".",
+    "instructions": "Go to tibia.com, edit character {{name}} and paste the code below in the Comment field. Then click \"I've added the code\".",
     "guide_btn": "View step-by-step guide",
-    "info_delay": "tibia.com may take <1>up to 5 minutes</1> to reflect profile changes. If verification fails right after saving, wait a few minutes and try again.",
+    "info_delay": "tibia.com may take up to 5 minutes to reflect profile changes. If verification fails right after saving, wait a few minutes and try again.",
     "copy_code": "Copy code",
     "code_copied_toast": "Code copied!",
     "code_expired_inline": "Code expired — ",
@@ -223,6 +224,14 @@
     "email_title": "Talk to the dev",
     "email_desc": "General questions, suggestions, or anything else — feel free to send an email.",
     "email_btn": "Send email",
-    "footer_link": "Contact"
+    "footer_link": "Contact",
+    "creator_title": "About the creator",
+    "creator_name_label": "Creator",
+    "creator_char_label": "Tibia character",
+    "creator_email_label": "Email"
+  },
+  "copyright": {
+    "notice": "Tibia is a game created by",
+    "notice2": "All official content is property of CipSoft GmbH."
   }
 }
