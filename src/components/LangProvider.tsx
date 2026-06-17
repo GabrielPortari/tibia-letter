@@ -1,12 +1,11 @@
 import { useEffect } from 'react'
-import { useParams, useNavigate, useLocation, Outlet } from 'react-router-dom'
+import { useParams, useNavigate, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { SUPPORTED_LANGS, detectLang, type SupportedLang } from '../i18n'
 
 export function LangProvider() {
   const { lang } = useParams<{ lang: string }>()
   const navigate = useNavigate()
-  const location = useLocation()
   const { i18n } = useTranslation()
 
   useEffect(() => {

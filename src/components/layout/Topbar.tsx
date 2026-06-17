@@ -18,7 +18,7 @@ const LANG_LABELS: Record<SupportedLang, string> = {
   pl: 'PL',
 }
 
-function premiumLabel(until: string | null, t: (k: string, opts?: object) => string): string {
+function premiumLabel(until: string | null, t: (k: string, opts?: Record<string, unknown>) => string): string {
   if (!until) return 'Premium'
   const days = Math.ceil((new Date(until).getTime() - Date.now()) / 86_400_000)
   if (days <= 0) return t('topbar.premium_expired')
