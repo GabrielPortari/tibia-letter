@@ -223,6 +223,14 @@
     "email_title": "Falar com o dev",
     "email_desc": "Dúvidas gerais, sugestões ou qualquer outro assunto — pode mandar um e-mail.",
     "email_btn": "Enviar e-mail",
-    "footer_link": "Contato"
+    "footer_link": "Contato",
+    "creator_title": "Sobre o criador",
+    "creator_name_label": "Criador",
+    "creator_char_label": "Personagem Tibia",
+    "creator_email_label": "E-mail"
+  },
+  "copyright": {
+    "notice": "Tibia é um jogo criado pela",
+    "notice2": "Todo o conteúdo oficial é propriedade da CipSoft GmbH."
   }
 }
