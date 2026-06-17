@@ -1,12 +1,13 @@
 import { useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { PageWrapper } from '../components/layout/PageWrapper'
 import { Button } from '../components/ui/Button'
+import { useLangNavigate } from '../hooks/useLangNavigate'
 
 export default function PremiumSuccess() {
-  const navigate = useNavigate()
+  const langNavigate = useLangNavigate()
   const [params] = useSearchParams()
   const qc = useQueryClient()
   const { t } = useTranslation()
@@ -44,7 +45,7 @@ export default function PremiumSuccess() {
           </>
         )}
 
-        <Button className="w-full mt-6" onClick={() => navigate('/app/queue')}>
+        <Button className="w-full mt-6" onClick={() => langNavigate('/app/queue')}>
           {t('supporterSuccess.go_queue')}
         </Button>
       </div>

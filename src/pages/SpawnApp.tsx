@@ -92,8 +92,7 @@ export default function SpawnApp() {
     const alreadyInThisSpawn = myEntries.some((e) => e.spawnId === spawnId)
     if (alreadyInThisSpawn) return t('spawnApp.already_in_queue')
 
-    const waitingQueues = myEntries.filter((e) => getEntryStatus(e) !== 'active').length
-    if (waitingQueues >= 2) {
+    if (myEntries.length >= 2) {
       return t('spawnApp.queue_limit')
     }
 

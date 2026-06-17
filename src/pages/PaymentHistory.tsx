@@ -17,8 +17,11 @@ export default function PaymentHistory() {
     queryFn: () => api.get<PaymentRecord[]>("/payments/history"),
   });
 
+  const LOCALE_MAP: Record<string, string> = { pt: 'pt-BR', en: 'en-US', es: 'es-ES', pl: 'pl-PL' }
+
   function formatDate(iso: string) {
-    return new Date(iso).toLocaleDateString(i18n.language, {
+    const locale = LOCALE_MAP[i18n.language] ?? i18n.language
+    return new Date(iso).toLocaleDateString(locale, {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
