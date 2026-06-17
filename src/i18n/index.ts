@@ -23,7 +23,7 @@ i18n.use(initReactI18next).init({
     es: { translation: es },
     pl: { translation: pl },
   },
-  lng: 'pt',
+  lng: detectLang(),
   fallbackLng: 'en',
   interpolation: { escapeValue: false },
 })

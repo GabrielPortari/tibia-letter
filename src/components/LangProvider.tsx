@@ -19,7 +19,7 @@ export function LangProvider() {
     }
     localStorage.setItem('i18n-lang', lang)
     i18n.changeLanguage(lang)
-  }, [lang, i18n, navigate, location])
+  }, [lang, i18n, navigate])
 
   if (!lang || !SUPPORTED_LANGS.includes(lang as SupportedLang)) return null
 

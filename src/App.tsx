@@ -53,7 +53,7 @@ function AppInner() {
             {/* Disabled features */}
             <Route path="premium" element={<Navigate to="../404" replace />} />
             <Route path="premium/sucesso" element={<Navigate to="../404" replace />} />
-            <Route path="app/payments" element={<Navigate to="../404" replace />} />
+            <Route path="app/payments" element={<Navigate to="../../404" replace />} />
 
             {/* Legacy redirects within lang context */}
             <Route path="login" element={<Navigate to=".." replace />} />
