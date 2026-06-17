@@ -18,12 +18,8 @@ const LANG_LABELS: Record<SupportedLang, string> = {
   pl: 'PL',
 }
 
-function premiumLabel(until: string | null, t: (k: string, opts?: Record<string, unknown>) => string): string {
-  if (!until) return 'Premium'
-  const days = Math.ceil((new Date(until).getTime() - Date.now()) / 86_400_000)
-  if (days <= 0) return t('topbar.premium_expired')
-  if (days <= 30) return t('topbar.premium_days', { count: days })
-  return t('topbar.premium_until', { date: new Date(until).toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' }) })
+function supporterLabel(t: (k: string) => string): string {
+  return t('topbar.supporter')
 }
 
 export function Topbar() {
@@ -143,7 +139,7 @@ export function Topbar() {
                   {user.discordName}
                 </span>
                 {user.premium && (
-                  <Badge variant="gold" className="hidden sm:inline-flex">Premium</Badge>
+                  <Badge variant="gold" className="hidden sm:inline-flex">Supporter</Badge>
                 )}
                 <svg
                   className={`w-3.5 h-3.5 text-text-muted transition-transform ${open ? 'rotate-180' : ''}`}
@@ -159,7 +155,7 @@ export function Topbar() {
                     <p className="text-sm font-semibold text-text truncate">{user.discordName}</p>
                     {user.premium && (
                       <p className="text-xs text-gold mt-0.5">
-                        ★ {premiumLabel(user.premiumUntil, t)}
+                        ★ {supporterLabel(t)}
                       </p>
                     )}
                     {char ? (
@@ -205,6 +201,20 @@ export function Topbar() {
                       </button>
                     )}
                   </div>
+
+                  {!user.premium && (
+                    <div className="border-t border-border py-1">
+                      <button
+                        onClick={() => go('/supporter')}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gold/80 hover:text-gold hover:bg-bg3 transition-colors text-left"
+                      >
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        {t('topbar.be_supporter')}
+                      </button>
+                    </div>
+                  )}
 
                   <div className="border-t border-border py-1">
                     <button

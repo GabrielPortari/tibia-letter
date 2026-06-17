@@ -18,8 +18,6 @@ import { Modal } from '../components/ui/Modal'
 import type { Spawn, QueueEntry, CreateSpawnResponse } from '../types'
 import { getEntryStatus } from '../types'
 
-const QUEUE_LIMIT = { free: 1, premium: 3 }
-
 export default function SpawnApp() {
   const { worldId } = useParams<{ worldId: string }>()
   const { user, activeChar } = useAuthStore()
@@ -94,10 +92,8 @@ export default function SpawnApp() {
     const alreadyInThisSpawn = myEntries.some((e) => e.spawnId === spawnId)
     if (alreadyInThisSpawn) return t('spawnApp.already_in_queue')
 
-    const limit = user.premium ? QUEUE_LIMIT.premium : QUEUE_LIMIT.free
-    const waitingQueues = myEntries.filter((e) => getEntryStatus(e) !== 'active').length
-    if (waitingQueues >= limit) {
-      return user.premium ? t('spawnApp.premium_limit') : t('spawnApp.free_limit')
+    if (myEntries.length >= 2) {
+      return t('spawnApp.queue_limit')
     }
 
     return null
@@ -178,14 +174,21 @@ export default function SpawnApp() {
             {worldId}
           </h1>
           {char && !wrongWorld && (
-            <Button
-              size="sm"
-              onClick={() => setShowCreateModal(true)}
-              disabled={isActivelyHunting}
-              title={isActivelyHunting ? t('spawnApp.finish_hunt_first') : undefined}
-            >
-              {t('spawnApp.start_hunt')}
-            </Button>
+            <div className="flex flex-col items-end gap-1">
+              <Button
+                size="sm"
+                onClick={() => setShowCreateModal(true)}
+                disabled={isActivelyHunting}
+                title={isActivelyHunting ? t('spawnApp.finish_hunt_first') : undefined}
+              >
+                {t('spawnApp.start_hunt')}
+              </Button>
+              <span className={`text-xs tabular-nums ${
+                myEntries.length >= 2 ? 'text-amber' : 'text-text-dim'
+              }`}>
+                {t('spawnApp.queue_counter', { count: myEntries.length })}
+              </span>
+            </div>
           )}
         </div>
 

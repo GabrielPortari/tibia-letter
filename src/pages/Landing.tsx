@@ -223,6 +223,52 @@ export default function Landing() {
       {/* ── Demo ── */}
       <DemoSection />
 
+      {/* ── Supporter ── */}
+      <section className="py-12 px-4">
+        <div className="max-w-lg mx-auto">
+          <div
+            className="rounded-2xl border overflow-hidden"
+            style={{ borderColor: 'var(--gold-dim)', background: 'var(--bg-2)' }}
+          >
+            {/* header strip */}
+            <div
+              className="px-6 py-4 flex items-center justify-between gap-4"
+              style={{ background: 'var(--gold-glow)', borderBottom: '1px solid var(--gold-dim)' }}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-gold text-xl">★</span>
+                <div>
+                  <p className="text-sm font-bold text-gold leading-tight">{t('landing.supporter_badge')}</p>
+                  <p className="text-xs text-text-muted mt-0.5">{t('landing.supporter_sub')}</p>
+                </div>
+              </div>
+              <span className="font-display text-xl font-bold text-gold flex-shrink-0">{t("supporter.price")}</span>
+            </div>
+
+            {/* body */}
+            <div className="px-6 py-5 space-y-3">
+              <p className="text-sm text-text-muted leading-relaxed">
+                {t('landing.supporter_desc')}
+              </p>
+              <p className="text-xs text-text-dim leading-relaxed">
+                {t('landing.supporter_disclaimer')}
+              </p>
+            </div>
+
+            {/* cta */}
+            <div className="px-6 pb-6">
+              <button
+                onClick={() => langNavigate('/supporter')}
+                className="w-full py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-80"
+                style={{ background: 'var(--gold)', color: 'var(--bg-0)' }}
+              >
+                {t('landing.supporter_cta')}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Footer ── */}
       <footer className="border-t border-border px-5 sm:px-10 pt-5 pb-4 flex flex-col gap-3">
         <div className="flex items-center justify-between flex-wrap gap-3">

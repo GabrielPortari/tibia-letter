@@ -14,10 +14,8 @@
     "admin": "Admin",
     "no_active_char": "Nenhum personagem ativo",
     "playing_as": "Jogando como {{name}} · Lv. {{level}} · {{world}}",
-    "premium_expired": "Premium expirado",
-    "premium_days_one": "{{count}} dia restante",
-    "premium_days_other": "{{count}} dias restantes",
-    "premium_until": "até {{date}}"
+    "supporter": "Supporter",
+    "be_supporter": "Seja um apoiador"
   },
   "landing": {
     "badge": "SISTEMA DE FILAS PARA TIBIA",
@@ -52,8 +50,8 @@
     "feat1_desc": "Personagem verificado direto no tibia.com. Se não é seu char, não entra na fila. Simples assim.",
     "feat2_title": "Automático do início ao fim",
     "feat2_desc": "Quando sua hunt termina, o próximo já recebe o aviso. Ninguém precisa ficar babando o spawn.",
-    "feat3_title": "3 filas ao mesmo tempo",
-    "feat3_desc": "Com Premium, entre em até 3 respawns simultâneos. Maximize cada minuto de jogo.",
+    "feat3_title": "2 filas ao mesmo tempo",
+    "feat3_desc": "Entre em até 2 filas simultâneas. Maximize cada minuto de jogo.",
     "sec_title": "Sua conta do Tibia está 100% segura",
     "sec1_title": "Nunca pedimos sua senha",
     "sec1_desc": "O Tibia Letter não solicita, armazena ou tem acesso à sua senha do Tibia ou da conta Tibia.com.",
@@ -63,7 +61,12 @@
     "sec3_desc": "Usamos o OAuth do Discord para autenticação. Nunca criamos formulários de login próprios.",
     "sec4_title": "Código aberto e auditável",
     "sec4_desc": "O projeto é open source. Qualquer pessoa pode verificar que não há coleta indevida de dados.",
-    "footer_tagline": "Não afiliado à CipSoft. Projeto independente."
+    "footer_tagline": "Não afiliado à CipSoft. Projeto independente.",
+    "supporter_badge": "Supporter Pack",
+    "supporter_sub": "Pagamento único · permanente",
+    "supporter_desc": "Está gostando do Tibia Letter? Apoie o projeto e tenha seu nome em dourado com o badge ★ nas filas — visível para todos os players.",
+    "supporter_disclaimer": "O Supporter Pack é puramente visual. Não há nenhuma vantagem nas filas em ser supporter — todos os jogadores têm as mesmas regras.",
+    "supporter_cta": "Ver Supporter Pack →"
   },
   "demo": {
     "badge": "DEMO INTERATIVA",
@@ -97,6 +100,7 @@
     "no_active": "Nenhum personagem ativo — vincule e ative um para usar as filas.",
     "go_queue": "Entrar na fila →",
     "link_char": "+ Vincular Personagem",
+    "capacity_chars": "personagens verificados",
     "need_verified": "Você precisa de um personagem verificado e ativo para entrar em filas.",
     "empty_title": "Nenhum personagem vinculado",
     "empty_desc": "Clique em \"Vincular Personagem\" para começar.",
@@ -153,8 +157,8 @@
     "spawn_not_found": "Spawn não encontrado",
     "already_hunting": "Você já está caçando. Finalize a hunt antes de entrar em outra fila.",
     "already_in_queue": "Você já está na fila deste spawn.",
-    "free_limit": "Plano Free permite apenas 1 fila por vez. Assine Premium para até 3 filas e personagens ilimitados.",
-    "premium_limit": "Limite de 3 filas simultâneas atingido."
+    "queue_limit": "Limite de 2 filas simultâneas atingido.",
+    "queue_counter": "{{count}}/2 filas"
   },
   "spawn": {
     "status_free": "Livre",
@@ -229,6 +233,44 @@
     "creator_name_label": "Criador",
     "creator_char_label": "Personagem Tibia",
     "creator_email_label": "E-mail"
+  },
+  "supporter": {
+    "title": "Supporter Pack",
+    "subtitle": "Se você está gostando do Tibia Letter, considere apoiar o projeto.",
+    "perk1": "Nome em dourado com badge ★ Supporter nas filas",
+    "perk2": "Destaque visível para todos os players do seu mundo",
+    "perk3": "Apoio direto ao desenvolvimento do projeto",
+    "pack_label": "Supporter Pack · pagamento único",
+    "pack_permanent": "Acesso permanente · sem renovação",
+    "already_active": "✓ Você já é um Supporter — obrigado pelo apoio!",
+    "back": "← Voltar",
+    "btn_active": "Já é Supporter",
+    "price": "R$ 19,90",
+    "btn_buy": "Apoiar — R$ 19,90",
+    "payment_note": "Pagamento seguro via Mercado Pago · PIX e cartão",
+    "preview_caption": "É assim que você aparecerá na fila",
+    "preview_in_queue": "na fila",
+    "preview_hunting": "Caçando"
+  },
+  "supporterSuccess": {
+    "failed_title": "Pagamento não concluído",
+    "failed_desc": "O pagamento foi cancelado ou recusado. Tente novamente.",
+    "pending_title": "Aguardando pagamento",
+    "pending_desc": "Seu PIX foi gerado. Assim que o pagamento for confirmado o Supporter Pack será ativado automaticamente.",
+    "success_title": "Supporter ativado!",
+    "success_desc": "Obrigado pelo apoio ao Tibia Letter. Seu badge já está ativo!",
+    "go_queue": "Ir para as filas"
+  },
+  "paymentHistory": {
+    "title": "Histórico de pagamentos",
+    "subtitle": "Todos os Supporter Packs adquiridos na sua conta.",
+    "error": "Erro ao carregar pagamentos.",
+    "error_retry": "Tente novamente em alguns instantes.",
+    "empty": "Nenhum pagamento encontrado.",
+    "empty_desc": "Seu Supporter Pack aparecerá aqui após a confirmação do pagamento.",
+    "col_plan": "Plano",
+    "col_date": "Data",
+    "record_name": "Supporter Pack"
   },
   "copyright": {
     "notice": "Tibia é um jogo criado pela",

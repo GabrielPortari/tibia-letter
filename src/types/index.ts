@@ -16,7 +16,6 @@ export interface User {
   discordName: string
   avatarUrl: string | null
   premium: boolean
-  premiumUntil: string | null
   warnings: number
   banned: boolean
   banUntil: string | null
