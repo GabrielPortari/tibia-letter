@@ -39,8 +39,18 @@ export function Topbar() {
     ? (segments[1] as SupportedLang)
     : 'en'
 
+  const isHome = segments.length <= 3 && !segments[2]
+
   function langNavigate(to: string) {
     navigate(`/${lang}${to}`)
+  }
+
+  function handleLogoClick() {
+    if (isHome) {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else {
+      langNavigate('')
+    }
   }
   const [open, setOpen] = useState(false)
   const char = activeChar()
@@ -96,7 +106,7 @@ export function Topbar() {
     <header className="sticky top-0 z-[100] bg-bg1/95 backdrop-blur border-b border-border">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
         <button
-          onClick={() => langNavigate('')}
+          onClick={handleLogoClick}
           className="font-display text-gold text-lg font-semibold tracking-wide flex items-center gap-2"
         >
           <img src={letterIcon} alt="" className="w-6 h-6 object-contain" />
