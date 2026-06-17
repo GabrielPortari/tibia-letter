@@ -3,26 +3,26 @@
 @tailwind utilities;
 
 :root {
-  --bg-0: #0D0D0F;
+  --bg-0: #0c0c0e;
   --bg-1: #131318;
-  --bg-2: #1A1A22;
-  --bg-3: #22222C;
-  --border: #2E2E3A;
-  --border-hover: #4A4A5A;
-  --gold: #C9A84C;
-  --gold-dim: #8A6E2F;
+  --bg-2: #1a1a22;
+  --bg-3: #22222c;
+  --border: #2e2e3a;
+  --border-hover: #4a4a5a;
+  --gold: #c9a84c;
+  --gold-dim: #8a6e2f;
   --gold-glow: rgba(201, 168, 76, 0.15);
-  --red: #C94C4C;
+  --red: #c94c4c;
   --red-bg: rgba(201, 76, 76, 0.1);
-  --green: #4CB87A;
+  --green: #4cb87a;
   --green-bg: rgba(76, 184, 122, 0.1);
-  --blue: #4C8FC9;
+  --blue: #4c8fc9;
   --blue-bg: rgba(76, 143, 201, 0.1);
-  --amber: #C97E4C;
+  --amber: #c97e4c;
   --amber-bg: rgba(201, 126, 76, 0.1);
-  --text: #E8E0CC;
-  --text-muted: #8A8499;
-  --text-dim: #5A5468;
+  --text: #e8e0cc;
+  --text-muted: #8a8499;
+  --text-dim: #5a5468;
 }
 
 * {
@@ -35,7 +35,7 @@ body {
   padding: 0;
   background-color: var(--bg-0);
   color: var(--text);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
