@@ -20,8 +20,8 @@ const PLANS = [
   {
     key: "monthly" as PlanKey,
     label: "1 mês",
-    price: "R$ 19,90",
-    priceOriginal: "R$ 29,90",
+    price: "R$ 4,99",
+    priceOriginal: "R$ 19,90",
     priceNote: "Oferta de lançamento",
     duration: "30 dias de acesso",
     featured: false,
@@ -29,8 +29,8 @@ const PLANS = [
   {
     key: "quarterly" as PlanKey,
     label: "3 meses",
-    price: "R$ 44,90",
-    priceOriginal: "R$ 79,90",
+    price: "R$ 12,99",
+    priceOriginal: "R$ 49,90",
     priceNote: "Melhor oferta",
     duration: "90 dias de acesso",
     featured: true,

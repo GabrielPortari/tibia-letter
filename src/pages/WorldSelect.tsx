@@ -1,8 +1,9 @@
-import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/authStore'
 import { PageWrapper } from '../components/layout/PageWrapper'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
+import { useLangNavigate } from '../hooks/useLangNavigate'
 import type { Character } from '../types'
 
 interface TibiaWorld {
@@ -63,12 +64,12 @@ const PVP_LABEL: Record<string, string> = {
 
 export default function WorldSelect() {
   const { user, activeChar } = useAuthStore()
-  const navigate = useNavigate()
+  const { t } = useTranslation()
+  const langNavigate = useLangNavigate()
   const activeCharData = activeChar()
 
   const verifiedChars = (user?.characters ?? []).filter((c) => c.verified)
 
-  // Group chars by world, deduplicated
   const worldMap = verifiedChars.reduce<Record<string, Character[]>>((acc, c) => {
     if (!c.world) return acc
     ;(acc[c.world] ??= []).push(c)
@@ -82,7 +83,6 @@ export default function WorldSelect() {
       meta: WORLDS.find((w) => w.id === worldId),
     }))
     .sort((a, b) => {
-      // Active char's world first
       if (a.worldId === activeCharData?.world) return -1
       if (b.worldId === activeCharData?.world) return 1
       return a.worldId.localeCompare(b.worldId)
@@ -92,20 +92,18 @@ export default function WorldSelect() {
     <PageWrapper>
       <div className="mb-6">
         <h1 className="font-display text-2xl sm:text-3xl text-gold font-semibold mb-1">
-          Entrar na Fila
+          {t('worldSelect.title')}
         </h1>
-        <p className="text-text-muted text-sm">
-          Selecione o mundo para ver as filas de spawn disponíveis.
-        </p>
+        <p className="text-text-muted text-sm">{t('worldSelect.subtitle')}</p>
       </div>
 
       {myWorlds.length === 0 ? (
         <div className="text-center py-16 text-text-muted">
           <p className="text-4xl mb-3">🌍</p>
-          <p className="font-semibold mb-1">Nenhum personagem verificado</p>
-          <p className="text-sm mb-4">Vincule e verifique um personagem para acessar as filas.</p>
-          <Button variant="secondary" onClick={() => navigate('/app/characters')}>
-            Gerenciar Personagens
+          <p className="font-semibold mb-1">{t('worldSelect.empty_title')}</p>
+          <p className="text-sm mb-4">{t('worldSelect.empty_desc')}</p>
+          <Button variant="secondary" onClick={() => langNavigate('/app/characters')}>
+            {t('worldSelect.manage_chars')}
           </Button>
         </div>
       ) : (
@@ -115,7 +113,7 @@ export default function WorldSelect() {
             return (
               <button
                 key={worldId}
-                onClick={() => navigate(`/app/queue/${worldId}`)}
+                onClick={() => langNavigate(`/app/queue/${worldId}`)}
                 className={`text-left rounded-xl p-4 transition-all duration-150 hover:bg-bg3 active:scale-[0.98] ${
                   isActive
                     ? 'bg-bg2 border-2 border-gold'
@@ -153,10 +151,10 @@ export default function WorldSelect() {
 
       <div className="mt-6">
         <button
-          onClick={() => navigate('/app/characters')}
+          onClick={() => langNavigate('/app/characters')}
           className="text-xs text-text-dim hover:text-text-muted underline transition-colors"
         >
-          + Vincular personagem em outro mundo
+          {t('worldSelect.link_other_world')}
         </button>
       </div>
     </PageWrapper>
