@@ -100,6 +100,7 @@
     "no_active": "Nenhum personagem ativo — vincule e ative um para usar as filas.",
     "go_queue": "Entrar na fila →",
     "link_char": "+ Vincular Personagem",
+    "capacity_chars": "personagens verificados",
     "need_verified": "Você precisa de um personagem verificado e ativo para entrar em filas.",
     "empty_title": "Nenhum personagem vinculado",
     "empty_desc": "Clique em \"Vincular Personagem\" para começar.",
@@ -156,7 +157,8 @@
     "spawn_not_found": "Spawn não encontrado",
     "already_hunting": "Você já está caçando. Finalize a hunt antes de entrar em outra fila.",
     "already_in_queue": "Você já está na fila deste spawn.",
-    "queue_limit": "Limite de 2 filas simultâneas atingido."
+    "queue_limit": "Limite de 2 filas simultâneas atingido.",
+    "queue_counter": "{{count}}/2 filas"
   },
   "spawn": {
     "status_free": "Livre",

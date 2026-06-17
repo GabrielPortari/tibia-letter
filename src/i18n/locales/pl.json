@@ -100,6 +100,7 @@
     "no_active": "Brak aktywnej postaci — dodaj i aktywuj jedną, aby korzystać z kolejek.",
     "go_queue": "Wejdź do kolejki →",
     "link_char": "+ Dodaj postać",
+    "capacity_chars": "zweryfikowane postaci",
     "need_verified": "Potrzebujesz zweryfikowanej i aktywnej postaci, aby dołączyć do kolejek.",
     "empty_title": "Brak dodanych postaci",
     "empty_desc": "Kliknij \"Dodaj postać\", aby zacząć.",
@@ -156,7 +157,8 @@
     "spawn_not_found": "Nie znaleziono spawnu",
     "already_hunting": "Już polują. Zakończ bieżące polowanie przed dołączeniem do innej kolejki.",
     "already_in_queue": "Już jesteś w kolejce tego spawnu.",
-    "queue_limit": "Osiągnięto limit 2 jednoczesnych kolejek."
+    "queue_limit": "Osiągnięto limit 2 jednoczesnych kolejek.",
+    "queue_counter": "{{count}}/2 kolejek"
   },
   "spawn": {
     "status_free": "Wolny",

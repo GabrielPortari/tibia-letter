@@ -100,6 +100,7 @@
     "no_active": "Sin personaje activo — vincula y activa uno para usar las colas.",
     "go_queue": "Entrar en cola →",
     "link_char": "+ Vincular Personaje",
+    "capacity_chars": "personajes verificados",
     "need_verified": "Necesitas un personaje verificado y activo para unirte a las colas.",
     "empty_title": "Sin personajes vinculados",
     "empty_desc": "Haz clic en \"Vincular Personaje\" para comenzar.",
@@ -156,7 +157,8 @@
     "spawn_not_found": "Spawn no encontrado",
     "already_hunting": "Ya estás cazando. Finaliza la caza antes de unirte a otra cola.",
     "already_in_queue": "Ya estás en la cola de este spawn.",
-    "queue_limit": "Límite de 2 colas simultáneas alcanzado."
+    "queue_limit": "Límite de 2 colas simultáneas alcanzado.",
+    "queue_counter": "{{count}}/2 colas"
   },
   "spawn": {
     "status_free": "Libre",

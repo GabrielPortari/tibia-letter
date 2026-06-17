@@ -174,14 +174,21 @@ export default function SpawnApp() {
             {worldId}
           </h1>
           {char && !wrongWorld && (
-            <Button
-              size="sm"
-              onClick={() => setShowCreateModal(true)}
-              disabled={isActivelyHunting}
-              title={isActivelyHunting ? t('spawnApp.finish_hunt_first') : undefined}
-            >
-              {t('spawnApp.start_hunt')}
-            </Button>
+            <div className="flex flex-col items-end gap-1">
+              <Button
+                size="sm"
+                onClick={() => setShowCreateModal(true)}
+                disabled={isActivelyHunting}
+                title={isActivelyHunting ? t('spawnApp.finish_hunt_first') : undefined}
+              >
+                {t('spawnApp.start_hunt')}
+              </Button>
+              <span className={`text-xs tabular-nums ${
+                myEntries.length >= 2 ? 'text-amber' : 'text-text-dim'
+              }`}>
+                {t('spawnApp.queue_counter', { count: myEntries.length })}
+              </span>
+            </div>
           )}
         </div>
 

@@ -73,6 +73,7 @@ export default function Characters() {
 
   const characters = user?.characters ?? []
   const activeChar = characters.find((c) => c.active)
+  const verifiedCount = characters.filter((c) => c.verified).length
 
   function handleActivate(char: Character) {
     if (!activeChar || activeChar.id === char.id) {
@@ -114,15 +115,22 @@ export default function Characters() {
               : t('characters.no_active')}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-3">
           {activeChar && (
             <Button variant="secondary" onClick={() => langNavigate('/app/queue')}>
               {t('characters.go_queue')}
             </Button>
           )}
-          <Button onClick={() => { setReInitChar(null); setModalOpen(true) }}>
-            {t('characters.link_char')}
-          </Button>
+          <div className="flex flex-col items-end gap-1">
+            <Button onClick={() => { setReInitChar(null); setModalOpen(true) }} disabled={verifiedCount >= 5}>
+              {t('characters.link_char')}
+            </Button>
+            <span className={`text-xs tabular-nums ${
+              verifiedCount >= 5 ? 'text-red' : verifiedCount >= 4 ? 'text-amber' : 'text-text-dim'
+            }`}>
+              {verifiedCount}/5 {t('characters.capacity_chars')}
+            </span>
+          </div>
         </div>
       </div>
 

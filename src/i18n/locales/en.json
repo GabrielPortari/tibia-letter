@@ -100,6 +100,7 @@
     "no_active": "No active character — link and activate one to use the queues.",
     "go_queue": "Enter queue →",
     "link_char": "+ Link Character",
+    "capacity_chars": "verified characters",
     "need_verified": "You need a verified and active character to join queues.",
     "empty_title": "No characters linked",
     "empty_desc": "Click \"Link Character\" to get started.",
@@ -156,7 +157,8 @@
     "spawn_not_found": "Spawn not found",
     "already_hunting": "You are already hunting. Finish your current hunt before joining another queue.",
     "already_in_queue": "You are already in this spawn's queue.",
-    "queue_limit": "Limit of 2 simultaneous queues reached."
+    "queue_limit": "Limit of 2 simultaneous queues reached.",
+    "queue_counter": "{{count}}/2 queues"
   },
   "spawn": {
     "status_free": "Free",
