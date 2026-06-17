@@ -56,6 +56,7 @@ export default function SpawnApp() {
 
   const myEntries = char ? getMyEntries(char.name) : []
   const isActivelyHunting = myEntries.some((e) => getEntryStatus(e) === 'active')
+  const wrongWorld = !!char && char.world.toLowerCase() !== worldId?.toLowerCase()
 
   const trimmedSearch = search.trim().toLowerCase()
   const filteredSpawns = trimmedSearch
@@ -70,6 +71,7 @@ export default function SpawnApp() {
     if (!user) return 'Não autenticado'
     if (!char) return 'Sem personagem ativo'
     if (useAuthStore.getState().isBanned()) return 'Conta banida'
+    if (wrongWorld) return `Seu personagem ativo é de ${char.world}, não deste mundo.`
 
     const spawn = spawns?.find((s) => s.id === spawnId)
     if (!spawn) return 'Spawn não encontrado'
@@ -166,7 +168,7 @@ export default function SpawnApp() {
           <h1 className="font-display text-xl sm:text-2xl text-gold font-semibold flex-1">
             {worldId}
           </h1>
-          {char && (
+          {char && !wrongWorld && (
             <Button
               size="sm"
               onClick={() => setShowCreateModal(true)}
@@ -177,6 +179,15 @@ export default function SpawnApp() {
             </Button>
           )}
         </div>
+
+        {wrongWorld && (
+          <div
+            className="mb-4 rounded-lg px-4 py-3 text-sm"
+            style={{ background: 'var(--amber-bg)', border: '1px solid var(--amber)', color: 'var(--amber)' }}
+          >
+            Seu personagem ativo é de <strong>{char!.world}</strong>. Você pode visualizar as filas, mas não pode participar neste mundo.
+          </div>
+        )}
 
         <div className="mb-5">
           <Input
