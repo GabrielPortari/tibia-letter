@@ -17,6 +17,7 @@ const Admin = lazy(() => import('./pages/Admin'))
 const AuthCallback = lazy(() => import('./pages/AuthCallback'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const Forbidden = lazy(() => import('./pages/Forbidden'))
+const Contact = lazy(() => import('./pages/Contact'))
 
 const Fallback = <div className="flex-1 flex items-center justify-center"><Spinner size="lg" /></div>
 
@@ -36,6 +37,7 @@ function AppInner() {
             <Route index element={<Landing />} />
             <Route path="403" element={<Forbidden />} />
             <Route path="404" element={<NotFound />} />
+            <Route path="contact" element={<Contact />} />
 
             <Route element={<PrivateRoute />}>
               <Route path="app/characters" element={<Characters />} />
