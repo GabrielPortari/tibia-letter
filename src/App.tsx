@@ -18,6 +18,7 @@ const AuthCallback = lazy(() => import('./pages/AuthCallback'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 const Forbidden = lazy(() => import('./pages/Forbidden'))
 const Contact = lazy(() => import('./pages/Contact'))
+const About = lazy(() => import('./pages/About'))
 const Premium = lazy(() => import('./pages/Premium'))
 const PremiumSuccess = lazy(() => import('./pages/PremiumSuccess'))
 const PaymentHistory = lazy(() => import('./pages/PaymentHistory'))
@@ -41,6 +42,7 @@ function AppInner() {
             <Route path="403" element={<Forbidden />} />
             <Route path="404" element={<NotFound />} />
             <Route path="contact" element={<Contact />} />
+            <Route path="about" element={<About />} />
 
             <Route element={<PrivateRoute />}>
               <Route path="app/characters" element={<Characters />} />
@@ -66,6 +68,8 @@ function AppInner() {
             <Route path="worlds" element={<Navigate to="../app/queue" replace />} />
             <Route path="worlds/:worldId" element={<Navigate to="../../app/queue" replace />} />
             <Route path="admin" element={<Navigate to="../app/admin" replace />} />
+            <Route path="premium" element={<Navigate to="../supporter" replace />} />
+            <Route path="premium/sucesso" element={<Navigate to="../supporter/sucesso" replace />} />
 
             <Route path="*" element={<NotFound />} />
           </Route>

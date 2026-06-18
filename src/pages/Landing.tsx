@@ -257,13 +257,12 @@ export default function Landing() {
 
             {/* cta */}
             <div className="px-6 pb-6">
-              <button
+              <Button
                 onClick={() => langNavigate('/supporter')}
-                className="w-full py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-80"
-                style={{ background: 'var(--gold)', color: 'var(--bg-0)' }}
+                className="w-full rounded-xl"
               >
                 {t('landing.supporter_cta')}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -277,6 +276,12 @@ export default function Landing() {
             Tibia Letter
           </span>
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => langNavigate('/about')}
+              className="text-xs text-text-dim hover:text-text transition-colors"
+            >
+              {t('about.footer_link')}
+            </button>
             <button
               onClick={() => langNavigate('/contact')}
               className="text-xs text-text-dim hover:text-text transition-colors"
