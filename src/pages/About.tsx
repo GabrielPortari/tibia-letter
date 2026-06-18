@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useLangNavigate } from "../hooks/useLangNavigate";
+import { Button } from "../components/ui/Button";
 
 const GITHUB_URL = "https://github.com/GabrielPortari";
 const LINKEDIN_URL = "https://www.linkedin.com/in/gabriel-portari-3aa73623b/";
@@ -187,13 +188,12 @@ export default function About() {
                 </span>
               </li>
             </ul>
-            <button
+            <Button
               onClick={() => langNavigate("/supporter")}
-              className="w-full py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-80 mt-1"
-              style={{ background: "var(--gold)", color: "var(--bg-0)" }}
+              className="w-full rounded-xl mt-1"
             >
               {t("about.support_pack_btn")}
-            </button>
+            </Button>
           </div>
         </section>
       </div>

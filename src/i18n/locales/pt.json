@@ -15,7 +15,8 @@
     "no_active_char": "Nenhum personagem ativo",
     "playing_as": "Jogando como {{name}} · Lv. {{level}} · {{world}}",
     "supporter": "Supporter",
-    "be_supporter": "Seja um apoiador"
+    "be_supporter": "Seja um apoiador",
+    "about": "Sobre"
   },
   "landing": {
     "badge": "SISTEMA DE FILAS PARA TIBIA",

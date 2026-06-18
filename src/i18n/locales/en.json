@@ -15,7 +15,8 @@
     "no_active_char": "No active character",
     "playing_as": "Playing as {{name}} · Lv. {{level}} · {{world}}",
     "supporter": "Supporter",
-    "be_supporter": "Become a supporter"
+    "be_supporter": "Become a supporter",
+    "about": "About"
   },
   "landing": {
     "badge": "SPAWN QUEUE SYSTEM FOR TIBIA",

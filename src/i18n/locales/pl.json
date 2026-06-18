@@ -15,7 +15,8 @@
     "no_active_char": "Brak aktywnej postaci",
     "playing_as": "Gram jako {{name}} · Poz. {{level}} · {{world}}",
     "supporter": "Supporter",
-    "be_supporter": "Zostań supporterem"
+    "be_supporter": "Zostań supporterem",
+    "about": "O projekcie"
   },
   "landing": {
     "badge": "SYSTEM KOLEJEK RESPAWNÓW DLA TIBIA",

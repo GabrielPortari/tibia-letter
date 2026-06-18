@@ -68,6 +68,8 @@ function AppInner() {
             <Route path="worlds" element={<Navigate to="../app/queue" replace />} />
             <Route path="worlds/:worldId" element={<Navigate to="../../app/queue" replace />} />
             <Route path="admin" element={<Navigate to="../app/admin" replace />} />
+            <Route path="premium" element={<Navigate to="../supporter" replace />} />
+            <Route path="premium/sucesso" element={<Navigate to="../supporter/sucesso" replace />} />
 
             <Route path="*" element={<NotFound />} />
           </Route>

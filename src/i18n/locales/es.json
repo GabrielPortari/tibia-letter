@@ -15,7 +15,8 @@
     "no_active_char": "Sin personaje activo",
     "playing_as": "Jugando como {{name}} · Lv. {{level}} · {{world}}",
     "supporter": "Supporter",
-    "be_supporter": "Sé un supporter"
+    "be_supporter": "Sé un supporter",
+    "about": "Acerca de"
   },
   "landing": {
     "badge": "SISTEMA DE COLAS DE RESPAWN PARA TIBIA",
