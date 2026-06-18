@@ -219,6 +219,29 @@
   "authCallback": {
     "authenticating": "Autenticando com Discord…"
   },
+  "about": {
+    "title": "Sobre",
+    "footer_link": "Sobre",
+    "what_badge": "O QUE É O TIBIA LETTER",
+    "what_title": "Chega de carta, chega de bagunça.",
+    "what_desc1": "Quem já jogou Tibia sabe: chegar num spawn disputado é sempre um estresse. Carta no personagem, discussão no chat, favoritismo — tudo isso é coisa do passado.",
+    "what_desc2": "O Tibia Letter resolve isso de forma simples e transparente: filas digitais, em tempo real, por ordem de chegada. Nada mais, nada menos. Sem subjetividade, sem discussão. O sistema decide — e todos respeitam.",
+    "me_badge": "SOBRE MIM",
+    "me_name": "Gabriel Portari",
+    "me_role": "Desenvolvedor Fullstack",
+    "me_desc": "Sou desenvolvedor fullstack com interesse em todo o ciclo de desenvolvimento — desde a criação de interfaces, construção de APIs, modelagem de banco de dados, até o deploy em produção. Gosto de resolver problemas reais com código limpo e soluções que fazem sentido. O Tibia Letter nasceu exatamente disso: um problema real que eu queria resolver de verdade.",
+    "disclaimer_badge": "DECLARAÇÃO",
+    "disclaimer_text": "Tibia é um jogo criado e distribuído pela CipSoft GmbH. Todos os ícones, imagens e referências ao Tibia presentes neste site são propriedade da CipSoft GmbH — não reivindicamos nenhum direito sobre eles. O Tibia Letter é um projeto de fã independente, sem afiliação oficial com a CipSoft. Os únicos dados que armazenamos são o seu usuário do Discord e os dados públicos do seu personagem, obtidos via API pública do TibiaData.",
+    "contact_badge": "INFORMAÇÕES DE CONTATO",
+    "contact_email": "E-mail",
+    "contact_github": "GitHub",
+    "contact_linkedin": "LinkedIn",
+    "support_badge": "APOIE O PROJETO",
+    "support_desc": "Gostou do Tibia Letter? Você pode apoiar o projeto de duas formas:",
+    "support_pack": "Assinar o Supporter Pack — acesso permanente com badge ★ dourado nas filas.",
+    "support_coins": "Enviar Tibia Coins para o personagem",
+    "support_pack_btn": "Ver Supporter Pack →"
+  },
   "contact": {
     "title": "Contato",
     "subtitle": "Tem uma dúvida, encontrou um bug ou quer sugerir algo? Escolha o canal abaixo.",
@@ -229,10 +252,7 @@
     "email_desc": "Dúvidas gerais, sugestões ou qualquer outro assunto — pode mandar um e-mail.",
     "email_btn": "Enviar e-mail",
     "footer_link": "Contato",
-    "creator_title": "Sobre o criador",
-    "creator_name_label": "Criador",
-    "creator_char_label": "Personagem Tibia",
-    "creator_email_label": "E-mail"
+    "about_link": "Sobre o projeto e o criador"
   },
   "supporter": {
     "title": "Supporter Pack",

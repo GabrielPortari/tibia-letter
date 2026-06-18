@@ -278,6 +278,12 @@ export default function Landing() {
           </span>
           <div className="flex items-center gap-4">
             <button
+              onClick={() => langNavigate('/about')}
+              className="text-xs text-text-dim hover:text-text transition-colors"
+            >
+              {t('about.footer_link')}
+            </button>
+            <button
               onClick={() => langNavigate('/contact')}
               className="text-xs text-text-dim hover:text-text transition-colors"
             >
