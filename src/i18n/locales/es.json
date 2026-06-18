@@ -15,7 +15,8 @@
     "no_active_char": "Sin personaje activo",
     "playing_as": "Jugando como {{name}} · Lv. {{level}} · {{world}}",
     "supporter": "Supporter",
-    "be_supporter": "Sé un supporter"
+    "be_supporter": "Sé un supporter",
+    "about": "Acerca de"
   },
   "landing": {
     "badge": "SISTEMA DE COLAS DE RESPAWN PARA TIBIA",
@@ -219,6 +220,29 @@
   "authCallback": {
     "authenticating": "Autenticando con Discord…"
   },
+  "about": {
+    "title": "Acerca de",
+    "footer_link": "Acerca de",
+    "what_badge": "QUÉ ES TIBIA LETTER",
+    "what_title": "Basta de cartas, basta de peleas.",
+    "what_desc1": "Quien ha jugado Tibia sabe: llegar a un spawn disputado siempre es estresante. Carta en el personaje, discusión en el chat, favoritismo — todo eso quedó en el pasado.",
+    "what_desc2": "Tibia Letter resuelve esto de forma simple y transparente: colas digitales, en tiempo real, por orden de llegada. Nada más, nada menos. Sin subjetividad, sin discusión. El sistema decide — y todos lo respetan.",
+    "me_badge": "SOBRE MÍ",
+    "me_name": "Gabriel Portari",
+    "me_role": "Desarrollador Fullstack",
+    "me_desc": "Soy desarrollador fullstack con interés en todo el ciclo de desarrollo — desde la creación de interfaces y APIs hasta el modelado de bases de datos y el despliegue en producción. Me gusta resolver problemas reales con código limpio y soluciones que tienen sentido. Tibia Letter nació exactamente de eso: un problema real que quería resolver de verdad.",
+    "disclaimer_badge": "AVISO LEGAL",
+    "disclaimer_text": "Tibia es un juego creado y distribuido por CipSoft GmbH. Todos los íconos, imágenes y referencias a Tibia en este sitio son propiedad de CipSoft GmbH — no reclamamos ningún derecho sobre ellos. Tibia Letter es un proyecto de fan independiente sin afiliación oficial con CipSoft. Los únicos datos que almacenamos son tu usuario de Discord y los datos públicos de tu personaje, obtenidos a través de la API pública de TibiaData.",
+    "contact_badge": "INFORMACIÓN DE CONTACTO",
+    "contact_email": "Correo",
+    "contact_github": "GitHub",
+    "contact_linkedin": "LinkedIn",
+    "support_badge": "APOYA EL PROYECTO",
+    "support_desc": "¿Te gusta Tibia Letter? Puedes apoyar el proyecto de dos maneras:",
+    "support_pack": "Suscribirse al Supporter Pack — acceso permanente con badge ★ dorado en las colas.",
+    "support_coins": "Enviar Tibia Coins al personaje",
+    "support_pack_btn": "Ver Supporter Pack →"
+  },
   "contact": {
     "title": "Contacto",
     "subtitle": "¿Tienes una pregunta, encontraste un bug o quieres sugerir algo? Elige un canal abajo.",
@@ -229,10 +253,7 @@
     "email_desc": "Preguntas generales, sugerencias o cualquier otro tema — manda un correo.",
     "email_btn": "Enviar correo",
     "footer_link": "Contacto",
-    "creator_title": "Sobre el creador",
-    "creator_name_label": "Creador",
-    "creator_char_label": "Personaje de Tibia",
-    "creator_email_label": "Correo"
+    "about_link": "Sobre el proyecto y el creador"
   },
   "supporter": {
     "title": "Supporter Pack",

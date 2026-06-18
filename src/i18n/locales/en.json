@@ -15,7 +15,8 @@
     "no_active_char": "No active character",
     "playing_as": "Playing as {{name}} · Lv. {{level}} · {{world}}",
     "supporter": "Supporter",
-    "be_supporter": "Become a supporter"
+    "be_supporter": "Become a supporter",
+    "about": "About"
   },
   "landing": {
     "badge": "SPAWN QUEUE SYSTEM FOR TIBIA",
@@ -219,6 +220,29 @@
   "authCallback": {
     "authenticating": "Authenticating with Discord…"
   },
+  "about": {
+    "title": "About",
+    "footer_link": "About",
+    "what_badge": "WHAT IS TIBIA LETTER",
+    "what_title": "No more letters, no more arguments.",
+    "what_desc1": "Anyone who has played Tibia knows: arriving at a contested spawn is always stressful. A letter on the character, arguing in chat, favoritism — all that is in the past.",
+    "what_desc2": "Tibia Letter solves this simply and transparently: digital queues, in real time, by order of arrival. Nothing more, nothing less. No subjectivity, no arguments. The system decides — and everyone respects it.",
+    "me_badge": "ABOUT ME",
+    "me_name": "Gabriel Portari",
+    "me_role": "Fullstack Developer",
+    "me_desc": "I'm a fullstack developer interested in the entire development cycle — from building interfaces and APIs to database modeling and production deployment. I enjoy solving real problems with clean code and solutions that make sense. Tibia Letter was born exactly from that: a real problem I genuinely wanted to solve.",
+    "disclaimer_badge": "DISCLAIMER",
+    "disclaimer_text": "Tibia is a game created and distributed by CipSoft GmbH. All icons, images, and references to Tibia on this site are property of CipSoft GmbH — we claim no rights over them. Tibia Letter is an independent fan project with no official affiliation with CipSoft. The only data we store is your Discord username and the public data of your character, retrieved via the public TibiaData API.",
+    "contact_badge": "CONTACT INFORMATION",
+    "contact_email": "Email",
+    "contact_github": "GitHub",
+    "contact_linkedin": "LinkedIn",
+    "support_badge": "SUPPORT THE PROJECT",
+    "support_desc": "Enjoying Tibia Letter? You can support the project in two ways:",
+    "support_pack": "Subscribe to the Supporter Pack — permanent access with a ★ gold badge in queues.",
+    "support_coins": "Send Tibia Coins to the character",
+    "support_pack_btn": "View Supporter Pack →"
+  },
   "contact": {
     "title": "Contact",
     "subtitle": "Got a question, found a bug, or want to suggest something? Pick a channel below.",
@@ -229,10 +253,7 @@
     "email_desc": "General questions, suggestions, or anything else — feel free to send an email.",
     "email_btn": "Send email",
     "footer_link": "Contact",
-    "creator_title": "About the creator",
-    "creator_name_label": "Creator",
-    "creator_char_label": "Tibia character",
-    "creator_email_label": "Email"
+    "about_link": "About the project and creator"
   },
   "supporter": {
     "title": "Supporter Pack",
