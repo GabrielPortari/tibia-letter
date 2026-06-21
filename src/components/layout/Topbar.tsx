@@ -30,18 +30,18 @@ function QueuePopoverItem({
   entry,
   onAccept,
   onLeave,
-  loadingSpawnId,
+  loadingSpawns,
   onExpire,
 }: {
   entry: MyQueueEntry
   onAccept: (worldId: string, spawnId: string) => Promise<void>
   onLeave: (worldId: string, spawnId: string) => Promise<void>
-  loadingSpawnId: string | null
+  loadingSpawns: Set<string>
   onExpire: () => void
 }) {
   const { t } = useTranslation()
   const status = getEntryStatus(entry)
-  const isLoading = loadingSpawnId === entry.spawnId
+  const isLoading = loadingSpawns.has(entry.spawnId)
 
   if (status === 'pending_accept') {
     return (
@@ -120,7 +120,7 @@ function QueueBadge({ lang }: { lang: SupportedLang }) {
   const { acceptEntry, leaveEntry, refetch } = useMyQueues()
   const { addToast } = useToasts()
   const [open, setOpen] = useState(false)
-  const [loadingSpawnId, setLoadingSpawnId] = useState<string | null>(null)
+  const [loadingSpawns, setLoadingSpawns] = useState<Set<string>>(() => new Set())
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -138,24 +138,24 @@ function QueueBadge({ lang }: { lang: SupportedLang }) {
   const hasPendingAccept = myEntries.some((e) => getEntryStatus(e) === 'pending_accept')
 
   async function handleAccept(worldId: string, spawnId: string) {
-    setLoadingSpawnId(spawnId)
+    setLoadingSpawns((prev) => new Set(prev).add(spawnId))
     try {
       await acceptEntry(worldId, spawnId)
     } catch (err) {
       addToast('error', err instanceof Error ? err.message : t('common.error'))
     } finally {
-      setLoadingSpawnId(null)
+      setLoadingSpawns((prev) => { const next = new Set(prev); next.delete(spawnId); return next })
     }
   }
 
   async function handleLeave(worldId: string, spawnId: string) {
-    setLoadingSpawnId(spawnId)
+    setLoadingSpawns((prev) => new Set(prev).add(spawnId))
     try {
       await leaveEntry(worldId, spawnId)
     } catch (err) {
       addToast('error', err instanceof Error ? err.message : t('common.error'))
     } finally {
-      setLoadingSpawnId(null)
+      setLoadingSpawns((prev) => { const next = new Set(prev); next.delete(spawnId); return next })
     }
   }
 
@@ -197,7 +197,7 @@ function QueueBadge({ lang }: { lang: SupportedLang }) {
                 entry={entry}
                 onAccept={handleAccept}
                 onLeave={handleLeave}
-                loadingSpawnId={loadingSpawnId}
+                loadingSpawns={loadingSpawns}
                 onExpire={refetch}
               />
             ))}
