@@ -30,10 +30,15 @@ export function useAuth() {
           const me: User = await res.json()
           setUser(me)
         } else {
-          setUser(null)
+          // Don't overwrite a user set concurrently by AuthCallback (race on /auth/callback).
+          // If AuthCallback's finishLogin already ran, getState().user is non-null and we
+          // must not clobber it — doing so would cause PrivateRoute to redirect immediately.
+          if (!useAuthStore.getState().user) {
+            setUser(null)
+          }
         }
       } catch {
-        if (mounted) setUser(null)
+        if (mounted && !useAuthStore.getState().user) setUser(null)
       } finally {
         if (mounted) setLoading(false)
       }

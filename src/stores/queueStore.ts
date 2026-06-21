@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { QueueEntry } from '../types'
+import type { QueueEntry, MyQueueEntry } from '../types'
 
 interface QueueEntryWithSpawn extends QueueEntry {
   spawnId: string
@@ -7,7 +7,9 @@ interface QueueEntryWithSpawn extends QueueEntry {
 
 interface QueueState {
   entries: Record<string, QueueEntry[]>
+  myEntries: MyQueueEntry[]
   setWorldEntries: (map: Record<string, QueueEntry[]>) => void
+  setMyEntries: (entries: MyQueueEntry[]) => void
   getSpawnQueue: (spawnId: string) => QueueEntry[]
   getMyEntries: (characterName: string) => QueueEntryWithSpawn[]
   clearWorld: () => void
@@ -15,8 +17,10 @@ interface QueueState {
 
 export const useQueueStore = create<QueueState>((set, get) => ({
   entries: {},
+  myEntries: [],
 
   setWorldEntries: (map) => set({ entries: map }),
+  setMyEntries: (entries) => set({ myEntries: entries }),
 
   getSpawnQueue: (spawnId) => {
     const list = get().entries[spawnId] ?? []

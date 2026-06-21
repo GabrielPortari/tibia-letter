@@ -52,6 +52,11 @@ export interface QueueEntry {
   joinedAt: string
 }
 
+export interface MyQueueEntry extends QueueEntry {
+  worldId: string
+  spawnName: string
+}
+
 export type QueueStatus = 'waiting' | 'pending_accept' | 'active'
 
 export function getEntryStatus(e: QueueEntry): QueueStatus {
