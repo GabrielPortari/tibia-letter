@@ -23,12 +23,12 @@ export function useMyQueues() {
 
   async function acceptEntry(worldId: string, spawnId: string) {
     await api.post(`/queue/${worldId}/${spawnId}/accept`)
-    queryClient.invalidateQueries({ queryKey: ['my-queues'] })
+    await queryClient.invalidateQueries({ queryKey: ['my-queues'] })
   }
 
   async function leaveEntry(worldId: string, spawnId: string) {
     await api.delete(`/queue/${worldId}/${spawnId}`)
-    queryClient.invalidateQueries({ queryKey: ['my-queues'] })
+    await queryClient.invalidateQueries({ queryKey: ['my-queues'] })
   }
 
   return { ...query, acceptEntry, leaveEntry }

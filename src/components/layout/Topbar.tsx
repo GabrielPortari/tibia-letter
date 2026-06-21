@@ -7,10 +7,11 @@ import { useAuthStore } from '../../stores/authStore'
 import { useQueueStore } from '../../stores/queueStore'
 import { queryClient } from '../../lib/queryClient'
 import { useMyQueues } from '../../hooks/useMyQueues'
-import { useCountdown } from '../../hooks/useCountdown'
+import { useToasts } from '../../hooks/useToasts'
 import { Avatar } from '../ui/Avatar'
 import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
+import { AcceptTimer, HuntEndTimer } from '../queue/InlineTimer'
 import { SUPPORTED_LANGS, type SupportedLang } from '../../i18n'
 import { getEntryStatus } from '../../types'
 import { fmt, secondsUntil } from '../../utils/time'
@@ -24,44 +25,23 @@ const LANG_LABELS: Record<SupportedLang, string> = {
   pl: 'PL',
 }
 
-function supporterLabel(t: (k: string) => string): string {
-  return t('topbar.supporter')
-}
-
-function AcceptCountdown({ deadline }: { deadline: string }) {
-  const secs = useCountdown(new Date(deadline).getTime(), () => {})
-  return (
-    <span
-      className="font-mono text-xs font-bold"
-      style={{ color: secs <= 60 ? 'var(--red)' : 'var(--gold)' }}
-    >
-      {fmt(secs)}
-    </span>
-  )
-}
-
-function HuntCountdown({ endsAt }: { endsAt: string }) {
-  const secs = useCountdown(new Date(endsAt).getTime(), () => {})
-  return (
-    <span className="font-mono text-xs" style={{ color: 'var(--text-muted)' }}>
-      {fmt(secs)}
-    </span>
-  )
-}
 
 function QueuePopoverItem({
   entry,
   onAccept,
   onLeave,
-  busy,
+  loadingSpawnId,
+  onExpire,
 }: {
   entry: MyQueueEntry
   onAccept: (worldId: string, spawnId: string) => Promise<void>
   onLeave: (worldId: string, spawnId: string) => Promise<void>
-  busy: boolean
+  loadingSpawnId: string | null
+  onExpire: () => void
 }) {
   const { t } = useTranslation()
   const status = getEntryStatus(entry)
+  const isLoading = loadingSpawnId === entry.spawnId
 
   if (status === 'pending_accept') {
     return (
@@ -75,20 +55,24 @@ function QueuePopoverItem({
       >
         <div className="flex items-center justify-between gap-2">
           <span className="text-xs font-semibold text-gold truncate">{entry.spawnName}</span>
-          {entry.acceptDeadline && <AcceptCountdown deadline={entry.acceptDeadline} />}
+          {entry.acceptDeadline && (
+            <AcceptTimer deadline={entry.acceptDeadline} onExpire={onExpire} />
+          )}
         </div>
         <div className="flex gap-1.5">
           <button
             onClick={() => onAccept(entry.worldId, entry.spawnId)}
-            disabled={busy}
+            disabled={isLoading}
             className="flex-1 py-1 rounded text-xs font-semibold text-bg0 disabled:opacity-50"
             style={{ background: 'var(--gold)' }}
           >
-            {t('banner.accept')}
+            {isLoading ? (
+              <span className="inline-block w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            ) : t('banner.accept')}
           </button>
           <button
             onClick={() => onLeave(entry.worldId, entry.spawnId)}
-            disabled={busy}
+            disabled={isLoading}
             className="py-1 px-2 rounded text-xs disabled:opacity-50"
             style={{ background: 'var(--red-bg)', border: '0.5px solid var(--red)', color: 'var(--red)' }}
           >
@@ -108,7 +92,7 @@ function QueuePopoverItem({
         <span className="text-xs font-medium" style={{ color: 'var(--green)' }}>
           ⚔ {entry.spawnName}
         </span>
-        {entry.huntEndsAt && <HuntCountdown endsAt={entry.huntEndsAt} />}
+        {entry.huntEndsAt && <HuntEndTimer endsAt={entry.huntEndsAt} />}
       </div>
     )
   }
@@ -133,9 +117,10 @@ function QueueBadge({ lang }: { lang: SupportedLang }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { myEntries } = useQueueStore()
-  const { acceptEntry, leaveEntry } = useMyQueues()
+  const { acceptEntry, leaveEntry, refetch } = useMyQueues()
+  const { addToast } = useToasts()
   const [open, setOpen] = useState(false)
-  const [busy, setBusy] = useState(false)
+  const [loadingSpawnId, setLoadingSpawnId] = useState<string | null>(null)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -153,13 +138,25 @@ function QueueBadge({ lang }: { lang: SupportedLang }) {
   const hasPendingAccept = myEntries.some((e) => getEntryStatus(e) === 'pending_accept')
 
   async function handleAccept(worldId: string, spawnId: string) {
-    setBusy(true)
-    try { await acceptEntry(worldId, spawnId) } finally { setBusy(false) }
+    setLoadingSpawnId(spawnId)
+    try {
+      await acceptEntry(worldId, spawnId)
+    } catch (err) {
+      addToast('error', err instanceof Error ? err.message : t('common.error'))
+    } finally {
+      setLoadingSpawnId(null)
+    }
   }
 
   async function handleLeave(worldId: string, spawnId: string) {
-    setBusy(true)
-    try { await leaveEntry(worldId, spawnId) } finally { setBusy(false) }
+    setLoadingSpawnId(spawnId)
+    try {
+      await leaveEntry(worldId, spawnId)
+    } catch (err) {
+      addToast('error', err instanceof Error ? err.message : t('common.error'))
+    } finally {
+      setLoadingSpawnId(null)
+    }
   }
 
   return (
@@ -200,7 +197,8 @@ function QueueBadge({ lang }: { lang: SupportedLang }) {
                 entry={entry}
                 onAccept={handleAccept}
                 onLeave={handleLeave}
-                busy={busy}
+                loadingSpawnId={loadingSpawnId}
+                onExpire={refetch}
               />
             ))}
           </div>
@@ -348,7 +346,7 @@ export function Topbar() {
                       <p className="text-sm font-semibold text-text truncate">{user.discordName}</p>
                       {user.premium && (
                         <p className="text-xs text-gold mt-0.5">
-                          ★ {supporterLabel(t)}
+                          ★ {t('topbar.supporter')}
                         </p>
                       )}
                       {char ? (
