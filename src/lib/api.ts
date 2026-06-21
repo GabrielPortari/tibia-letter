@@ -1,3 +1,5 @@
+import { useAuthStore } from '../stores/authStore'
+
 const BASE = ((import.meta.env.VITE_API_URL as string) || '') + '/api/v1'
 
 // Deduplicates concurrent refresh calls into a single request
@@ -36,7 +38,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
         return retry.json() as Promise<T>
       }
     }
-    window.location.href = '/'
+    useAuthStore.getState().setUser(null)
     return Promise.reject(new Error('Unauthorized'))
   }
 
