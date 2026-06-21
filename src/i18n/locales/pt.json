@@ -296,5 +296,11 @@
   "copyright": {
     "notice": "Tibia é um jogo criado pela",
     "notice2": "Todo o conteúdo oficial é propriedade da CipSoft GmbH."
+  },
+  "cookies": {
+    "title": "Usamos cookies",
+    "desc": "Utilizamos cookies estritamente necessários para autenticação (login com Discord) e preferências de idioma. Esses cookies são essenciais para o funcionamento da plataforma.",
+    "accept": "Aceitar",
+    "decline": "Recusar"
   }
 }

@@ -5,6 +5,7 @@ import { queryClient } from './lib/queryClient'
 import { useAuth } from './hooks/useAuth'
 import { Topbar } from './components/layout/Topbar'
 import { ToastContainer } from './components/ui/ToastContainer'
+import { CookieConsentModal } from './components/ui/CookieConsentModal'
 import { PrivateRoute, CharRequiredRoute, AdminRoute } from './components/layout/RouteGuards'
 import { Spinner } from './components/ui/Spinner'
 import { LangProvider, LangRedirect } from './components/LangProvider'
@@ -79,6 +80,7 @@ function AppInner() {
         </Routes>
       </Suspense>
       <ToastContainer />
+      <CookieConsentModal />
     </>
   )
 }
