@@ -110,6 +110,7 @@ export default function SpawnApp() {
       })
       qc.invalidateQueries({ queryKey: ['spawns', worldId] })
       qc.invalidateQueries({ queryKey: ['queue', worldId] })
+      qc.invalidateQueries({ queryKey: ['my-queues'] })
       setShowCreateModal(false)
       setNewSpawnName('')
       addToast('success', t('spawnApp.hunt_started_toast'))
@@ -126,6 +127,7 @@ export default function SpawnApp() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['queue', worldId] })
       qc.invalidateQueries({ queryKey: ['spawns', worldId] })
+      qc.invalidateQueries({ queryKey: ['my-queues'] })
     },
     onError: (e: Error) => addToast('error', e.message),
   })
@@ -136,6 +138,7 @@ export default function SpawnApp() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['queue', worldId] })
       qc.invalidateQueries({ queryKey: ['spawns', worldId] })
+      qc.invalidateQueries({ queryKey: ['my-queues'] })
     },
     onError: (e: Error) => addToast('error', e.message),
   })
@@ -146,6 +149,7 @@ export default function SpawnApp() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['queue', worldId] })
       qc.invalidateQueries({ queryKey: ['spawns', worldId] })
+      qc.invalidateQueries({ queryKey: ['my-queues'] })
     },
     onError: (e: Error) => addToast('error', e.message),
   })
@@ -156,6 +160,7 @@ export default function SpawnApp() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['queue', worldId] })
       qc.invalidateQueries({ queryKey: ['spawns', worldId] })
+      qc.invalidateQueries({ queryKey: ['my-queues'] })
     },
     onError: (e: Error) => addToast('error', e.message),
   })
