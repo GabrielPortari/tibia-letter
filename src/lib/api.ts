@@ -1,3 +1,6 @@
+import { useAuthStore } from '../stores/authStore'
+import { queryClient } from './queryClient'
+
 const BASE = ((import.meta.env.VITE_API_URL as string) || '') + '/api/v1'
 
 // Deduplicates concurrent refresh calls into a single request
@@ -35,8 +38,14 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
         if (retry.status === 204 || retry.headers.get('content-length') === '0') return undefined as T
         return retry.json() as Promise<T>
       }
+      // Retry failed for a non-auth reason (403, 500, …) — don't log the user out
+      if (retry.status !== 401) {
+        const body = await retry.json().catch(() => ({}))
+        throw new Error((body as { message?: string }).message ?? `HTTP ${retry.status}`)
+      }
     }
-    window.location.href = '/'
+    useAuthStore.getState().setUser(null)
+    queryClient.clear()
     return Promise.reject(new Error('Unauthorized'))
   }
 
