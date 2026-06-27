@@ -21,7 +21,7 @@ import { getEntryStatus } from '../types'
 export default function SpawnApp() {
   const { worldId } = useParams<{ worldId: string }>()
   const { user, activeChar } = useAuthStore()
-  const { setWorldEntries, getMyEntries } = useQueueStore()
+  const { setWorldEntries, myEntries: storeMyEntries } = useQueueStore()
   const { addToast } = useToasts()
   const { t } = useTranslation()
   const langNavigate = useLangNavigate()
@@ -64,7 +64,9 @@ export default function SpawnApp() {
     enabled: !!worldId && !spawnsError,
   })
 
-  const myEntries = char ? getMyEntries(char.name) : []
+  const myEntries = char
+    ? storeMyEntries.filter((e) => e.worldId?.toLowerCase() === worldId?.toLowerCase())
+    : []
   const isActivelyHunting = myEntries.some((e) => getEntryStatus(e) === 'active')
   const wrongWorld = !!char && char.world.toLowerCase() !== worldId?.toLowerCase()
 

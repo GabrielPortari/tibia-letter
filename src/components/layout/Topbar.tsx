@@ -104,7 +104,7 @@ function QueuePopoverItem({
     >
       <span className="text-xs text-text truncate">{entry.spawnName}</span>
       <span className="text-xs flex-shrink-0" style={{ color: 'var(--text-muted)' }}>
-        #{entry.position}
+        {t('banner.position', { pos: entry.position })}
         {entry.estimatedStart && (
           <> · ~{fmt(secondsUntil(entry.estimatedStart))}</>
         )}
@@ -213,8 +213,6 @@ export function Topbar() {
   const navigate = useNavigate()
   const location = useLocation()
   const { t, i18n } = useTranslation()
-
-  useMyQueues()
 
   // Parse lang directly from the URL — Topbar renders outside <Route path="/:lang">
   // so useParams() won't have the lang segment.

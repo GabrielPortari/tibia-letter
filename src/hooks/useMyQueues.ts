@@ -28,14 +28,15 @@ export function useMyQueues() {
   async function acceptEntry(worldId: string, spawnId: string) {
     await api.post(`/queue/${worldId}/${spawnId}/accept`)
     await queryClient.invalidateQueries({ queryKey: ['my-queues'] })
-    // Also invalidate the per-world query so SpawnApp reflects the change immediately
     queryClient.invalidateQueries({ queryKey: ['queue', worldId] })
+    queryClient.invalidateQueries({ queryKey: ['spawns', worldId] })
   }
 
   async function leaveEntry(worldId: string, spawnId: string) {
     await api.delete(`/queue/${worldId}/${spawnId}`)
     await queryClient.invalidateQueries({ queryKey: ['my-queues'] })
     queryClient.invalidateQueries({ queryKey: ['queue', worldId] })
+    queryClient.invalidateQueries({ queryKey: ['spawns', worldId] })
   }
 
   return { ...query, acceptEntry, leaveEntry }
