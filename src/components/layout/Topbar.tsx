@@ -214,6 +214,8 @@ export function Topbar() {
   const location = useLocation()
   const { t, i18n } = useTranslation()
 
+  useMyQueues()
+
   // Parse lang directly from the URL — Topbar renders outside <Route path="/:lang">
   // so useParams() won't have the lang segment.
   const segments = location.pathname.split('/')
