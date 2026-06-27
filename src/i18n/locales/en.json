@@ -159,7 +159,10 @@
     "already_hunting": "You are already hunting. Finish your current hunt before joining another queue.",
     "already_in_queue": "You are already in this spawn's queue.",
     "queue_limit": "Limit of 2 simultaneous queues reached.",
-    "queue_counter": "{{count}}/2 queues"
+    "queue_counter": "{{count}}/2 queues",
+    "section_pending_accept": "AWAITING ACCEPT",
+    "section_in_queue": "YOUR QUEUES",
+    "section_other_spawns": "OTHER SPAWNS"
   },
   "spawn": {
     "status_free": "Free",

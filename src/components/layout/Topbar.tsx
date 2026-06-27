@@ -104,7 +104,7 @@ function QueuePopoverItem({
     >
       <span className="text-xs text-text truncate">{entry.spawnName}</span>
       <span className="text-xs flex-shrink-0" style={{ color: 'var(--text-muted)' }}>
-        #{entry.position}
+        {t('banner.position', { pos: entry.position })}
         {entry.estimatedStart && (
           <> · ~{fmt(secondsUntil(entry.estimatedStart))}</>
         )}
