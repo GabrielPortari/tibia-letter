@@ -159,7 +159,10 @@
     "already_hunting": "Już polują. Zakończ bieżące polowanie przed dołączeniem do innej kolejki.",
     "already_in_queue": "Już jesteś w kolejce tego spawnu.",
     "queue_limit": "Osiągnięto limit 2 jednoczesnych kolejek.",
-    "queue_counter": "{{count}}/2 kolejek"
+    "queue_counter": "{{count}}/2 kolejek",
+    "section_pending_accept": "OCZEKIWANIE NA AKCEPTACJĘ",
+    "section_in_queue": "TWOJE KOLEJKI",
+    "section_other_spawns": "INNE SPAWNY"
   },
   "spawn": {
     "status_free": "Wolny",

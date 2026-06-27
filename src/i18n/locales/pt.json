@@ -159,7 +159,10 @@
     "already_hunting": "Você já está caçando. Finalize a hunt antes de entrar em outra fila.",
     "already_in_queue": "Você já está na fila deste spawn.",
     "queue_limit": "Limite de 2 filas simultâneas atingido.",
-    "queue_counter": "{{count}}/2 filas"
+    "queue_counter": "{{count}}/2 filas",
+    "section_pending_accept": "AGUARDANDO ACEITE",
+    "section_in_queue": "VOCÊ ESTÁ NA FILA",
+    "section_other_spawns": "DEMAIS FILAS"
   },
   "spawn": {
     "status_free": "Livre",

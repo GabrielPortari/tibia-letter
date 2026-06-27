@@ -73,6 +73,22 @@ export default function SpawnApp() {
     ? (spawns ?? []).filter((s) => s.name.toLowerCase().includes(trimmedSearch))
     : (spawns ?? [])
 
+  const pendingSpawnIds = new Set(
+    myEntries.filter((e) => getEntryStatus(e) === 'pending_accept').map((e) => e.spawnId),
+  )
+  const waitingSpawnIds = new Set(
+    myEntries.filter((e) => getEntryStatus(e) === 'waiting').map((e) => e.spawnId),
+  )
+  const sortAlpha = (arr: Spawn[]) => [...arr].sort((a, b) => a.name.localeCompare(b.name))
+  const pendingSpawns = sortAlpha(filteredSpawns.filter((s) => pendingSpawnIds.has(s.id)))
+  const waitingSpawns = sortAlpha(
+    filteredSpawns.filter((s) => waitingSpawnIds.has(s.id) && !pendingSpawnIds.has(s.id)),
+  )
+  const otherSpawns = sortAlpha(
+    filteredSpawns.filter((s) => !pendingSpawnIds.has(s.id) && !waitingSpawnIds.has(s.id)),
+  )
+  const hasUserSections = pendingSpawns.length > 0 || waitingSpawns.length > 0
+
   const nameAlreadyExists = !!spawns?.some(
     (s) => s.name.toLowerCase() === newSpawnName.trim().toLowerCase(),
   )
@@ -223,28 +239,79 @@ export default function SpawnApp() {
         {isLoading ? (
           <div className="flex justify-center py-16"><Spinner size="lg" /></div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-start">
-            {filteredSpawns.map((spawn) => (
-              <SpawnCard
-                key={spawn.id}
-                spawn={spawn}
-                onJoin={(id) => joinMutation.mutateAsync(id)}
-                onAccept={(id) => acceptMutation.mutateAsync(id)}
-                onFinish={(id) => finishMutation.mutateAsync(id)}
-                onLeave={(id) => leaveMutation.mutateAsync(id)}
-              />
-            ))}
-            {!isLoading && spawns?.length === 0 && (
-              <p className="col-span-full text-center py-16 text-text-muted">
-                {t('spawnApp.no_spawns')}
-              </p>
+          <>
+            {spawns?.length === 0 && (
+              <p className="text-center py-16 text-text-muted">{t('spawnApp.no_spawns')}</p>
             )}
-            {!isLoading && spawns && spawns.length > 0 && filteredSpawns.length === 0 && (
-              <p className="col-span-full text-center py-16 text-text-muted">
+            {spawns && spawns.length > 0 && filteredSpawns.length === 0 && (
+              <p className="text-center py-16 text-text-muted">
                 {t('spawnApp.no_results', { query: search.trim() })}
               </p>
             )}
-          </div>
+            {filteredSpawns.length > 0 && (
+              <div className="space-y-6">
+                {pendingSpawns.length > 0 && (
+                  <section>
+                    <p className="text-xs font-semibold tracking-widest mb-3" style={{ color: 'var(--gold-dim)' }}>
+                      {t('spawnApp.section_pending_accept')}
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-start">
+                      {pendingSpawns.map((spawn) => (
+                        <SpawnCard
+                          key={spawn.id}
+                          spawn={spawn}
+                          onJoin={(id) => joinMutation.mutateAsync(id)}
+                          onAccept={(id) => acceptMutation.mutateAsync(id)}
+                          onFinish={(id) => finishMutation.mutateAsync(id)}
+                          onLeave={(id) => leaveMutation.mutateAsync(id)}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                )}
+                {waitingSpawns.length > 0 && (
+                  <section>
+                    <p className="text-xs font-semibold tracking-widest mb-3" style={{ color: 'var(--text-dim)' }}>
+                      {t('spawnApp.section_in_queue')}
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-start">
+                      {waitingSpawns.map((spawn) => (
+                        <SpawnCard
+                          key={spawn.id}
+                          spawn={spawn}
+                          onJoin={(id) => joinMutation.mutateAsync(id)}
+                          onAccept={(id) => acceptMutation.mutateAsync(id)}
+                          onFinish={(id) => finishMutation.mutateAsync(id)}
+                          onLeave={(id) => leaveMutation.mutateAsync(id)}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                )}
+                {otherSpawns.length > 0 && (
+                  <section>
+                    {hasUserSections && (
+                      <p className="text-xs font-semibold tracking-widest mb-3" style={{ color: 'var(--text-dim)' }}>
+                        {t('spawnApp.section_other_spawns')}
+                      </p>
+                    )}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 items-start">
+                      {otherSpawns.map((spawn) => (
+                        <SpawnCard
+                          key={spawn.id}
+                          spawn={spawn}
+                          onJoin={(id) => joinMutation.mutateAsync(id)}
+                          onAccept={(id) => acceptMutation.mutateAsync(id)}
+                          onFinish={(id) => finishMutation.mutateAsync(id)}
+                          onLeave={(id) => leaveMutation.mutateAsync(id)}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                )}
+              </div>
+            )}
+          </>
         )}
 
         <Modal

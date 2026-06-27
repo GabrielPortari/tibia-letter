@@ -159,7 +159,10 @@
     "already_hunting": "Ya estás cazando. Finaliza la caza antes de unirte a otra cola.",
     "already_in_queue": "Ya estás en la cola de este spawn.",
     "queue_limit": "Límite de 2 colas simultáneas alcanzado.",
-    "queue_counter": "{{count}}/2 colas"
+    "queue_counter": "{{count}}/2 colas",
+    "section_pending_accept": "ESPERANDO ACEPTACIÓN",
+    "section_in_queue": "EN COLA",
+    "section_other_spawns": "OTROS SPAWNS"
   },
   "spawn": {
     "status_free": "Libre",
